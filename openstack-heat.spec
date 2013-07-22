@@ -1,6 +1,6 @@
 %global release_name havana
 %global release_letter b
-%global milestone 1
+%global milestone 2
 %global full_release heat-%{version}.%{release_letter}%{milestone}
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
@@ -23,8 +23,6 @@ Source4:	openstack-heat-engine.service
 Source5:	openstack-heat-api-cloudwatch.service
 
 Patch0: switch-to-using-m2crypto.patch
-# bug fix already committed upstream, fixes autoscaling
-Patch1: bug1186389.patch
 
 BuildArch: noarch
 BuildRequires: python2-devel
@@ -44,7 +42,6 @@ Requires: %{name}-cli = %{version}-%{release}
 %prep
 %setup -q -n %{full_release}
 %patch0 -p1
-%patch1 -p1
 
 %build
 %{__python} setup.py build
@@ -287,6 +284,9 @@ Heat client tools accessible from the CLI
 %{_mandir}/man1/heat-watch.1.gz
 
 %changelog
+* Mon Jul 22 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.2.b2
+- rebase to havana-2
+
 * Mon Jun 10 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.2.b1
 - fix m2crypto patch
 
