@@ -8,7 +8,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2013.2
-Release:	0.5.%{release_letter}%{milestone}%{?dist}
+Release:	0.6.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -77,6 +77,7 @@ popd
 
 rm -rf %{buildroot}/var/lib/heat/.dummy
 rm -f %{buildroot}/usr/bin/cinder-keystone-setup
+rm -rf %{buildroot}/%{python_sitelib}/heat/tests
 
 install -p -D -m 640 %{_builddir}/%{full_release}/etc/heat/heat-api.conf %{buildroot}/%{_sysconfdir}/heat
 install -p -D -m 640 %{_builddir}/%{full_release}/etc/heat/api-paste.ini %{buildroot}/%{_sysconfdir}/heat
@@ -288,6 +289,9 @@ Heat client tools accessible from the CLI
 %{_mandir}/man1/heat-watch.1.gz
 
 %changelog
+* Fri Aug 30 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-6.b2
+- remove tests from common
+
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2013.2-0.5.b2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
