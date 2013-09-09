@@ -37,7 +37,6 @@ Requires: %{name}-engine = %{version}-%{release}
 Requires: %{name}-api = %{version}-%{release}
 Requires: %{name}-api-cfn = %{version}-%{release}
 Requires: %{name}-api-cloudwatch = %{version}-%{release}
-Requires: %{name}-cli = %{version}-%{release}
 
 %prep
 %setup -q -n %{full_release}
@@ -119,6 +118,7 @@ Requires: python-qpid
 Requires: python-webob
 Requires: PyYAML
 Requires: m2crypto
+Requires: python-heatclient
 
 Requires(pre): shadow-utils
 
@@ -127,6 +127,7 @@ Components common to all OpenStack Heat services
 
 %files common
 %doc LICENSE
+%{_bindir}/heat-manage
 %{_bindir}/heat-db-setup
 %{_bindir}/heat-keystone-setup
 %{python_sitelib}/heat*
@@ -267,30 +268,11 @@ AWS CloudWatch-compatible API to the Heat Engine
 %systemd_postun_with_restart openstack-heat-api-cfn.service
 
 
-%package cli
-Summary: Heat cli
-Group: System Environment/Base
-
-Requires: %{name}-common = %{version}-%{release}
-
-%description cli
-Heat client tools accessible from the CLI
-
-%files cli
-%doc README.rst LICENSE doc/build/html/man/heat-cfn.html
-%{_bindir}/heat-boto
-%{_bindir}/heat-cfn
-%{_bindir}/heat-watch
-%{_bindir}/heat-manage
-%config(noreplace) %{_sysconfdir}/bash_completion.d/heat-cfn
-%config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/boto.cfg
-%{_mandir}/man1/heat-cfn.1.gz
-%{_mandir}/man1/heat-boto.1.gz
-%{_mandir}/man1/heat-watch.1.gz
-
 %changelog
 * Fri Aug 30 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-6.b2
 - remove tests from common
+- remove cli package and move heat-manage into common
+- added requires for python-heatclient
 
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2013.2-0.5.b2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
