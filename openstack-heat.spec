@@ -1,6 +1,6 @@
 %global release_name havana
 %global release_letter b
-%global milestone 2
+%global milestone 3
 %global full_release heat-%{version}.%{release_letter}%{milestone}
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
@@ -25,9 +25,37 @@ Source5:	openstack-heat-api-cloudwatch.service
 Patch0: switch-to-using-m2crypto.patch
 
 BuildArch: noarch
+BuildRequires: git
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
+BuildRequires: python-oslo-sphinx
+BuildRequires: python-oslo-config
+BuildRequires: python-argparse
+BuildRequires: python-eventlet
+BuildRequires: python-greenlet
+BuildRequires: python-httplib2
+BuildRequires: python-iso8601
+BuildRequires: python-kombu
+BuildRequires: python-lxml
+BuildRequires: python-netaddr
+BuildRequires: python-cinderclient
+BuildRequires: python-keystoneclient
+BuildRequires: python-memcached
+BuildRequires: python-novaclient
+BuildRequires: python-neutronclient
+BuildRequires: python-swiftclient
+BuildRequires: python-migrate
+BuildRequires: python-qpid
+BuildRequires: python-six
+BuildRequires: PyYAML
 BuildRequires: python-sphinx
+BuildRequires: m2crypto
+BuildRequires: python-paramiko
+# These are required to build due to the requirements check added
+BuildRequires: python-paste-deploy
+BuildRequires: python-routes
+BuildRequires: python-sqlalchemy
+BuildRequires: python-webob
 BuildRequires: python-pbr
 BuildRequires: python-d2to1
 BuildRequires: systemd-units
@@ -54,7 +82,8 @@ rm -rf {test-,}requirements.txt tools/{pip,test}-requires
 sed -i -e '/^#!/,1 d' %{buildroot}/%{python_sitelib}/heat/db/sqlalchemy/manage.py
 sed -i -e '/^#!/,1 d' %{buildroot}/%{python_sitelib}/heat/db/sqlalchemy/migrate_repo/manage.py
 mkdir -p %{buildroot}/var/log/heat/
-install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/heat
+mkdir -p %{buildroot}/var/run/heat/
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-heat
 
 # install systemd unit files
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-heat-api.service
@@ -78,14 +107,13 @@ rm -rf %{buildroot}/var/lib/heat/.dummy
 rm -f %{buildroot}/usr/bin/cinder-keystone-setup
 rm -rf %{buildroot}/%{python_sitelib}/heat/tests
 
-install -p -D -m 640 %{_builddir}/%{full_release}/etc/heat/heat-api.conf %{buildroot}/%{_sysconfdir}/heat
+install -p -D -m 640 %{_builddir}/%{full_release}/etc/heat/heat.conf.sample %{buildroot}/%{_sysconfdir}/heat/heat.conf
 install -p -D -m 640 %{_builddir}/%{full_release}/etc/heat/api-paste.ini %{buildroot}/%{_sysconfdir}/heat
-install -p -D -m 640 %{_builddir}/%{full_release}/etc/heat/heat-api-cfn.conf %{buildroot}/%{_sysconfdir}/heat
-install -p -D -m 640 %{_builddir}/%{full_release}/etc/heat/heat-api-cloudwatch.conf %{buildroot}/%{_sysconfdir}/heat
-install -p -D -m 640 %{_builddir}/%{full_release}/etc/heat/heat-engine.conf %{buildroot}/%{_sysconfdir}/heat
-install -p -D -m 640 %{_builddir}/%{full_release}/etc/boto.cfg %{buildroot}/%{_sysconfdir}/heat
-install -p -D -m 644 %{_builddir}/%{full_release}/etc/bash_completion.d/heat-cfn %{buildroot}/%{_sysconfdir}/bash_completion.d/heat-cfn
 install -p -D -m 640 etc/heat/policy.json %{buildroot}/%{_sysconfdir}/heat
+
+# TODO: move this to setup.cfg
+cp -vr etc/heat/templates %{buildroot}/%{_sysconfdir}/heat
+cp -vr etc/heat/environment.d %{buildroot}/%{_sysconfdir}/heat
 
 %description
 Heat provides AWS CloudFormation and CloudWatch functionality for OpenStack.
@@ -96,13 +124,13 @@ Summary: Heat common
 Group: System Environment/Base
 
 Requires: python-argparse
-Requires: python-boto
 Requires: python-eventlet
 Requires: python-greenlet
 Requires: python-httplib2
 Requires: python-iso8601
 Requires: python-kombu
 Requires: python-lxml
+Requires: python-netaddr
 Requires: python-paste-deploy
 Requires: python-cinderclient
 Requires: python-keystoneclient
@@ -116,8 +144,11 @@ Requires: python-sqlalchemy
 Requires: python-migrate
 Requires: python-qpid
 Requires: python-webob
+Requires: python-six
 Requires: PyYAML
 Requires: m2crypto
+Requires: python-anyjson
+Requires: python-paramiko
 Requires: python-heatclient
 
 Requires(pre): shadow-utils
@@ -132,11 +163,15 @@ Components common to all OpenStack Heat services
 %{_bindir}/heat-keystone-setup
 %{python_sitelib}/heat*
 %dir %attr(0755,heat,root) %{_localstatedir}/log/heat
+%dir %attr(0755,heat,root) %{_localstatedir}/run/heat
 %dir %attr(0755,heat,root) %{_sharedstatedir}/heat
 %dir %attr(0755,heat,root) %{_sysconfdir}/heat
-%config(noreplace) %{_sysconfdir}/logrotate.d/heat
+%config(noreplace) %{_sysconfdir}/logrotate.d/openstack-heat
+%config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/heat.conf
 %config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/policy.json
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/api-paste.ini
+%config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/environment.d/*
+%config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/templates/*
 %{_mandir}/man1/heat-db-setup.1.gz
 %{_mandir}/man1/heat-keystone-setup.1.gz
 
@@ -164,7 +199,6 @@ OpenStack API for starting CloudFormation templates on OpenStack
 %files engine
 %doc README.rst LICENSE doc/build/html/man/heat-engine.html
 %{_bindir}/heat-engine
-%config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/heat-engine.conf
 %{_unitdir}/openstack-heat-engine.service
 %{_mandir}/man1/heat-engine.1.gz
 
@@ -194,7 +228,6 @@ OpenStack-native ReST API to the Heat Engine
 %files api
 %doc README.rst LICENSE doc/build/html/man/heat-api.html
 %{_bindir}/heat-api
-%config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/heat-api.conf
 %{_unitdir}/openstack-heat-api.service
 %{_mandir}/man1/heat-api.1.gz
 
@@ -224,7 +257,6 @@ AWS CloudFormation-compatible API to the Heat Engine
 %files api-cfn
 %doc README.rst LICENSE doc/build/html/man/heat-api-cfn.html
 %{_bindir}/heat-api-cfn
-%config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/heat-api-cfn.conf
 %{_unitdir}/openstack-heat-api-cfn.service
 %{_mandir}/man1/heat-api-cfn.1.gz
 
@@ -254,7 +286,6 @@ AWS CloudWatch-compatible API to the Heat Engine
 %files api-cloudwatch
 %doc README.rst LICENSE doc/build/html/man/heat-api-cloudwatch.html
 %{_bindir}/heat-api-cloudwatch
-%config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/heat-api-cloudwatch.conf
 %{_unitdir}/openstack-heat-api-cloudwatch.service
 %{_mandir}/man1/heat-api-cloudwatch.1.gz
 
@@ -269,10 +300,14 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
-* Fri Aug 30 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-6.b2
+* Mon Sep 9 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.6.b3
+- rebase to havana-3
 - remove tests from common
 - remove cli package and move heat-manage into common
 - added requires for python-heatclient
+- remove python-boto as boto has been moved to another repo
+- remove heat-cfn bash completion
+- add /var/run/heat directory
 
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2013.2-0.5.b2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
