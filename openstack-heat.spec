@@ -8,7 +8,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2013.2
-Release:	0.6.%{release_letter}%{milestone}%{?dist}
+Release:	0.7.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -150,6 +150,8 @@ Requires: m2crypto
 Requires: python-anyjson
 Requires: python-paramiko
 Requires: python-heatclient
+Requires: python-babel
+Requires: python-pbr
 
 Requires(pre): shadow-utils
 
@@ -300,6 +302,11 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Wed Sep 11 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.7.b3
+- fix init scripts (rhbz 1006868)
+- added python-babel
+- added python-pbr (rhbz 1006911)
+
 * Mon Sep 9 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.6.b3
 - rebase to havana-3
 - remove tests from common

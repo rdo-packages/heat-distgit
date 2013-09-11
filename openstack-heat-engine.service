@@ -5,7 +5,7 @@ After=syslog.target network.target qpidd.service mysqld.service openstack-keysto
 [Service]
 Type=simple
 User=heat
-ExecStart=/usr/bin/heat-engine --config-file /etc/heat/heat-engine.conf --logfile /var/log/heat/engine.log
+ExecStart=/usr/bin/heat-engine --logfile /var/log/heat/engine.log
 
 [Install]
 WantedBy=multi-user.target
