@@ -21,8 +21,7 @@ Source2:	openstack-heat-api.service
 Source3:	openstack-heat-api-cfn.service
 Source4:	openstack-heat-engine.service
 Source5:	openstack-heat-api-cloudwatch.service
-# must stay as #6 for conf updating in %prep
-Source6:    heat-dist.conf
+Source20:   heat-dist.conf
 
 Patch0: switch-to-using-m2crypto.patch
 
@@ -117,7 +116,7 @@ echo '
 while read name eq value; do
   test "$name" && test "$value" || continue
   sed -i "0,/^# *$name=/{s!^# *$name=.*!#$name=$value!}" etc/heat/heat.conf.sample
-done < %{SOURCE6}
+done < %{SOURCE20}
 
 %build
 %{__python} setup.py build
@@ -153,8 +152,8 @@ rm -f %{buildroot}/usr/bin/cinder-keystone-setup
 rm -rf %{buildroot}/%{python_sitelib}/heat/tests
 
 install -p -D -m 640 %{_builddir}/%{full_release}/etc/heat/heat.conf.sample %{buildroot}/%{_sysconfdir}/heat/heat.conf
-install -p -D -m 640 %{SOURCE6} %{buildroot}%{_datadir}/heat/heat-dist.conf
-install -p -D -m 640 %{_builddir}/%{full_release}/etc/heat/api-paste.ini %{buildroot}/%{_sysconfdir}/heat
+install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/heat/heat-dist.conf
+install -p -D -m 640 %{_builddir}/%{full_release}/etc/heat/api-paste.ini %{buildroot}/%{_datadir}/heat/api-paste-dist.ini
 install -p -D -m 640 etc/heat/policy.json %{buildroot}/%{_sysconfdir}/heat
 
 # TODO: move this to setup.cfg
@@ -182,7 +181,7 @@ Requires: python-cinderclient
 Requires: python-keystoneclient
 Requires: python-memcached
 Requires: python-novaclient
-Requires: python-oslo-config >= 1.2
+Requires: python-oslo-config >= 1:1.2.0
 Requires: python-neutronclient
 Requires: python-swiftclient
 Requires: python-routes
@@ -211,6 +210,7 @@ Components common to all OpenStack Heat services
 %{_bindir}/heat-keystone-setup
 %{python_sitelib}/heat*
 %attr(-, root, heat) %{_datadir}/heat/heat-dist.conf
+%attr(-, root, heat) %{_datadir}/heat/api-paste-dist.ini
 %dir %attr(0755,heat,root) %{_localstatedir}/log/heat
 %dir %attr(0755,heat,root) %{_localstatedir}/run/heat
 %dir %attr(0755,heat,root) %{_sharedstatedir}/heat
@@ -218,7 +218,6 @@ Components common to all OpenStack Heat services
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-heat
 %config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/heat.conf
 %config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/policy.json
-%config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/api-paste.ini
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/environment.d/*
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/templates/*
 %{_mandir}/man1/heat-db-setup.1.gz
@@ -349,7 +348,11 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
-* Tue Sep 17 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.8.b3
+* Thu Sep 19 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.9.b3
+- fix the python-oslo-config dependency to cater for epoch
+- add api-paste-dist.ini to /usr/share/heat
+
+*  Tue Sep 17 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.8.b3
 - Depend on python-oslo-config >= 1.2 so it upgraded automatically
 - Distribute dist defaults in heat-dist.conf separate to user heat.conf (rhbz 1008560)
 
