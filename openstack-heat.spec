@@ -1,6 +1,6 @@
 %global release_name havana
-%global release_letter b
-%global milestone 3
+%global release_letter rc
+%global milestone 1
 %global full_release heat-%{version}.%{release_letter}%{milestone}
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
@@ -12,7 +12,7 @@ Release:	0.9.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
-Source0:	https://launchpad.net/heat/%{release_name}/%{release_name}-%{milestone}/+download/%{full_release}.tar.gz
+Source0:	https://launchpad.net/heat/%{release_name}/%{release_name}-%{release_letter}%{milestone}/+download/%{full_release}.tar.gz
 Obsoletes:	heat < 7-9
 Provides:	heat
 
@@ -30,7 +30,6 @@ BuildRequires: git
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
 BuildRequires: python-oslo-sphinx
-BuildRequires: python-oslo-config
 BuildRequires: python-argparse
 BuildRequires: python-eventlet
 BuildRequires: python-greenlet
@@ -39,12 +38,7 @@ BuildRequires: python-iso8601
 BuildRequires: python-kombu
 BuildRequires: python-lxml
 BuildRequires: python-netaddr
-BuildRequires: python-cinderclient
-BuildRequires: python-keystoneclient
 BuildRequires: python-memcached
-BuildRequires: python-novaclient
-BuildRequires: python-neutronclient
-BuildRequires: python-swiftclient
 BuildRequires: python-migrate
 BuildRequires: python-qpid
 BuildRequires: python-six
@@ -60,6 +54,14 @@ BuildRequires: python-webob
 BuildRequires: python-pbr
 BuildRequires: python-d2to1
 BuildRequires: systemd-units
+%if 0%{?with_doc}
+BuildRequires: python-oslo-config
+BuildRequires: python-cinderclient
+BuildRequires: python-keystoneclient
+BuildRequires: python-novaclient
+BuildRequires: python-neutronclient
+BuildRequires: python-swiftclient
+%endif
 
 Requires: %{name}-common = %{version}-%{release}
 Requires: %{name}-engine = %{version}-%{release}
@@ -138,6 +140,7 @@ install -p -D -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/openstack-heat-api-cloud
 mkdir -p %{buildroot}/var/lib/heat/
 mkdir -p %{buildroot}/etc/heat/
 
+%if 0%{?with_doc}
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
 pushd doc
 sphinx-build -b html -d build/doctrees source build/html
@@ -146,6 +149,7 @@ sphinx-build -b man -d build/doctrees source build/man
 mkdir -p %{buildroot}%{_mandir}/man1
 install -p -D -m 644 build/man/*.1 %{buildroot}%{_mandir}/man1/
 popd
+%endif
 
 rm -rf %{buildroot}/var/lib/heat/.dummy
 rm -f %{buildroot}/usr/bin/cinder-keystone-setup
@@ -220,8 +224,10 @@ Components common to all OpenStack Heat services
 %config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/policy.json
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/environment.d/*
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/templates/*
+%if 0%{?with_doc}
 %{_mandir}/man1/heat-db-setup.1.gz
 %{_mandir}/man1/heat-keystone-setup.1.gz
+%endif
 
 %pre common
 # 187:187 for heat - rhbz#845078
@@ -245,10 +251,15 @@ Requires(postun): systemd
 OpenStack API for starting CloudFormation templates on OpenStack
 
 %files engine
-%doc README.rst LICENSE doc/build/html/man/heat-engine.html
+%doc README.rst LICENSE
+%if 0%{?with_doc}
+%doc doc/build/html/man/heat-engine.html
+%endif
 %{_bindir}/heat-engine
 %{_unitdir}/openstack-heat-engine.service
+%if 0%{?with_doc}
 %{_mandir}/man1/heat-engine.1.gz
+%endif
 
 %post engine
 %systemd_post openstack-heat-engine.service
@@ -274,10 +285,15 @@ Requires(postun): systemd
 OpenStack-native ReST API to the Heat Engine
 
 %files api
-%doc README.rst LICENSE doc/build/html/man/heat-api.html
+%doc README.rst LICENSE
+%if 0%{?with_doc}
+%doc doc/build/html/man/heat-api.html
+%endif
 %{_bindir}/heat-api
 %{_unitdir}/openstack-heat-api.service
+%if 0%{?with_doc}
 %{_mandir}/man1/heat-api.1.gz
+%endif
 
 %post api
 %systemd_post openstack-heat-api.service
@@ -303,10 +319,15 @@ Requires(postun): systemd
 AWS CloudFormation-compatible API to the Heat Engine
 
 %files api-cfn
-%doc README.rst LICENSE doc/build/html/man/heat-api-cfn.html
+%doc README.rst LICENSE
+%if 0%{?with_doc}
+%doc doc/build/html/man/heat-api-cfn.html
+%endif
 %{_bindir}/heat-api-cfn
 %{_unitdir}/openstack-heat-api-cfn.service
+%if 0%{?with_doc}
 %{_mandir}/man1/heat-api-cfn.1.gz
+%endif
 
 %post api-cfn
 %systemd_post openstack-heat-api-cloudwatch.service
@@ -332,10 +353,15 @@ Requires(postun): systemd
 AWS CloudWatch-compatible API to the Heat Engine
 
 %files api-cloudwatch
-%doc README.rst LICENSE doc/build/html/man/heat-api-cloudwatch.html
+%doc README.rst LICENSE
+%if 0%{?with_doc}
+%doc doc/build/html/man/heat-api-cloudwatch.html
+%endif
 %{_bindir}/heat-api-cloudwatch
 %{_unitdir}/openstack-heat-api-cloudwatch.service
+%if 0%{?with_doc}
 %{_mandir}/man1/heat-api-cloudwatch.1.gz
+%endif
 
 %post api-cloudwatch
 %systemd_post openstack-heat-api-cfn.service
@@ -348,6 +374,10 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Thu Oct 3 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.9.rc1
+- update to rc1
+- exclude doc builds if with_doc 0
+
 * Thu Sep 19 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.9.b3
 - fix the python-oslo-config dependency to cater for epoch
 - add api-paste-dist.ini to /usr/share/heat
