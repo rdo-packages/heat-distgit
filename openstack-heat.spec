@@ -1,6 +1,6 @@
 %global release_name havana
 %global release_letter rc
-%global milestone 1
+%global milestone 2
 %global full_release heat-%{version}.%{release_letter}%{milestone}
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
@@ -24,6 +24,7 @@ Source5:	openstack-heat-api-cloudwatch.service
 Source20:   heat-dist.conf
 
 Patch0: switch-to-using-m2crypto.patch
+Patch1: remove-pbr-runtime-dependency.patch
 
 BuildArch: noarch
 BuildRequires: git
@@ -72,6 +73,10 @@ Requires: %{name}-api-cloudwatch = %{version}-%{release}
 %prep
 %setup -q -n %{full_release}
 %patch0 -p1
+%patch1 -p1
+
+sed -i s/REDHATHEATVERSION/%{version}/ heat/version.py
+sed -i s/REDHATHEATRELEASE/%{release}/ heat/version.py
 
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
@@ -200,7 +205,6 @@ Requires: python-anyjson
 Requires: python-paramiko
 Requires: python-heatclient
 Requires: python-babel
-Requires: python-pbr
 
 Requires(pre): shadow-utils
 
@@ -374,6 +378,10 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Mon Oct 14 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.9.rc2
+- rebase to havana-rc2
+- remove pbr dependency
+
 * Thu Oct 3 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.9.rc1
 - update to rc1
 - exclude doc builds if with_doc 0
