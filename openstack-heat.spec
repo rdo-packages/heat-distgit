@@ -214,6 +214,7 @@ Components common to all OpenStack Heat services
 %files common
 %doc LICENSE
 %{_bindir}/heat-manage
+# Deprecated by openstack-db since openstack-utils-2013.2-2
 %{_bindir}/heat-db-setup
 %{_bindir}/heat-keystone-setup
 %{python_sitelib}/heat*
@@ -229,6 +230,7 @@ Components common to all OpenStack Heat services
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/environment.d/*
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/templates/*
 %if 0%{?with_doc}
+# Deprecated by openstack-db since openstack-utils-2013.2-2
 %{_mandir}/man1/heat-db-setup.1.gz
 %{_mandir}/man1/heat-keystone-setup.1.gz
 %endif
