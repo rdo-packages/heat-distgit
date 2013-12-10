@@ -1,18 +1,18 @@
-%global release_name havana
-%global release_letter rc
-%global milestone 2
-%global full_release heat-%{version}
+%global release_name icehouse
+%global release_letter b
+%global milestone 1
+%global full_release heat-%{version}.%{release_letter}%{milestone}
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
-Version:	2013.2
-Release:	1.0%{?dist}
+Version:	2014.1
+Release:	0.1.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
-Source0:	https://launchpad.net/heat/%{release_name}/%{version}/+download/heat-%{version}.tar.gz
+Source0:	https://launchpad.net/heat/%{release_name}/%{release_name}-%{milestone}/+download/%{full_release}.tar.gz
 Obsoletes:	heat < 7-9
 Provides:	heat
 
@@ -65,6 +65,7 @@ BuildRequires: python-keystoneclient
 BuildRequires: python-novaclient
 BuildRequires: python-neutronclient
 BuildRequires: python-swiftclient
+BuildRequires: python-heatclient
 %endif
 
 Requires: %{name}-common = %{version}-%{release}
@@ -133,7 +134,6 @@ done < %{SOURCE20}
 
 %install
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
-sed -i -e '/^#!/,1 d' %{buildroot}/%{python_sitelib}/heat/db/sqlalchemy/manage.py
 sed -i -e '/^#!/,1 d' %{buildroot}/%{python_sitelib}/heat/db/sqlalchemy/migrate_repo/manage.py
 mkdir -p %{buildroot}/var/log/heat/
 mkdir -p %{buildroot}/var/run/heat/
@@ -236,6 +236,8 @@ Components common to all OpenStack Heat services
 # Deprecated by openstack-db since openstack-utils-2013.2-2
 %{_mandir}/man1/heat-db-setup.1.gz
 %{_mandir}/man1/heat-keystone-setup.1.gz
+# TODO: enable icehouse-2, https://review.openstack.org/#/c/61212/
+#%{_mandir}/man1/heat-manage.1.gz
 %endif
 
 %pre common
@@ -383,6 +385,10 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Mon Dec 09 2013 Jeff Peeler <jpeeler@redhat.com> 2014-1.0.1.b1
+- update to icehouse-1
+- add python-heatclient to BuildRequires
+
 * Thu Oct 17 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-1
 - update to havana final
 
