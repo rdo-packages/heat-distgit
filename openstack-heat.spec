@@ -8,7 +8,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2014.1
-Release:	0.2.%{release_letter}%{milestone}%{?dist}
+Release:	0.3.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -208,6 +208,7 @@ Requires: python-anyjson
 Requires: python-paramiko
 Requires: python-heatclient
 Requires: python-babel
+Requires: MySQL-python
 
 Requires(pre): shadow-utils
 
@@ -217,8 +218,6 @@ Components common to all OpenStack Heat services
 %files common
 %doc LICENSE
 %{_bindir}/heat-manage
-# Deprecated by openstack-db since openstack-utils-2013.2-2
-%{_bindir}/heat-db-setup
 %{_bindir}/heat-keystone-setup
 %{python_sitelib}/heat*
 %attr(-, root, heat) %{_datadir}/heat/heat-dist.conf
@@ -233,8 +232,6 @@ Components common to all OpenStack Heat services
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/environment.d/*
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/templates/*
 %if 0%{?with_doc}
-# Deprecated by openstack-db since openstack-utils-2013.2-2
-%{_mandir}/man1/heat-db-setup.1.gz
 %{_mandir}/man1/heat-keystone-setup.1.gz
 # TODO: enable icehouse-2, https://review.openstack.org/#/c/61212/
 #%{_mandir}/man1/heat-manage.1.gz
@@ -385,6 +382,10 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Mon Jan 06 2014 Jeff Peeler <jpeeler@redhat.com> 2014-1.0.3.b1
+- added MySQL-python requires
+- removed heat-db-setup (rhbz 1046326)
+
 * Mon Jan 06 2014 Pádraig Brady <pbrady@redhat.com> - 2014.1-0.2.b1
 - Set python-six min version to ensure updated
 
