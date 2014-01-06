@@ -8,7 +8,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2014.1
-Release:	0.1.%{release_letter}%{milestone}%{?dist}
+Release:	0.2.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -201,7 +201,7 @@ Requires: python-sqlalchemy
 Requires: python-migrate
 Requires: python-qpid
 Requires: python-webob
-Requires: python-six
+Requires: python-six >= 1.4.1
 Requires: PyYAML
 Requires: m2crypto
 Requires: python-anyjson
@@ -385,6 +385,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Mon Jan 06 2014 Pádraig Brady <pbrady@redhat.com> - 2014.1-0.2.b1
+- Set python-six min version to ensure updated
+
 * Mon Dec 09 2013 Jeff Peeler <jpeeler@redhat.com> 2014-1.0.1.b1
 - update to icehouse-1
 - add python-heatclient to BuildRequires
