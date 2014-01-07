@@ -8,7 +8,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2014.1
-Release:	0.3.%{release_letter}%{milestone}%{?dist}
+Release:	0.4.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -86,44 +86,19 @@ sed -i s/REDHATHEATRELEASE/%{release}/ heat/version.py
 # to distutils requires_dist config
 rm -rf {test-,}requirements.txt tools/{pip,test}-requires
 
-echo '
-#
-# Options to be passed to keystoneclient.auth_token middleware
-# NOTE: These options are not defined in heat but in keystoneclient
-#
-[keystone_authtoken]
-
-# the name of the admin tenant (string value)
-#admin_tenant_name=
-
-# the keystone admin username (string value)
-#admin_user=
-
-# the keystone admin password (string value)
-#admin_password=
-
-# the keystone host (string value)
-#auth_host=
-
-# the keystone port (integer value)
-#auth_port=
-
-# protocol to be used for auth requests http/https (string value)
-#auth_protocol=
-
-#auth_uri=
-
-# signing_dir is configurable, but the default behavior of the authtoken
-# middleware should be sufficient.  It will create a temporary directory
-# in the home directory for the user the heat process is running as.
-#signing_dir=/var/lib/heat/keystone-signing
-' >> etc/heat/heat.conf.sample
 
 # Programmatically update defaults in sample config
 # which is installed at /etc/heat/heat.conf
-# TODO: Make this more robust
-# Note it only edits the first occurance, so assumes a section ordering in sample
-# and also doesn't support multi-valued variables.
+
+#  First we ensure all values are commented in appropriate format.
+#  Since icehouse, there was an uncommented keystone_authtoken section
+#  at the end of the file which mimics but also conflicted with our
+#  distro editing that had been done for many releases.
+sed -i '/^[^#[]/{s/^/#/; s/ //g}; /^#[^ ]/s/ = /=/' etc/heat/heat.conf.sample
+
+#  TODO: Make this more robust
+#  Note it only edits the first occurance, so assumes a section ordering in sample
+#  and also doesn't support multi-valued variables.
 while read name eq value; do
   test "$name" && test "$value" || continue
   sed -i "0,/^# *$name=/{s!^# *$name=.*!#$name=$value!}" etc/heat/heat.conf.sample
@@ -382,6 +357,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Mon Jan 06 2014 Pádraig Brady <pbrady@redhat.com> - 2014.1-0.4.b1
+- Avoid [keystone_authtoken] config corruption in heat.conf
+
 * Mon Jan 06 2014 Jeff Peeler <jpeeler@redhat.com> 2014-1.0.3.b1
 - added MySQL-python requires
 - removed heat-db-setup (rhbz 1046326)
