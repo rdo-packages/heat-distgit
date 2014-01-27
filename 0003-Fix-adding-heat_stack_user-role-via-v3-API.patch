@@ -1,0 +1,75 @@
+From 8b896336c97424d34503164aa4cbc569f464bd4f Mon Sep 17 00:00:00 2001
+From: Steven Hardy <shardy@redhat.com>
+Date: Tue, 21 Jan 2014 14:51:16 +0000
+Subject: [PATCH] Fix adding heat_stack_user role via v3 API
+
+A regression was introduced via 301a894 because it expects
+keystoneclient functionality which is not yet merged/released,
+so instead of passing the name to roles.list() we must filter
+the results locally to lookup the role ID.
+
+The lack of filtering support is a general issue with the v3
+keystoneclient interfaces, so when it's fixed we can remove
+this workaround.
+
+Closes-Bug: #1271190
+Change-Id: I1b29cc131496e4b19493a8cd8e6d4ed913db0938
+---
+ heat/common/heat_keystoneclient.py | 10 +++++++---
+ heat/tests/test_heatclient.py      | 13 ++++++++++++-
+ 2 files changed, 19 insertions(+), 4 deletions(-)
+
+diff --git a/heat/common/heat_keystoneclient.py b/heat/common/heat_keystoneclient.py
+index 93f7c0c..2b7a29b 100644
+--- a/heat/common/heat_keystoneclient.py
++++ b/heat/common/heat_keystoneclient.py
+@@ -253,10 +253,14 @@ class KeystoneClient(object):
+         # This role is designed to allow easier differentiation of the
+         # heat-generated "stack users" which will generally have credentials
+         # deployed on an instance (hence are implicitly untrusted)
+-        stack_user_role = self.client_v3.roles.list(
+-            name=cfg.CONF.heat_stack_user_role)
++        # FIXME(shardy): The v3 keystoneclient doesn't currently support
++        # filtering the results, so we have to do it locally, update when
++        # that is fixed in keystoneclient
++        roles_list = self.client_v3.roles.list()
++        stack_user_role = [r for r in roles_list
++                           if r.name == cfg.CONF.heat_stack_user_role]
+         if len(stack_user_role) == 1:
+-            role_id = stack_user_role[0]
++            role_id = stack_user_role[0].id
+             logger.debug(_("Adding user %(user)s to role %(role)s") % {
+                          'user': user.id, 'role': role_id})
+             self.client_v3.roles.grant(role=role_id, user=user.id,
+diff --git a/heat/tests/test_heatclient.py b/heat/tests/test_heatclient.py
+index 1d0f79e..85a503b 100644
+--- a/heat/tests/test_heatclient.py
++++ b/heat/tests/test_heatclient.py
+@@ -139,6 +139,7 @@ class KeystoneClientTest(HeatTestCase):
+         # mock keystone client user functions
+         self.mock_ks_v3_client.users = self.m.CreateMockAnything()
+         mock_user = self.m.CreateMockAnything()
++        mock_user.id = 'auser123'
+         # when keystone is called, the name should have been truncated
+         # to the last 64 characters of the long name
+         self.mock_ks_v3_client.users.create(name=good_user_name,
+@@ -147,8 +148,18 @@ class KeystoneClientTest(HeatTestCase):
+                                             ).AndReturn(mock_user)
+         # mock out the call to roles; will send an error log message but does
+         # not raise an exception
++        mock_roles_list = []
++        for r_id, r_name in (('1234', 'blah'), ('4546', 'heat_stack_user')):
++            mock_role = self.m.CreateMockAnything()
++            mock_role.id = r_id
++            mock_role.name = r_name
++            mock_roles_list.append(mock_role)
++
+         self.mock_ks_v3_client.roles = self.m.CreateMockAnything()
+-        self.mock_ks_v3_client.roles.list(name='heat_stack_user').AndReturn([])
++        self.mock_ks_v3_client.roles.list().AndReturn(mock_roles_list)
++        self.mock_ks_v3_client.roles.grant(project=ctx.tenant_id,
++                                           role='4546',
++                                           user='auser123').AndReturn(None)
+         self.m.ReplayAll()
+         # call create_stack_user with a long user name.
+         # the cleanup VerifyAll should verify that though we passed
