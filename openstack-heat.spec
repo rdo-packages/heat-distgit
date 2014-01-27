@@ -1,6 +1,6 @@
 %global release_name icehouse
 %global release_letter b
-%global milestone 1
+%global milestone 2
 %global full_release heat-%{version}.%{release_letter}%{milestone}
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
@@ -24,7 +24,7 @@ Source5:	openstack-heat-api-cloudwatch.service
 Source20:   heat-dist.conf
 
 #
-# patches_base=2013.2
+# patches_base=2014.1.b2
 #
 Patch0001: 0001-Switch-to-using-M2Crypto.patch
 Patch0002: 0002-remove-pbr-runtime-dependency.patch
@@ -210,8 +210,7 @@ Components common to all OpenStack Heat services
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/templates/*
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-keystone-setup.1.gz
-# TODO: enable icehouse-2, https://review.openstack.org/#/c/61212/
-#%{_mandir}/man1/heat-manage.1.gz
+%{_mandir}/man1/heat-manage.1.gz
 %endif
 
 %pre common
@@ -359,6 +358,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Mon Jan 27 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-0.4.b2
+- update to icehouse-2
+
 * Mon Jan 06 2014 Pádraig Brady <pbrady@redhat.com> - 2014.1-0.4.b1
 - Avoid [keystone_authtoken] config corruption in heat.conf
 
