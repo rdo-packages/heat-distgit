@@ -1,4 +1,4 @@
-From 8b896336c97424d34503164aa4cbc569f464bd4f Mon Sep 17 00:00:00 2001
+From 77371dcdebf2fb116f286ac1db21ef24d28c50f5 Mon Sep 17 00:00:00 2001
 From: Steven Hardy <shardy@redhat.com>
 Date: Tue, 21 Jan 2014 14:51:16 +0000
 Subject: [PATCH] Fix adding heat_stack_user role via v3 API

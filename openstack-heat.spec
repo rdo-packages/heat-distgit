@@ -8,7 +8,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2014.1
-Release:	0.4.%{release_letter}%{milestone}%{?dist}
+Release:	0.5.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -360,6 +360,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Tue Feb  4 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-0.5.b2
+- fix heat-manage (rhbz 1060904)
+
 * Mon Jan 27 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-0.4.b2
 - update to icehouse-2
 
