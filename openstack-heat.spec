@@ -1,6 +1,6 @@
 %global release_name icehouse
 %global release_letter b
-%global milestone 2
+%global milestone 3
 %global full_release heat-%{version}.%{release_letter}%{milestone}
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
@@ -24,7 +24,7 @@ Source5:	openstack-heat-api-cloudwatch.service
 Source20:   heat-dist.conf
 
 #
-# patches_base=2014.1.b2
+# patches_base=2014.1.b3
 #
 Patch0001: 0001-Switch-to-using-M2Crypto.patch
 Patch0002: 0002-remove-pbr-runtime-dependency.patch
@@ -88,6 +88,8 @@ sed -i s/REDHATHEATRELEASE/%{release}/ heat/version.py
 # to distutils requires_dist config
 rm -rf {test-,}requirements.txt tools/{pip,test}-requires
 
+# Remove tests in contrib
+find contrib -name tests -type d | xargs rm -r
 
 # Programmatically update defaults in sample config
 # which is installed at /etc/heat/heat.conf
@@ -360,6 +362,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Thu Mar  6 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-0.5.b3
+- update to icehouse-3
+
 * Tue Feb  4 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-0.5.b2
 - fix heat-manage (rhbz 1060904)
 
