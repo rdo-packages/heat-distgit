@@ -28,7 +28,7 @@ Source20:   heat-dist.conf
 #
 Patch0001: 0001-Switch-to-using-M2Crypto.patch
 Patch0002: 0002-remove-pbr-runtime-dependency.patch
-Patch0003: 0003-Fix-adding-heat_stack_user-role-via-v3-API.patch
+Patch0003: 0003-Patch-to-allow-building-against-python-oslo-sphinx.patch
 
 BuildArch: noarch
 BuildRequires: git

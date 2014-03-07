@@ -1,4 +1,4 @@
-From a70c771694bccebff9cb84248d815879df2ef8e6 Mon Sep 17 00:00:00 2001
+From 5a362b02e8b69f8dba4977b54c780e5024bbbf73 Mon Sep 17 00:00:00 2001
 From: Jeff Peeler <jpeeler@redhat.com>
 Date: Mon, 14 Oct 2013 14:30:34 -0400
 Subject: [PATCH] remove pbr runtime dependency
@@ -8,10 +8,10 @@ Subject: [PATCH] remove pbr runtime dependency
  1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/heat/version.py b/heat/version.py
-index a717606..8ea213a 100644
+index 4a2b021..0758e7e 100644
 --- a/heat/version.py
 +++ b/heat/version.py
-@@ -14,6 +14,14 @@
+@@ -13,6 +13,14 @@
  #    under the License.
  
  
