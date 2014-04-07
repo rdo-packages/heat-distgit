@@ -1,4 +1,4 @@
-From 7ab269a1562a4dac3425011b8df7f233c828cd6a Mon Sep 17 00:00:00 2001
+From 4d151496649042db232bd572f7f089d634664d95 Mon Sep 17 00:00:00 2001
 From: Jeff Peeler <jpeeler@redhat.com>
 Date: Fri, 7 Mar 2014 11:50:58 -0500
 Subject: [PATCH] Patch to allow building against python-oslo-sphinx
@@ -12,10 +12,10 @@ The package with the renaming changed is not yet available.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/doc/source/conf.py b/doc/source/conf.py
-index 5187fca..9d09a10 100644
+index 7b436c8..d659327 100644
 --- a/doc/source/conf.py
 +++ b/doc/source/conf.py
-@@ -193,7 +193,7 @@ extensions = ['sphinx.ext.autodoc',
+@@ -205,7 +205,7 @@ extensions = ['sphinx.ext.autodoc',
                'sphinx.ext.pngmath',
                'sphinx.ext.viewcode',
                'sphinx.ext.doctest',
