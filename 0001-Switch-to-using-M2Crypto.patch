@@ -1,4 +1,4 @@
-From b2011e91545d45d094162f3c0873a042a07d1bcd Mon Sep 17 00:00:00 2001
+From a400f4cca14b027a02656337a34c2a3fc92707a8 Mon Sep 17 00:00:00 2001
 From: Jeff Peeler <jpeeler@redhat.com>
 Date: Wed, 8 May 2013 12:27:35 -0400
 Subject: [PATCH] Switch to using M2Crypto
@@ -68,7 +68,7 @@ index c87678f..b3fdd45 100644
 +    res = cipher.update(auth[16:]) + cipher.final()
      return res
 diff --git a/requirements.txt b/requirements.txt
-index 8b41238..797d2ae 100644
+index d93023a..1acfb9b 100644
 --- a/requirements.txt
 +++ b/requirements.txt
 @@ -1,5 +1,6 @@

@@ -1,4 +1,4 @@
-From 4d151496649042db232bd572f7f089d634664d95 Mon Sep 17 00:00:00 2001
+From 39d3a36fd925f95ca74e8792137863d114298101 Mon Sep 17 00:00:00 2001
 From: Jeff Peeler <jpeeler@redhat.com>
 Date: Fri, 7 Mar 2014 11:50:58 -0500
 Subject: [PATCH] Patch to allow building against python-oslo-sphinx
