@@ -1,6 +1,6 @@
 %global release_name icehouse
 %global release_letter rc
-%global milestone 1
+%global milestone 2
 %global full_release heat-%{version}.%{release_letter}%{milestone}
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
@@ -24,7 +24,7 @@ Source5:	openstack-heat-api-cloudwatch.service
 Source20:   heat-dist.conf
 
 #
-# patches_base=2014.1.rc1
+# patches_base=2014.1.rc2
 #
 Patch0001: 0001-Switch-to-using-M2Crypto.patch
 Patch0002: 0002-remove-pbr-runtime-dependency.patch
@@ -362,6 +362,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Mon Apr 14 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-0.5.rc2
+- update to icehouse-rc2
+
 * Mon Apr  7 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-0.5.rc1
 - update to icehouse-rc1
 
