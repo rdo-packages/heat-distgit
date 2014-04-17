@@ -138,11 +138,11 @@ install -p -D -m 644 build/man/*.1 %{buildroot}%{_mandir}/man1/
 popd
 %endif
 
+rm -f %{buildroot}/usr/bin/heat-db-setup
+rm -f %{buildroot}%{_mandir}/man1/heat-db-setup.*
 rm -rf %{buildroot}/var/lib/heat/.dummy
 rm -f %{buildroot}/usr/bin/cinder-keystone-setup
 rm -rf %{buildroot}/%{python_sitelib}/heat/tests
-rm -f %{buildroot}/usr/bin/heat-db-setup
-rm %{buildroot}%{_mandir}/man1/heat-db-setup.1
 
 install -p -D -m 640 %{_builddir}/%{full_release}/etc/heat/heat.conf.sample %{buildroot}/%{_sysconfdir}/heat/heat.conf
 install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/heat/heat-dist.conf
