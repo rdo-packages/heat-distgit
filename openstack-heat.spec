@@ -1,18 +1,18 @@
 %global release_name icehouse
 %global release_letter rc
 %global milestone 2
-%global full_release heat-%{version}.%{release_letter}%{milestone}
+%global full_release heat-%{version}
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2014.1
-Release:	0.5.%{release_letter}%{milestone}%{?dist}
+Release:	1.0.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
-Source0:	https://launchpad.net/heat/%{release_name}/%{release_name}-%{release_letter}%{milestone}/+download/%{full_release}.tar.gz
+Source0:	https://launchpad.net/heat/%{release_name}/%{version}/+download/heat-%{version}.tar.gz
 Obsoletes:	heat < 7-9
 Provides:	heat
 
@@ -24,7 +24,7 @@ Source5:	openstack-heat-api-cloudwatch.service
 Source20:   heat-dist.conf
 
 #
-# patches_base=2014.1.rc2
+# patches_base=2014.1
 #
 Patch0001: 0001-Switch-to-using-M2Crypto.patch
 Patch0002: 0002-remove-pbr-runtime-dependency.patch
@@ -362,6 +362,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Tue Apr 22 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-1.0
+- update to icehouse final
+
 * Mon Apr 14 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-0.5.rc2
 - update to icehouse-rc2
 
