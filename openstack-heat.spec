@@ -8,7 +8,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2014.1
-Release:	1.0%{?dist}
+Release:	2.0%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -362,6 +362,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2014.1-2.0
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
 * Tue Apr 22 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-1.0
 - update to icehouse final
 
