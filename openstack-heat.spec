@@ -7,7 +7,7 @@
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
-Version:	2014.1
+Version:	2014.1.1
 Release:	2.0%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
@@ -24,7 +24,7 @@ Source5:	openstack-heat-api-cloudwatch.service
 Source20:   heat-dist.conf
 
 #
-# patches_base=2014.1
+# patches_base=2014.1.1
 #
 Patch0001: 0001-Switch-to-using-M2Crypto.patch
 Patch0002: 0002-remove-pbr-runtime-dependency.patch
@@ -83,6 +83,9 @@ Requires: %{name}-api-cloudwatch = %{version}-%{release}
 %patch0003 -p1
 sed -i s/REDHATHEATVERSION/%{version}/ heat/version.py
 sed -i s/REDHATHEATRELEASE/%{release}/ heat/version.py
+
+# make doc build compatible with python-oslo-sphinx RPM
+sed -i 's/oslosphinx/oslo.sphinx/' doc/source/conf.py
 
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
@@ -362,6 +365,10 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Mon Jun 10 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1.1-2.0
+- updated to 2014.1.1
+- removed patch to build against python-oslo-sphinx and put change in spec
+
 * Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2014.1-2.0
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
