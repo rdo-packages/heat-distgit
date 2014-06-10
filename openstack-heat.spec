@@ -363,7 +363,7 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
-* Mon Jun 10 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1.1-2.0
+* Tue Jun 10 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1.1-2.0
 - updated to 2014.1.1
 - removed patch to build against python-oslo-sphinx and put change in spec
 
