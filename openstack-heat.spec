@@ -8,7 +8,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2014.1.1
-Release:	2.0%{?dist}
+Release:	2.1%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -24,7 +24,7 @@ Source5:	openstack-heat-api-cloudwatch.service
 Source20:   heat-dist.conf
 
 #
-# patches_base=2014.1.1
+# patches_base=2014.1.1+1
 #
 Patch0001: 0001-Switch-to-using-M2Crypto.patch
 Patch0002: 0002-remove-pbr-runtime-dependency.patch
@@ -201,6 +201,7 @@ Components common to all OpenStack Heat services
 %doc LICENSE
 %{_bindir}/heat-manage
 %{_bindir}/heat-keystone-setup
+%{_bindir}/heat-keystone-setup-domain
 %{python_sitelib}/heat*
 %attr(-, root, heat) %{_datadir}/heat/heat-dist.conf
 %attr(-, root, heat) %{_datadir}/heat/api-paste-dist.ini
@@ -363,6 +364,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Fri Jun 13 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1.1-2.1
+- added heat-keystone-setup-domain script
+
 * Tue Jun 10 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1.1-2.0
 - updated to 2014.1.1
 - removed patch to build against python-oslo-sphinx and put change in spec
