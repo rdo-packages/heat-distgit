@@ -1,4 +1,4 @@
-From d4ad0053b873a488efc508cb11586c0aaf90dc66 Mon Sep 17 00:00:00 2001
+From b41893390e67bb2f4626f226991e6a9b342070fc Mon Sep 17 00:00:00 2001
 From: Jeff Peeler <jpeeler@redhat.com>
 Date: Wed, 8 May 2013 12:27:35 -0400
 Subject: [PATCH] Switch to using M2Crypto
