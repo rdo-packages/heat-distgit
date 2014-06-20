@@ -1,18 +1,26 @@
-%global release_name icehouse
-%global release_letter rc
-%global milestone 2
-%global full_release heat-%{version}
+%global project_name heat
+Source99:	sources
+%global release_version %(cat %{SOURCE99} | awk '{sub(/%{project_name}-/, ""); sub(/.tar.gz/, ""); print $2}')
+%global spec_version %(echo %{release_version} | sed -r 's/([0-9]+.[0-9]+.[0-9]+).*/\\1/')
+%global release_milestone %(echo %{release_version} | sed -r 's/[0-9]+.[0-9]+.(b[0-9]+).*/\\1/')
+
+%if "%{release_version}" == "%{release_milestone}"
+%global release_suffix %{?dist}
+%else
+# beta detected
+%global release_suffix .%{release_milestone}%{?dist}
+%endif
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
-Version:	2014.1.1
-Release:	2.1%{?dist}
+Version:	%{spec_version}
+Release:	0.1%{release_suffix}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
-Source0:	https://launchpad.net/heat/%{release_name}/%{version}/+download/heat-%{version}.tar.gz
+Source0:	http://tarballs.openstack.org/%{project_name}/%{project_name}-%{release_version}.tar.gz
 Obsoletes:	heat < 7-9
 Provides:	heat
 
@@ -21,10 +29,10 @@ Source2:	openstack-heat-api.service
 Source3:	openstack-heat-api-cfn.service
 Source4:	openstack-heat-engine.service
 Source5:	openstack-heat-api-cloudwatch.service
-Source20:   heat-dist.conf
+Source20:	heat-dist.conf
 
 #
-# patches_base=2014.1.1+1
+# patches_base=2014.2.b1
 #
 Patch0001: 0001-Switch-to-using-M2Crypto.patch
 Patch0002: 0002-remove-pbr-runtime-dependency.patch
@@ -67,6 +75,9 @@ BuildRequires: python-novaclient
 BuildRequires: python-neutronclient
 BuildRequires: python-swiftclient
 BuildRequires: python-heatclient
+BuildRequires: python-ceilometerclient
+BuildRequires: python-glanceclient
+BuildRequires: python-troveclient
 %endif
 
 Requires: %{name}-common = %{version}-%{release}
@@ -76,7 +87,7 @@ Requires: %{name}-api-cfn = %{version}-%{release}
 Requires: %{name}-api-cloudwatch = %{version}-%{release}
 
 %prep
-%setup -q -n %{full_release}
+%setup -q -n %{project_name}-%{release_version}
 
 %patch0001 -p1
 %patch0002 -p1
@@ -147,9 +158,9 @@ rm -rf %{buildroot}/var/lib/heat/.dummy
 rm -f %{buildroot}/usr/bin/cinder-keystone-setup
 rm -rf %{buildroot}/%{python_sitelib}/heat/tests
 
-install -p -D -m 640 %{_builddir}/%{full_release}/etc/heat/heat.conf.sample %{buildroot}/%{_sysconfdir}/heat/heat.conf
+install -p -D -m 640 etc/heat/heat.conf.sample %{buildroot}/%{_sysconfdir}/heat/heat.conf
 install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/heat/heat-dist.conf
-install -p -D -m 640 %{_builddir}/%{full_release}/etc/heat/api-paste.ini %{buildroot}/%{_datadir}/heat/api-paste-dist.ini
+install -p -D -m 640 etc/heat/api-paste.ini %{buildroot}/%{_datadir}/heat/api-paste-dist.ini
 install -p -D -m 640 etc/heat/policy.json %{buildroot}/%{_sysconfdir}/heat
 
 # TODO: move this to setup.cfg
@@ -366,6 +377,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Fri Jun 20 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.2-0.1.b1
+- updated to juno-1
+
 * Fri Jun 13 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1.1-2.1
 - added heat-keystone-setup-domain script
 
