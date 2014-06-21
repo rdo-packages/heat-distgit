@@ -34,9 +34,8 @@ Source20:	heat-dist.conf
 #
 # patches_base=2014.2.b1
 #
-Patch0001: 0001-Switch-to-using-M2Crypto.patch
-Patch0002: 0002-remove-pbr-runtime-dependency.patch
-Patch0003: 0003-Add-heat-keystone-setup-domain-script.patch
+Patch0001: 0001-remove-pbr-runtime-dependency.patch
+Patch0002: 0002-Add-compatability-patch-to-allow-smooth-migration-aw.patch
 
 BuildArch: noarch
 BuildRequires: git
@@ -91,7 +90,7 @@ Requires: %{name}-api-cloudwatch = %{version}-%{release}
 
 %patch0001 -p1
 %patch0002 -p1
-%patch0003 -p1
+
 sed -i s/REDHATHEATVERSION/%{version}/ heat/version.py
 sed -i s/REDHATHEATRELEASE/%{release}/ heat/version.py
 
