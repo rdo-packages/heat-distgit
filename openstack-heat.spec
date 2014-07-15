@@ -16,7 +16,7 @@ Source99:	sources
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	%{spec_version}
-Release:	0.1%{release_suffix}
+Release:	0.2%{release_suffix}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -112,6 +112,7 @@ find contrib -name tests -type d | xargs rm -r
 #  at the end of the file which mimics but also conflicted with our
 #  distro editing that had been done for many releases.
 sed -i '/^[^#[]/{s/^/#/; s/ //g}; /^#[^ ]/s/ = /=/' etc/heat/heat.conf.sample
+sed -i -e "s/^#heat_revision=.*$/heat_revision=%{version}-%{release}/I" etc/heat/heat.conf.sample
 
 #  TODO: Make this more robust
 #  Note it only edits the first occurance, so assumes a section ordering in sample
@@ -376,6 +377,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Tue Jul 15 2014 Ryan Brown <ryansb@redhat.com> - 2014.2-0.2.b1
+- At build time add build+release to /etc/heat/heat.conf
+
 * Fri Jun 20 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.2-0.1.b1
 - updated to juno-1
 
