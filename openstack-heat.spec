@@ -40,6 +40,8 @@ Patch0002: 0002-Add-compatability-patch-to-allow-smooth-migration-aw.patch
 BuildArch: noarch
 BuildRequires: git
 BuildRequires: python2-devel
+BuildRequires: python-stevedore
+BuildRequires: python-oslo-messaging
 BuildRequires: python-setuptools
 BuildRequires: python-oslo-sphinx
 BuildRequires: python-argparse
@@ -177,6 +179,8 @@ Group: System Environment/Base
 
 Requires: python-argparse
 Requires: python-eventlet
+Requires: python-stevedore
+Requires: python-oslo-messaging
 Requires: python-greenlet
 Requires: python-httplib2
 Requires: python-iso8601
