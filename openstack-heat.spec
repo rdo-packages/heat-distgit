@@ -16,7 +16,7 @@ Source99:	sources
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	%{spec_version}
-Release:	0.1.b2%{release_suffix}
+Release:	0.1%{release_suffix}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
