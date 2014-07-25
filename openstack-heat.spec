@@ -16,7 +16,7 @@ Source99:	sources
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	%{spec_version}
-Release:	0.2%{release_suffix}
+Release:	0.1.b2%{release_suffix}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -32,7 +32,7 @@ Source5:	openstack-heat-api-cloudwatch.service
 Source20:	heat-dist.conf
 
 #
-# patches_base=2014.2.b1
+# patches_base=
 #
 Patch0001: 0001-remove-pbr-runtime-dependency.patch
 Patch0002: 0002-Add-compatability-patch-to-allow-smooth-migration-aw.patch
@@ -377,6 +377,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Fri Jul 25 2014 Ryan S. Brown <rybrown@redhat.com> 2014.2-0.1.b2
+- Update to upstream 2014.2.b2
+
 * Tue Jul 15 2014 Ryan Brown <ryansb@redhat.com> - 2014.2-0.2.b1
 - At build time add build+release to /etc/heat/heat.conf
 
