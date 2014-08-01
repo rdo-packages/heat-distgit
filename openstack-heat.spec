@@ -11,7 +11,9 @@ Source99:	sources
 %global release_suffix .%{release_milestone}%{?dist}
 %endif
 
-%global with_doc %{!?_without_doc:1}%{?_without_doc:0}
+
+# TODO : Fix doc building
+%global with_doc 0
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
@@ -70,6 +72,7 @@ BuildRequires: python-d2to1
 BuildRequires: systemd-units
 %if 0%{?with_doc}
 BuildRequires: python-oslo-config
+BuildRequires: python-oslo-db
 BuildRequires: python-cinderclient
 BuildRequires: python-keystoneclient
 BuildRequires: python-novaclient
@@ -88,16 +91,13 @@ Requires: %{name}-api-cfn = %{version}-%{release}
 Requires: %{name}-api-cloudwatch = %{version}-%{release}
 
 %prep
-%setup -q -n %{project_name}-%{release_version}
+%setup -q -n %{project_name}-%{upstream_version}
 
 %patch0001 -p1
 %patch0002 -p1
 
 sed -i s/REDHATHEATVERSION/%{version}/ heat/version.py
 sed -i s/REDHATHEATRELEASE/%{release}/ heat/version.py
-
-# make doc build compatible with python-oslo-sphinx RPM
-sed -i 's/oslosphinx/oslo.sphinx/' doc/source/conf.py
 
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
@@ -193,6 +193,7 @@ Requires: python-keystoneclient
 Requires: python-memcached
 Requires: python-novaclient
 Requires: python-oslo-config >= 1:1.2.0
+Requires: python-oslo-db
 Requires: python-neutronclient
 Requires: python-swiftclient
 Requires: python-routes
