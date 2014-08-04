@@ -188,13 +188,8 @@ Requires: python-kombu
 Requires: python-lxml
 Requires: python-netaddr
 Requires: python-paste-deploy
-Requires: python-cinderclient
-Requires: python-keystoneclient
 Requires: python-memcached
-Requires: python-novaclient
 Requires: python-oslo-config >= 1:1.2.0
-Requires: python-neutronclient
-Requires: python-swiftclient
 Requires: python-routes
 Requires: python-sqlalchemy
 Requires: python-migrate
@@ -205,9 +200,18 @@ Requires: PyYAML
 Requires: m2crypto
 Requires: python-anyjson
 Requires: python-paramiko
-Requires: python-heatclient
 Requires: python-babel
 Requires: MySQL-python
+
+Requires: python-ceilometerclient
+Requires: python-cinderclient
+Requires: python-glanceclient
+Requires: python-heatclient
+Requires: python-keystoneclient
+Requires: python-neutronclient
+Requires: python-novaclient
+Requires: python-swiftclient
+Requires: python-troveclient
 
 Requires(pre): shadow-utils
 
