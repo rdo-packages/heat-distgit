@@ -16,7 +16,7 @@ Source99:	sources
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	%{spec_version}
-Release:	0.2%{release_suffix}
+Release:	0.3%{release_suffix}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -384,9 +384,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
-* Mon Aug  4 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.2-0.2.b1
+* Mon Aug  4 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.2-0.3.b1
 - set qpid_topology_version=2 in heat-dist.conf (rhbz #1124137)
-- add client build requires (rhbz #1108056)
+- add client requires (rhbz #1108056)
 - remove m2crypto as it's no longer required
 
 * Fri Jul 25 2014 Ryan S. Brown <rybrown@redhat.com> 2014.2-0.1.b2
