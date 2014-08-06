@@ -180,7 +180,6 @@ Group: System Environment/Base
 Requires: python-argparse
 Requires: python-eventlet
 Requires: python-stevedore
-Requires: python-oslo-messaging
 Requires: python-greenlet
 Requires: python-httplib2
 Requires: python-iso8601
@@ -188,8 +187,9 @@ Requires: python-kombu
 Requires: python-lxml
 Requires: python-netaddr
 Requires: python-paste-deploy
+Requires: python-posix_ipc
 Requires: python-memcached
-Requires: python-oslo-config >= 1:1.2.0
+Requires: python-requests
 Requires: python-routes
 Requires: python-sqlalchemy
 Requires: python-migrate
@@ -201,6 +201,10 @@ Requires: python-anyjson
 Requires: python-paramiko
 Requires: python-babel
 Requires: MySQL-python
+
+Requires: python-oslo-config >= 1:1.2.0
+Requires: python-oslo-db
+Requires: python-oslo-messaging
 
 Requires: python-ceilometerclient
 Requires: python-cinderclient
