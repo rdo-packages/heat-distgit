@@ -196,6 +196,7 @@ Requires: python-oslo-config >= 1:1.2.0
 Requires: python-oslo-db
 Requires: python-neutronclient
 Requires: python-swiftclient
+Requires: python-troveclient
 Requires: python-routes
 Requires: python-sqlalchemy
 Requires: python-migrate
@@ -382,6 +383,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Mon Aug 18 2014 Derek Higgins <derekh@redhat.com> - XXX
+- Add dependency on python-troveclient
+
 * Fri Jul 25 2014 Ryan S. Brown <rybrown@redhat.com> 2014.2-0.1.b2
 - Update to upstream 2014.2.b2
 
