@@ -197,6 +197,7 @@ Requires: python-oslo-db
 Requires: python-neutronclient
 Requires: python-swiftclient
 Requires: python-troveclient
+Requires: python-saharaclient
 Requires: python-routes
 Requires: python-sqlalchemy
 Requires: python-migrate
@@ -383,6 +384,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Fri Aug 29 2014 Derek Higgins <derekh@redhat.com> - XXX
+- Add dependency on python-saharaclient
+
 * Mon Aug 18 2014 Derek Higgins <derekh@redhat.com> - XXX
 - Add dependency on python-troveclient
 
