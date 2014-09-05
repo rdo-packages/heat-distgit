@@ -259,6 +259,7 @@ Components common to all OpenStack Heat services
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/templates/*
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-keystone-setup.1.gz
+%{_mandir}/man1/heat-keystone-setup-domain.1.gz
 %{_mandir}/man1/heat-manage.1.gz
 %endif
 
