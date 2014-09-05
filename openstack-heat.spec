@@ -1,26 +1,18 @@
-%global project_name heat
-Source99:	sources
-%global release_version %(cat %{SOURCE99} | awk '{sub(/%{project_name}-/, ""); sub(/.tar.gz/, ""); print $2}')
-%global spec_version %(echo %{release_version} | sed -r 's/([0-9]+.[0-9]+.[0-9]+).*/\\1/')
-%global release_milestone %(echo %{release_version} | sed -r 's/[0-9]+.[0-9]+.(b[0-9]+).*/\\1/')
-
-%if "%{release_version}" == "%{release_milestone}"
-%global release_suffix %{?dist}
-%else
-# beta detected
-%global release_suffix .%{release_milestone}%{?dist}
-%endif
+%global release_name juno
+%global release_letter b
+%global milestone 2
+%global full_release heat-%{version}.%{release_letter}%{milestone}
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
-Version:	%{spec_version}
-Release:	0.4%{release_suffix}
+Version:	2014.2
+Release:	0.4.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
-Source0:	http://tarballs.openstack.org/%{project_name}/%{project_name}-%{release_version}.tar.gz
+Source0:	http://tarballs.openstack.org/heat/%{full_release}.tar.gz
 Obsoletes:	heat < 7-9
 Provides:	heat
 
@@ -99,7 +91,7 @@ Requires: %{name}-api-cfn = %{version}-%{release}
 Requires: %{name}-api-cloudwatch = %{version}-%{release}
 
 %prep
-%setup -q -n %{project_name}-%{release_version}
+%setup -q -n %{full_release}
 
 %patch0001 -p1
 %patch0002 -p1
