@@ -1,6 +1,6 @@
 %global release_name juno
 %global release_letter b
-%global milestone 2
+%global milestone 3
 %global full_release heat-%{version}.%{release_letter}%{milestone}
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
@@ -8,7 +8,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2014.2
-Release:	0.4.%{release_letter}%{milestone}%{?dist}
+Release:	0.1.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -31,7 +31,7 @@ Source5:	openstack-heat-api-cloudwatch.service
 Source20:	heat-dist.conf
 
 #
-# patches_base=2014.2.b2+0
+# patches_base=2014.2.b3+0
 #
 Patch0001: 0001-remove-pbr-runtime-dependency.patch
 Patch0002: 0002-Add-compatability-patch-to-allow-smooth-migration-aw.patch
@@ -514,6 +514,9 @@ fi
 
 
 %changelog
+* Tue Sep  9 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.1.b3
+- Update to upstream 2014.2.b3
+
 * Wed Aug 13 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.4.b2
 - Merge epel6 and fedora specfiles.
 
