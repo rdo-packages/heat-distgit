@@ -44,6 +44,7 @@ BuildRequires: python-stevedore
 BuildRequires: python-oslo-messaging
 BuildRequires: python-setuptools
 BuildRequires: python-oslo-sphinx
+BuildRequires: python-oslo-i18n
 BuildRequires: python-argparse
 BuildRequires: python-eventlet
 BuildRequires: python-greenlet
