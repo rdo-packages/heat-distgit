@@ -45,6 +45,7 @@ BuildRequires: python-oslo-messaging
 BuildRequires: python-setuptools
 BuildRequires: python-oslo-sphinx
 BuildRequires: python-oslo-i18n
+BuildRequires: python-oslo-utils
 BuildRequires: python-argparse
 BuildRequires: python-eventlet
 BuildRequires: python-greenlet
@@ -78,6 +79,7 @@ BuildRequires: python-oslo-config
 BuildRequires: python-cinderclient
 BuildRequires: python-keystoneclient
 BuildRequires: python-novaclient
+BuildRequires: python-saharaclient
 BuildRequires: python-neutronclient
 BuildRequires: python-swiftclient
 BuildRequires: python-heatclient
@@ -192,7 +194,7 @@ Group: System Environment/Base
 
 Requires: python-argparse
 Requires: python-eventlet
-Requires: python-stevedore
+Requires: python-stevedore >= 0.14
 Requires: python-greenlet
 Requires: python-httplib2
 Requires: python-iso8601
@@ -216,6 +218,7 @@ Requires: python-babel
 Requires: MySQL-python
 
 Requires: python-oslo-config >= 1:1.2.0
+Requires: python-oslo-utils
 Requires: python-oslo-db
 Requires: python-oslo-i18n
 Requires: python-oslo-messaging
