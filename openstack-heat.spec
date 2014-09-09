@@ -33,6 +33,9 @@ Source20:	heat-dist.conf
 #
 # patches_base=2014.2.b3+0
 #
+Patch0001: 0001-remove-pbr-runtime-dependency.patch
+Patch0002: 0002-Add-compatability-patch-to-allow-smooth-migration-aw.patch
+
 
 BuildArch: noarch
 BuildRequires: git
