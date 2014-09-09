@@ -8,7 +8,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2014.2
-Release:	0.1.%{release_letter}%{milestone}%{?dist}
+Release:	0.2.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -215,6 +215,7 @@ Requires: MySQL-python
 
 Requires: python-oslo-config >= 1:1.2.0
 Requires: python-oslo-db
+Requires: python-oslo-i18n
 Requires: python-oslo-messaging
 
 Requires: python-ceilometerclient
@@ -222,8 +223,10 @@ Requires: python-cinderclient
 Requires: python-glanceclient
 Requires: python-heatclient
 Requires: python-keystoneclient
+Requires: python-keystonemiddleware
 Requires: python-neutronclient
 Requires: python-novaclient
+Requires: python-saharaclient
 Requires: python-swiftclient
 Requires: python-troveclient
 
@@ -514,6 +517,9 @@ fi
 
 
 %changelog
+* Tue Sep  9 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.2.b3
+- Add dependencies for oslo-i18n, keystonemiddleware, and saharaclient
+
 * Tue Sep  9 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.1.b3
 - Update to upstream 2014.2.b3
 
