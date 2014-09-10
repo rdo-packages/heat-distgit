@@ -8,7 +8,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2014.2
-Release:	0.2.%{release_letter}%{milestone}%{?dist}
+Release:	0.4.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -524,8 +524,9 @@ fi
 
 
 %changelog
-* Tue Sep  9 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.2.b3
+* Tue Sep  9 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.5.b3
 - Add dependencies for oslo-i18n, keystonemiddleware, and saharaclient
+- Update patches for 2014.2.b3
 
 * Tue Sep  9 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.1.b3
 - Update to upstream 2014.2.b3
