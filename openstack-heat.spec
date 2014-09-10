@@ -45,6 +45,7 @@ BuildRequires: python-oslo-messaging
 BuildRequires: python-setuptools
 BuildRequires: python-oslo-sphinx
 BuildRequires: python-oslo-i18n
+BuildRequires: python-oslo-db
 BuildRequires: python-oslo-utils
 BuildRequires: python-argparse
 BuildRequires: python-eventlet
