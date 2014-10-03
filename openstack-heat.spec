@@ -1,6 +1,6 @@
 %global release_name juno
-%global release_letter b
-%global milestone 3
+%global release_letter rc
+%global milestone 1
 %global full_release heat-%{version}.%{release_letter}%{milestone}
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
@@ -8,7 +8,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2014.2
-Release:	0.5.%{release_letter}%{milestone}%{?dist}
+Release:	0.6.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -31,11 +31,10 @@ Source5:	openstack-heat-api-cloudwatch.service
 Source20:	heat-dist.conf
 
 #
-# patches_base=2014.2.b3+0
+# patches_base=2014.2.rc1+0
 #
 Patch0001: 0001-remove-pbr-runtime-dependency.patch
 Patch0002: 0002-Add-compatability-patch-to-allow-smooth-migration-aw.patch
-Patch0003: 0003-Add-heat-keystone-setup-domain-to-sphinx-conf.py.patch
 
 BuildArch: noarch
 BuildRequires: git
@@ -100,7 +99,6 @@ Requires: %{name}-api-cloudwatch = %{version}-%{release}
 
 %patch0001 -p1
 %patch0002 -p1
-%patch0003 -p1
 
 sed -i s/REDHATHEATVERSION/%{version}/ heat/version.py
 sed -i s/REDHATHEATRELEASE/%{release}/ heat/version.py
@@ -524,6 +522,9 @@ fi
 
 
 %changelog
+* Fri Oct  3 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.6.rc1
+- Update to upstream 2014.2.rc1
+
 * Tue Sep  9 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.5.b3
 - Add dependencies for oslo-i18n, keystonemiddleware, and saharaclient
 - Update patches for 2014.2.b3
