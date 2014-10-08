@@ -95,7 +95,7 @@ Requires: %{name}-api-cfn = %{version}-%{release}
 Requires: %{name}-api-cloudwatch = %{version}-%{release}
 
 %prep
-%setup -q -n %{project_name}-%{upstream_version}
+%setup -q -n heat-%{upstream_version}
 
 %patch0001 -p1
 %patch0002 -p1
