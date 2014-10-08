@@ -1,36 +1,33 @@
-%global project_name heat
-Source99:	sources
-%global release_version %(cat %{SOURCE99} | awk '{sub(/%{project_name}-/, ""); sub(/.tar.gz/, ""); print $2}')
-%global spec_version %(echo %{release_version} | sed -r 's/([0-9]+.[0-9]+.[0-9]+).*/\\1/')
-%global release_milestone %(echo %{release_version} | sed -r 's/[0-9]+.[0-9]+.(b[0-9]+).*/\\1/')
+%global release_name juno
+%global release_letter rc
+%global milestone 1
+%global full_release heat-%{version}.%{release_letter}%{milestone}
 
-%if "%{release_version}" == "%{release_milestone}"
-%global release_suffix %{?dist}
-%else
-# beta detected
-%global release_suffix .%{release_milestone}%{?dist}
-%endif
-
-
-# TODO : Fix doc building
-%global with_doc 0
+%global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
-Version:	%{spec_version}
-Release:	0.1%{release_suffix}
+Version:	2014.2
+Release:	0.6.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
-Source0:	http://tarballs.openstack.org/%{project_name}/%{project_name}-%{release_version}.tar.gz
+Source0:	http://tarballs.openstack.org/heat/%{full_release}.tar.gz
 Obsoletes:	heat < 7-9
 Provides:	heat
 
 Source1:	heat.logrotate
+%if 0%{?rhel} && 0%{?rhel} <= 6
+Source2:	openstack-heat-api.init
+Source3:	openstack-heat-api-cfn.init
+Source4:	openstack-heat-engine.init
+Source5:	openstack-heat-api-cloudwatch.init
+%else
 Source2:	openstack-heat-api.service
 Source3:	openstack-heat-api-cfn.service
 Source4:	openstack-heat-engine.service
 Source5:	openstack-heat-api-cloudwatch.service
+%endif
 Source20:	heat-dist.conf
 
 #
@@ -46,6 +43,9 @@ BuildRequires: python-stevedore
 BuildRequires: python-oslo-messaging
 BuildRequires: python-setuptools
 BuildRequires: python-oslo-sphinx
+BuildRequires: python-oslo-i18n
+BuildRequires: python-oslo-db
+BuildRequires: python-oslo-utils
 BuildRequires: python-argparse
 BuildRequires: python-eventlet
 BuildRequires: python-greenlet
@@ -69,13 +69,17 @@ BuildRequires: python-sqlalchemy
 BuildRequires: python-webob
 BuildRequires: python-pbr
 BuildRequires: python-d2to1
+
+%if ! (0%{?rhel} && 0%{?rhel} <= 6)
 BuildRequires: systemd-units
+%endif
+
 %if 0%{?with_doc}
 BuildRequires: python-oslo-config
-BuildRequires: python-oslo-db
 BuildRequires: python-cinderclient
 BuildRequires: python-keystoneclient
 BuildRequires: python-novaclient
+BuildRequires: python-saharaclient
 BuildRequires: python-neutronclient
 BuildRequires: python-swiftclient
 BuildRequires: python-heatclient
@@ -98,6 +102,9 @@ Requires: %{name}-api-cloudwatch = %{version}-%{release}
 
 sed -i s/REDHATHEATVERSION/%{version}/ heat/version.py
 sed -i s/REDHATHEATRELEASE/%{release}/ heat/version.py
+
+# make doc build compatible with python-oslo-sphinx RPM
+sed -i 's/oslosphinx/oslo.sphinx/' doc/source/conf.py
 
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
@@ -134,11 +141,19 @@ mkdir -p %{buildroot}/var/log/heat/
 mkdir -p %{buildroot}/var/run/heat/
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-heat
 
+%if 0%{?rhel} && 0%{?rhel} <= 6
+# install init scripts
+install -p -D -m 755 %{SOURCE2} %{buildroot}%{_initrddir}/openstack-heat-api
+install -p -D -m 755 %{SOURCE3} %{buildroot}%{_initrddir}/openstack-heat-api-cfn
+install -p -D -m 755 %{SOURCE4} %{buildroot}%{_initrddir}/openstack-heat-engine
+install -p -D -m 755 %{SOURCE5} %{buildroot}%{_initrddir}/openstack-heat-api-cloudwatch
+%else
 # install systemd unit files
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-heat-api.service
 install -p -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/openstack-heat-api-cfn.service
 install -p -D -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/openstack-heat-engine.service
 install -p -D -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/openstack-heat-api-cloudwatch.service
+%endif
 
 mkdir -p %{buildroot}/var/lib/heat/
 mkdir -p %{buildroot}/etc/heat/
@@ -154,8 +169,8 @@ install -p -D -m 644 build/man/*.1 %{buildroot}%{_mandir}/man1/
 popd
 %endif
 
-rm -f %{buildroot}/usr/bin/heat-db-setup
-rm -f %{buildroot}%{_mandir}/man1/heat-db-setup.*
+rm -f %{buildroot}/%{_bindir}/heat-db-setup
+rm -f %{buildroot}/%{_mandir}/man1/heat-db-setup.*
 rm -rf %{buildroot}/var/lib/heat/.dummy
 rm -f %{buildroot}/usr/bin/cinder-keystone-setup
 rm -rf %{buildroot}/%{python_sitelib}/heat/tests
@@ -179,8 +194,7 @@ Group: System Environment/Base
 
 Requires: python-argparse
 Requires: python-eventlet
-Requires: python-stevedore
-Requires: python-oslo-messaging
+Requires: python-stevedore >= 0.14
 Requires: python-greenlet
 Requires: python-httplib2
 Requires: python-iso8601
@@ -188,16 +202,9 @@ Requires: python-kombu
 Requires: python-lxml
 Requires: python-netaddr
 Requires: python-paste-deploy
-Requires: python-cinderclient
-Requires: python-keystoneclient
+Requires: python-posix_ipc
 Requires: python-memcached
-Requires: python-novaclient
-Requires: python-oslo-config >= 1:1.2.0
-Requires: python-oslo-db
-Requires: python-neutronclient
-Requires: python-swiftclient
-Requires: python-troveclient
-Requires: python-saharaclient
+Requires: python-requests
 Requires: python-routes
 Requires: python-sqlalchemy
 Requires: python-migrate
@@ -205,12 +212,28 @@ Requires: python-qpid
 Requires: python-webob
 Requires: python-six >= 1.4.1
 Requires: PyYAML
-Requires: m2crypto
 Requires: python-anyjson
 Requires: python-paramiko
-Requires: python-heatclient
 Requires: python-babel
 Requires: MySQL-python
+
+Requires: python-oslo-config >= 1:1.2.0
+Requires: python-oslo-utils
+Requires: python-oslo-db
+Requires: python-oslo-i18n
+Requires: python-oslo-messaging
+
+Requires: python-ceilometerclient
+Requires: python-cinderclient
+Requires: python-glanceclient
+Requires: python-heatclient
+Requires: python-keystoneclient
+Requires: python-keystonemiddleware
+Requires: python-neutronclient
+Requires: python-novaclient
+Requires: python-saharaclient
+Requires: python-swiftclient
+Requires: python-troveclient
 
 Requires(pre): shadow-utils
 
@@ -236,6 +259,7 @@ Components common to all OpenStack Heat services
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/templates/*
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-keystone-setup.1.gz
+%{_mandir}/man1/heat-keystone-setup-domain.1.gz
 %{_mandir}/man1/heat-manage.1.gz
 %endif
 
@@ -253,9 +277,16 @@ Group: System Environment/Base
 
 Requires: %{name}-common = %{version}-%{release}
 
+%if 0%{?rhel} && 0%{?rhel} <= 6
+Requires(post): chkconfig
+Requires(preun): chkconfig
+Requires(preun): initscripts
+Requires(postun): initscripts
+%else
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
+%endif
 
 %description engine
 OpenStack API for starting CloudFormation templates on OpenStack
@@ -266,19 +297,40 @@ OpenStack API for starting CloudFormation templates on OpenStack
 %doc doc/build/html/man/heat-engine.html
 %endif
 %{_bindir}/heat-engine
+%if 0%{?rhel} && 0%{?rhel} <= 6
+%{_initrddir}/openstack-heat-engine
+%else
 %{_unitdir}/openstack-heat-engine.service
+%endif
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-engine.1.gz
 %endif
 
 %post engine
+%if 0%{?rhel} && 0%{?rhel} <= 6
+/sbin/chkconfig --add openstack-heat-engine
+%else
 %systemd_post openstack-heat-engine.service
+%endif
 
 %preun engine
+%if 0%{?rhel} && 0%{?rhel} <= 6
+if [ $1 -eq 0 ]; then
+    /sbin/service openstack-heat-engine stop >/dev/null 2>&1
+    /sbin/chkconfig --del openstack-heat-engine
+fi
+%else
 %systemd_preun openstack-heat-engine.service
+%endif
 
 %postun engine
+%if 0%{?rhel} && 0%{?rhel} <= 6
+if [ $1 -ge 1 ]; then
+    /sbin/service openstack-heat-engine condrestart >/dev/null 2>&1 || :
+fi
+%else
 %systemd_postun_with_restart openstack-heat-engine.service
+%endif
 
 
 %package api
@@ -287,9 +339,16 @@ Group: System Environment/Base
 
 Requires: %{name}-common = %{version}-%{release}
 
+%if 0%{?rhel} && 0%{?rhel} <= 6
+Requires(post): chkconfig
+Requires(preun): chkconfig
+Requires(preun): initscripts
+Requires(postun): initscripts
+%else
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
+%endif
 
 %description api
 OpenStack-native ReST API to the Heat Engine
@@ -300,19 +359,40 @@ OpenStack-native ReST API to the Heat Engine
 %doc doc/build/html/man/heat-api.html
 %endif
 %{_bindir}/heat-api
+%if 0%{?rhel} && 0%{?rhel} <= 6
+%{_initrddir}/openstack-heat-api
+%else
 %{_unitdir}/openstack-heat-api.service
+%endif
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-api.1.gz
 %endif
 
 %post api
+%if 0%{?rhel} && 0%{?rhel} <= 6
+/sbin/chkconfig --add openstack-heat-api
+%else
 %systemd_post openstack-heat-api.service
+%endif
 
 %preun api
+%if 0%{?rhel} && 0%{?rhel} <= 6
+if [ $1 -eq 0 ]; then
+    /sbin/service openstack-heat-api stop >/dev/null 2>&1
+    /sbin/chkconfig --del openstack-heat-api
+fi
+%else
 %systemd_preun openstack-heat-api.service
+%endif
 
 %postun api
+%if 0%{?rhel} && 0%{?rhel} <= 6
+if [ $1 -ge 1 ]; then
+    /sbin/service openstack-heat-api condrestart >/dev/null 2>&1 || :
+fi
+%else
 %systemd_postun_with_restart openstack-heat-api.service
+%endif
 
 
 %package api-cfn
@@ -321,9 +401,16 @@ Group: System Environment/Base
 
 Requires: %{name}-common = %{version}-%{release}
 
+%if 0%{?rhel} && 0%{?rhel} <= 6
+Requires(post): chkconfig
+Requires(preun): chkconfig
+Requires(preun): initscripts
+Requires(postun): initscripts
+%else
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
+%endif
 
 %description api-cfn
 AWS CloudFormation-compatible API to the Heat Engine
@@ -334,19 +421,40 @@ AWS CloudFormation-compatible API to the Heat Engine
 %doc doc/build/html/man/heat-api-cfn.html
 %endif
 %{_bindir}/heat-api-cfn
+%if 0%{?rhel} && 0%{?rhel} <= 6
+%{_initrddir}/openstack-heat-api-cfn
+%else
 %{_unitdir}/openstack-heat-api-cfn.service
+%endif
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-api-cfn.1.gz
 %endif
 
 %post api-cfn
+%if 0%{?rhel} && 0%{?rhel} <= 6
+/sbin/chkconfig --add openstack-heat-api-cfn
+%else
 %systemd_post openstack-heat-api-cloudwatch.service
+%endif
 
 %preun api-cfn
+%if 0%{?rhel} && 0%{?rhel} <= 6
+if [ $1 -eq 0 ]; then
+    /sbin/service openstack-heat-api-cfn stop >/dev/null 2>&1
+    /sbin/chkconfig --del openstack-heat-api-cfn
+fi
+%else
 %systemd_preun openstack-heat-api-cloudwatch.service
+%endif
 
 %postun api-cfn
+%if 0%{?rhel} && 0%{?rhel} <= 6
+if [ $1 -ge 1 ]; then
+    /sbin/service openstack-heat-api-cfn condrestart >/dev/null 2>&1 || :
+fi
+%else
 %systemd_postun_with_restart openstack-heat-api-cloudwatch.service
+%endif
 
 
 %package api-cloudwatch
@@ -355,9 +463,16 @@ Group: System Environment/Base
 
 Requires: %{name}-common = %{version}-%{release}
 
+%if 0%{?rhel} && 0%{?rhel} <= 6
+Requires(post): chkconfig
+Requires(preun): chkconfig
+Requires(preun): initscripts
+Requires(postun): initscripts
+%else
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
+%endif
 
 %description api-cloudwatch
 AWS CloudWatch-compatible API to the Heat Engine
@@ -368,27 +483,62 @@ AWS CloudWatch-compatible API to the Heat Engine
 %doc doc/build/html/man/heat-api-cloudwatch.html
 %endif
 %{_bindir}/heat-api-cloudwatch
+%if 0%{?rhel} && 0%{?rhel} <= 6
+%{_initrddir}/openstack-heat-api-cloudwatch
+%else
 %{_unitdir}/openstack-heat-api-cloudwatch.service
+%endif
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-api-cloudwatch.1.gz
 %endif
 
 %post api-cloudwatch
+%if 0%{?rhel} && 0%{?rhel} <= 6
+/sbin/chkconfig --add openstack-heat-api-cloudwatch
+%else
 %systemd_post openstack-heat-api-cfn.service
+%endif
 
 %preun api-cloudwatch
+%if 0%{?rhel} && 0%{?rhel} <= 6
+/sbin/chkconfig --add openstack-heat-api-cloudwatch
+%else
 %systemd_preun openstack-heat-api-cfn.service
+%endif
 
 %postun api-cloudwatch
+%if 0%{?rhel} && 0%{?rhel} <= 6
+if [ $1 -eq 0 ]; then
+    /sbin/service openstack-heat-api-cloudwatch stop >/dev/null 2>&1
+    /sbin/chkconfig --del openstack-heat-api-cloudwatch
+fi
+
+if [ $1 -ge 1 ]; then
+    /sbin/service openstack-heat-api-cloudwatch condrestart >/dev/null 2>&1 || :
+fi
+%else
 %systemd_postun_with_restart openstack-heat-api-cfn.service
+%endif
 
 
 %changelog
-* Fri Aug 29 2014 Derek Higgins <derekh@redhat.com> - XXX
-- Add dependency on python-saharaclient
+* Fri Oct  3 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.6.rc1
+- Update to upstream 2014.2.rc1
 
-* Mon Aug 18 2014 Derek Higgins <derekh@redhat.com> - XXX
-- Add dependency on python-troveclient
+* Tue Sep  9 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.5.b3
+- Add dependencies for oslo-i18n, keystonemiddleware, and saharaclient
+- Update patches for 2014.2.b3
+
+* Tue Sep  9 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.1.b3
+- Update to upstream 2014.2.b3
+
+* Wed Aug 13 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.4.b2
+- Merge epel6 and fedora specfiles.
+
+* Mon Aug  4 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.2-0.3.b2
+- set qpid_topology_version=2 in heat-dist.conf (rhbz #1124137)
+- add client requires (rhbz #1108056)
+- remove m2crypto as it's no longer required
 
 * Fri Jul 25 2014 Ryan S. Brown <rybrown@redhat.com> 2014.2-0.1.b2
 - Update to upstream 2014.2.b2
