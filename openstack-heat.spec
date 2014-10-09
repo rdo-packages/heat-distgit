@@ -41,6 +41,7 @@ BuildRequires: git
 BuildRequires: python2-devel
 BuildRequires: python-stevedore
 BuildRequires: python-oslo-messaging
+BuildRequires: python-oslo-serialization
 BuildRequires: python-setuptools
 BuildRequires: python-oslo-sphinx
 BuildRequires: python-oslo-i18n
@@ -69,6 +70,7 @@ BuildRequires: python-sqlalchemy
 BuildRequires: python-webob
 BuildRequires: python-pbr
 BuildRequires: python-d2to1
+BuildRequires: python-osprofiler
 
 %if ! (0%{?rhel} && 0%{?rhel} <= 6)
 BuildRequires: systemd-units
@@ -213,12 +215,14 @@ Requires: python-anyjson
 Requires: python-paramiko
 Requires: python-babel
 Requires: MySQL-python
+Requires: python-osprofiler
 
 Requires: python-oslo-config >= 1:1.2.0
 Requires: python-oslo-utils
 Requires: python-oslo-db
 Requires: python-oslo-i18n
 Requires: python-oslo-messaging
+Requires: python-oslo-serialization
 
 Requires: python-ceilometerclient
 Requires: python-cinderclient
@@ -519,6 +523,10 @@ fi
 
 
 %changelog
+* Thu Oct 09 2014 Dan Prince <dprince@redhat.com> - XXX
+- Added python-oslo-serialization dependency.
+- Added python-osprofiler dependency.
+
 * Fri Oct  3 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.6.rc1
 - Update to upstream 2014.2.rc1
 
