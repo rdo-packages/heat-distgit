@@ -103,9 +103,6 @@ Requires: %{name}-api-cloudwatch = %{version}-%{release}
 sed -i s/REDHATHEATVERSION/%{version}/ heat/version.py
 sed -i s/REDHATHEATRELEASE/%{release}/ heat/version.py
 
-# make doc build compatible with python-oslo-sphinx RPM
-sed -i 's/oslosphinx/oslo.sphinx/' doc/source/conf.py
-
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
 rm -rf {test-,}requirements.txt tools/{pip,test}-requires
