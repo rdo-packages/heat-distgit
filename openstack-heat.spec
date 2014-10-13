@@ -1,6 +1,6 @@
 %global release_name juno
 %global release_letter rc
-%global milestone 1
+%global milestone 2
 %global full_release heat-%{version}.%{release_letter}%{milestone}
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
