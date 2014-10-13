@@ -8,7 +8,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2014.2
-Release:	0.6.%{release_letter}%{milestone}%{?dist}
+Release:	0.7.%{release_letter}%{milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -31,7 +31,7 @@ Source5:	openstack-heat-api-cloudwatch.service
 Source20:	heat-dist.conf
 
 #
-# patches_base=2014.2.rc1+0
+# patches_base=2014.2.rc2+0
 #
 Patch0001: 0001-remove-pbr-runtime-dependency.patch
 Patch0002: 0002-Add-compatability-patch-to-allow-smooth-migration-aw.patch
@@ -522,6 +522,9 @@ fi
 
 
 %changelog
+* Mon Oct 13 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.7.rc2
+- Update to upstream 2014.2.rc2
+
 * Fri Oct  3 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.6.rc1
 - Update to upstream 2014.2.rc1
 
