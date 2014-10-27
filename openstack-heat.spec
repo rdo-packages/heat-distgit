@@ -41,6 +41,7 @@ BuildRequires: git
 BuildRequires: python2-devel
 BuildRequires: python-stevedore
 BuildRequires: python-oslo-messaging
+BuildRequires: python-oslo-middleware
 BuildRequires: python-oslo-serialization
 BuildRequires: python-setuptools
 BuildRequires: python-oslo-sphinx
@@ -222,6 +223,7 @@ Requires: python-oslo-utils
 Requires: python-oslo-db
 Requires: python-oslo-i18n
 Requires: python-oslo-messaging
+Requires: python-oslo-middleware
 Requires: python-oslo-serialization
 
 Requires: python-ceilometerclient
@@ -523,6 +525,9 @@ fi
 
 
 %changelog
+* Mon Oct 27 2014 Dan Prince <dprince@redhat.com> - XXX
+- Added python-oslo-middleware dependency.
+
 * Thu Oct 09 2014 Dan Prince <dprince@redhat.com> - XXX
 - Added python-oslo-serialization dependency.
 - Added python-osprofiler dependency.
