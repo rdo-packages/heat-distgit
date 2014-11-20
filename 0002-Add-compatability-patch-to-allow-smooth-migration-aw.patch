@@ -1,4 +1,4 @@
-From 3afae514cc22a30acc5a3dae76ec2a6ca3c83f9f Mon Sep 17 00:00:00 2001
+From d2d194a78f27c15567bdbf164e6ab389bb58a584 Mon Sep 17 00:00:00 2001
 From: Jeff Peeler <jpeeler@redhat.com>
 Date: Sat, 21 Jun 2014 00:28:04 -0400
 Subject: [PATCH] Add compatability patch to allow smooth migration away from

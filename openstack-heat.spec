@@ -1,14 +1,12 @@
 %global release_name juno
-%global release_letter rc
-%global milestone 1
-%global full_release heat-%{version}.%{release_letter}%{milestone}
+%global full_release heat-%{version}
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
-Version:	2014.2
-Release:	0.6.%{release_letter}%{milestone}%{?dist}
+Version:    XXX
+Release:    XXX{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -31,7 +29,7 @@ Source5:	openstack-heat-api-cloudwatch.service
 Source20:	heat-dist.conf
 
 #
-# patches_base=
+# patches_base=+0
 #
 Patch0001: 0001-remove-pbr-runtime-dependency.patch
 Patch0002: 0002-Add-compatability-patch-to-allow-smooth-migration-aw.patch
@@ -40,9 +38,8 @@ BuildArch: noarch
 BuildRequires: git
 BuildRequires: python2-devel
 BuildRequires: python-stevedore
-BuildRequires: python-oslo-messaging
 BuildRequires: python-oslo-middleware
-BuildRequires: python-oslo-serialization
+BuildRequires: python-oslo-messaging
 BuildRequires: python-setuptools
 BuildRequires: python-oslo-sphinx
 BuildRequires: python-oslo-i18n
@@ -58,6 +55,7 @@ BuildRequires: python-lxml
 BuildRequires: python-netaddr
 BuildRequires: python-memcached
 BuildRequires: python-migrate
+BuildRequires: python-osprofiler
 BuildRequires: python-qpid
 BuildRequires: python-six
 BuildRequires: PyYAML
@@ -71,7 +69,6 @@ BuildRequires: python-sqlalchemy
 BuildRequires: python-webob
 BuildRequires: python-pbr
 BuildRequires: python-d2to1
-BuildRequires: python-osprofiler
 
 %if ! (0%{?rhel} && 0%{?rhel} <= 6)
 BuildRequires: systemd-units
@@ -201,6 +198,7 @@ Requires: python-iso8601
 Requires: python-kombu
 Requires: python-lxml
 Requires: python-netaddr
+Requires: python-osprofiler
 Requires: python-paste-deploy
 Requires: python-posix_ipc
 Requires: python-memcached
@@ -216,14 +214,13 @@ Requires: python-anyjson
 Requires: python-paramiko
 Requires: python-babel
 Requires: MySQL-python
-Requires: python-osprofiler
 
 Requires: python-oslo-config >= 1:1.2.0
 Requires: python-oslo-utils
 Requires: python-oslo-db
 Requires: python-oslo-i18n
-Requires: python-oslo-messaging
 Requires: python-oslo-middleware
+Requires: python-oslo-messaging
 Requires: python-oslo-serialization
 
 Requires: python-ceilometerclient
@@ -528,9 +525,14 @@ fi
 * Mon Oct 27 2014 Dan Prince <dprince@redhat.com> - XXX
 - Added python-oslo-middleware dependency.
 
-* Thu Oct 09 2014 Dan Prince <dprince@redhat.com> - XXX
-- Added python-oslo-serialization dependency.
-- Added python-osprofiler dependency.
+* Fri Oct 17 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-1
+- Update to upstream 2014.2
+
+* Mon Oct 13 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.8.rc3
+- Update to upstream 2014.2.rc3
+
+* Mon Oct 13 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.7.rc2
+- Update to upstream 2014.2.rc2
 
 * Fri Oct  3 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.6.rc1
 - Update to upstream 2014.2.rc1
