@@ -35,11 +35,12 @@ BuildArch: noarch
 BuildRequires: git
 BuildRequires: python2-devel
 BuildRequires: python-stevedore
-BuildRequires: python-oslo-messaging
 BuildRequires: python-setuptools
-BuildRequires: python-oslo-sphinx
-BuildRequires: python-oslo-i18n
 BuildRequires: python-oslo-db
+BuildRequires: python-oslo-i18n
+BuildRequires: python-oslo-messaging
+BuildRequires: python-oslo-serialization
+BuildRequires: python-oslo-sphinx
 BuildRequires: python-oslo-utils
 BuildRequires: python-argparse
 BuildRequires: python-eventlet
@@ -213,10 +214,11 @@ Requires: python-babel
 Requires: MySQL-python
 
 Requires: python-oslo-config >= 1:1.2.0
-Requires: python-oslo-utils
 Requires: python-oslo-db
 Requires: python-oslo-i18n
 Requires: python-oslo-messaging
+Requires: python-oslo-serialization
+Requires: python-oslo-utils
 
 Requires: python-ceilometerclient
 Requires: python-cinderclient
