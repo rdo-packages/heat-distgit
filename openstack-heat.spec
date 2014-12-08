@@ -245,7 +245,7 @@ Components common to all OpenStack Heat services
 %{python_sitelib}/heat*
 %attr(-, root, heat) %{_datadir}/heat/heat-dist.conf
 %attr(-, root, heat) %{_datadir}/heat/api-paste-dist.ini
-%dir %attr(0755,heat,root) %{_localstatedir}/log/heat
+%dir %attr(0750,heat,root) %{_localstatedir}/log/heat
 %dir %attr(0755,heat,root) %{_localstatedir}/run/heat
 %dir %attr(0755,heat,root) %{_sharedstatedir}/heat
 %dir %attr(0755,heat,root) %{_sysconfdir}/heat
