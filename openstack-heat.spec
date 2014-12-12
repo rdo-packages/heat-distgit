@@ -525,6 +525,9 @@ fi
 
 
 %changelog
+* Wed Dec 17 2014 Jeff Peeler <jpeeler@redhat.com> - XXX
+- change systemd service files to not explicitly define logfile (rhbz#1083057)
+
 * Tue Dec 16 2014 Jeff Peeler <jpeeler@redhat.com> - XXX
 - Add heat sample config generation
 
