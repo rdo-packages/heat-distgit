@@ -5,7 +5,7 @@ After=syslog.target network.target
 [Service]
 Type=simple
 User=heat
-ExecStart=/usr/bin/heat-api-cfn --logfile /var/log/heat/api-cfn.log
+ExecStart=/usr/bin/heat-api-cfn
 
 [Install]
 WantedBy=multi-user.target
