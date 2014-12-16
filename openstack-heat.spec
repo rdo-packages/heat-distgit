@@ -110,6 +110,9 @@ rm -rf {test-,}requirements.txt tools/{pip,test}-requires
 # Remove tests in contrib
 find contrib -name tests -type d | xargs rm -r
 
+# Generate sample config
+tools/config/generate_sample.sh -b . -p heat -o etc/heat
+
 # Programmatically update defaults in sample config
 # which is installed at /etc/heat/heat.conf
 
@@ -522,6 +525,9 @@ fi
 
 
 %changelog
+* Tue Dec 16 2014 Jeff Peeler <jpeeler@redhat.com> - XXX
+- Add heat sample config generation
+
 * Mon Oct 27 2014 Dan Prince <dprince@redhat.com> - XXX
 - Added python-oslo-middleware dependency.
 
