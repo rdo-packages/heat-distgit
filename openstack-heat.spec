@@ -110,7 +110,7 @@ rm -rf {test-,}requirements.txt tools/{pip,test}-requires
 find contrib -name tests -type d | xargs rm -r
 
 # Generate sample config
-tools/config/generate_sample.sh -b . -p heat -o etc/heat
+#tools/config/generate_sample.sh -b . -p heat -o etc/heat
 
 # Programmatically update defaults in sample config
 # which is installed at /etc/heat/heat.conf
@@ -119,16 +119,16 @@ tools/config/generate_sample.sh -b . -p heat -o etc/heat
 #  Since icehouse, there was an uncommented keystone_authtoken section
 #  at the end of the file which mimics but also conflicted with our
 #  distro editing that had been done for many releases.
-sed -i '/^[^#[]/{s/^/#/; s/ //g}; /^#[^ ]/s/ = /=/' etc/heat/heat.conf.sample
-sed -i -e "s/^#heat_revision=.*$/heat_revision=%{version}-%{release}/I" etc/heat/heat.conf.sample
+#sed -i '/^[^#[]/{s/^/#/; s/ //g}; /^#[^ ]/s/ = /=/' etc/heat/heat.conf.sample
+#sed -i -e "s/^#heat_revision=.*$/heat_revision=%{version}-%{release}/I" etc/heat/heat.conf.sample
 
 #  TODO: Make this more robust
 #  Note it only edits the first occurance, so assumes a section ordering in sample
 #  and also doesn't support multi-valued variables.
-while read name eq value; do
-  test "$name" && test "$value" || continue
-  sed -i "0,/^# *$name=/{s!^# *$name=.*!#$name=$value!}" etc/heat/heat.conf.sample
-done < %{SOURCE20}
+#while read name eq value; do
+#  test "$name" && test "$value" || continue
+#  sed -i "0,/^# *$name=/{s!^# *$name=.*!#$name=$value!}" etc/heat/heat.conf.sample
+#done < %{SOURCE20}
 
 %build
 %{__python} setup.py build
@@ -174,7 +174,7 @@ rm -rf %{buildroot}/var/lib/heat/.dummy
 rm -f %{buildroot}/usr/bin/cinder-keystone-setup
 rm -rf %{buildroot}/%{python_sitelib}/heat/tests
 
-install -p -D -m 640 etc/heat/heat.conf.sample %{buildroot}/%{_sysconfdir}/heat/heat.conf
+#install -p -D -m 640 etc/heat/heat.conf.sample %{buildroot}/%{_sysconfdir}/heat/heat.conf
 install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/heat/heat-dist.conf
 install -p -D -m 640 etc/heat/api-paste.ini %{buildroot}/%{_datadir}/heat/api-paste-dist.ini
 install -p -D -m 640 etc/heat/policy.json %{buildroot}/%{_sysconfdir}/heat
@@ -256,7 +256,7 @@ Components common to all OpenStack Heat services
 %dir %attr(0755,heat,root) %{_sharedstatedir}/heat
 %dir %attr(0755,heat,root) %{_sysconfdir}/heat
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-heat
-%config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/heat.conf
+#%config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/heat.conf
 %config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/policy.json
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/environment.d/*
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/templates/*
