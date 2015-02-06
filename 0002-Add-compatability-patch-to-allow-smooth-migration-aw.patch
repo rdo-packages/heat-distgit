@@ -1,4 +1,4 @@
-From 89e74b94326e19b2470fabe69ce19ee4f368f4b2 Mon Sep 17 00:00:00 2001
+From d3230a6223d56047a1bf49bf4e9410f3f6288311 Mon Sep 17 00:00:00 2001
 From: Jeff Peeler <jpeeler@redhat.com>
 Date: Sat, 21 Jun 2014 00:28:04 -0400
 Subject: [PATCH] Add compatability patch to allow smooth migration away from
@@ -10,30 +10,32 @@ uses PyCrypto. However, we must still allow decryption of existing
 entries in the database, so this patch will remain until at least
 the next release.
 ---
- heat/common/crypt.py | 43 ++++++++++++++++++++++++++++++-------------
- 1 file changed, 30 insertions(+), 13 deletions(-)
+ heat/common/crypt.py | 46 +++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 33 insertions(+), 13 deletions(-)
 
 diff --git a/heat/common/crypt.py b/heat/common/crypt.py
-index 0defb10..0c1e14e 100644
+index 0defb10..d18d34b 100644
 --- a/heat/common/crypt.py
 +++ b/heat/common/crypt.py
-@@ -44,20 +44,37 @@ def oslo_decrypt_v1(auth_info):
-     return sym.decrypt(cfg.CONF.auth_encryption_key[:32],
+@@ -45,19 +45,39 @@ def oslo_decrypt_v1(auth_info):
                         auth_info, b64decode=True)
+ 
  
 +#This is here for testing verification purposes related to the comment below
 +#def heat_encrypt(auth_info):
 +#    import M2Crypto
 +#    from os import urandom
 +#    iv = urandom(16)
-+#    cipher = M2Crypto.EVP.Cipher(alg='aes_128_cbc', key_as_bytes=False, padding=True,
++#    cipher = M2Crypto.EVP.Cipher(alg='aes_128_cbc', key_as_bytes=False,
++#                                 padding=True,
 +#                                 key=cfg.CONF.auth_encryption_key[:32], iv=iv,
 +#                                 op=1) # 1 is encode
 +#    update = cipher.update(auth_info)
 +#    final = cipher.final()
 +#    res = base64.b64encode(iv + update + final)
 +#    return 'heat_decrypt', res
- 
++
++
  def heat_decrypt(auth_info):
 -    """Decrypt function for data that has been encrypted using an older
 -    version of Heat.

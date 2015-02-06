@@ -1,4 +1,4 @@
-From 9db6b31c48f45cca71bb21aa1148bb7c5ec91925 Mon Sep 17 00:00:00 2001
+From 53718eac6706599bf644fef834391b4493e4e244 Mon Sep 17 00:00:00 2001
 From: Jeff Peeler <jpeeler@redhat.com>
 Date: Mon, 14 Oct 2013 14:30:34 -0400
 Subject: [PATCH] remove pbr runtime dependency

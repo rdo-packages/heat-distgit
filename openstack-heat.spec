@@ -5,8 +5,8 @@
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
-Version:	2014.2.1
-Release:	2%{?dist}
+Version:	2014.2.2
+Release:	1%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -519,6 +519,9 @@ fi
 
 
 %changelog
+* Fri Feb 06 2015 Ryan Brown <ryansb@redhat.com> 2014.2.2-1
+- Rebase to upstream 2014.2.2
+
 * Fri Dec 12 2014 Jeff Peeler <jpeeler@redhat.com> 2014.2.1-2
 - change systemd service files to not explicitly define logfile (rhbz#1083057)
 
