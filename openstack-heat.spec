@@ -46,6 +46,7 @@ BuildRequires: python-oslo-i18n
 BuildRequires: python-oslo-db
 BuildRequires: python-oslo-utils
 BuildRequires: python-oslo-log
+BuildRequires: python-oslo-versionedobjects
 BuildRequires: python-argparse
 BuildRequires: python-eventlet
 BuildRequires: python-greenlet
@@ -227,6 +228,7 @@ Requires: python-oslo-middleware
 Requires: python-oslo-messaging
 Requires: python-oslo-serialization
 Requires: python-oslo-log
+Requires: python-oslo-versionedobjects
 
 Requires: python-ceilometerclient
 Requires: python-cinderclient
