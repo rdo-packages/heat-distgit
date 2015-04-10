@@ -5,7 +5,7 @@
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
-Version:	2014.2.2
+Version:	2014.2.3
 Release:	1%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
@@ -519,6 +519,9 @@ fi
 
 
 %changelog
+* Fri Apr 10 2015 Ryan S. Brown <rybrown@redhat.com> 2014.2.3-1
+- Update to upstream 2014.2.3
+
 * Fri Feb 06 2015 Ryan Brown <ryansb@redhat.com> 2014.2.2-1
 - Rebase to upstream 2014.2.2
 
