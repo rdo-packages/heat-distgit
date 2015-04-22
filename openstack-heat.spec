@@ -6,7 +6,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2014.2.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -65,13 +65,13 @@ BuildRequires: python-sqlalchemy
 BuildRequires: python-webob
 BuildRequires: python-pbr
 BuildRequires: python-d2to1
+BuildRequires: python-oslo-config
 
 %if ! (0%{?rhel} && 0%{?rhel} <= 6)
 BuildRequires: systemd-units
 %endif
 
 %if 0%{?with_doc}
-BuildRequires: python-oslo-config
 BuildRequires: python-cinderclient
 BuildRequires: python-keystoneclient
 BuildRequires: python-novaclient
@@ -108,6 +108,9 @@ rm -rf {test-,}requirements.txt tools/{pip,test}-requires
 
 # Remove tests in contrib
 find contrib -name tests -type d | xargs rm -r
+
+# Generate sample config
+oslo-config-generator --config-file=config-generator.conf
 
 # Programmatically update defaults in sample config
 # which is installed at /etc/heat/heat.conf
@@ -519,6 +522,10 @@ fi
 
 
 %changelog
+* Wed Apr 22 2015 Ryan S. Brown <rybrown@redhat.com> 2014.2.3-2
+- Use oslo-config-generator to build heat config, move python-oslo-config to
+  main BuildRequires from with_doc section
+
 * Fri Apr 10 2015 Ryan S. Brown <rybrown@redhat.com> 2014.2.3-1
 - Update to upstream 2014.2.3
 
