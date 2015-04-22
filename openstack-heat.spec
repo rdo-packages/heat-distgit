@@ -6,7 +6,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2014.2.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -110,7 +110,23 @@ rm -rf {test-,}requirements.txt tools/{pip,test}-requires
 find contrib -name tests -type d | xargs rm -r
 
 # Generate sample config
-oslo-config-generator --config-file=config-generator.conf
+oslo-config-generator --output-file etc/heat/heat.conf.sample \
+    --wrap-width 79 \
+    --namespace heat.common.config \
+    --namespace heat.common.crypt \
+    --namespace heat.common.heat_keystoneclient \
+    --namespace heat.common.wsgi \
+    --namespace heat.engine.clients \
+    --namespace heat.engine.notification \
+    --namespace heat.engine.resources \
+    --namespace heat.openstack.common.eventlet_backdoor \
+    --namespace heat.openstack.common.policy \
+    --namespace heat.api.middleware.ssl \
+    --namespace heat.api.aws.ec2token \
+    --namespace keystonemiddleware.auth_token \
+    --namespace oslo.messaging \
+    --namespace oslo.db \
+    --namespace oslo.log
 
 # Programmatically update defaults in sample config
 # which is installed at /etc/heat/heat.conf
@@ -522,7 +538,7 @@ fi
 
 
 %changelog
-* Wed Apr 22 2015 Ryan S. Brown <rybrown@redhat.com> 2014.2.3-2
+* Wed Apr 22 2015 Ryan S. Brown <rybrown@redhat.com> 2014.2.3-3
 - Use oslo-config-generator to build heat config, move python-oslo-config to
   main BuildRequires from with_doc section
 
