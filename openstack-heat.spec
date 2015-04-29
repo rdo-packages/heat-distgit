@@ -1,19 +1,21 @@
-%global release_name juno
-%global full_release heat-%{version}
-
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
+%global release_name kilo
+%global milestone .0rc2
+%global service heat
+%{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
-Version:	2014.2.3
-Release:	4%{?dist}
+Version:	2015.1
+Release:	0.1%{?milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
-Source0:	http://tarballs.openstack.org/heat/%{full_release}.tar.gz
+
 Obsoletes:	heat < 7-9
 Provides:	heat
 
+Source0:	http://launchpad.net/%{service}/%{release_name}/%{release_name}-rc2/+download/%{service}-%{upstream_version}.tar.gz
 Source1:	heat.logrotate
 %if 0%{?rhel} && 0%{?rhel} <= 6
 Source2:	openstack-heat-api.init
@@ -28,20 +30,24 @@ Source5:	openstack-heat-api-cloudwatch.service
 %endif
 Source20:	heat-dist.conf
 
-Patch0001: 0001-remove-pbr-runtime-dependency.patch
-Patch0002: 0002-Add-compatability-patch-to-allow-smooth-migration-aw.patch
-
 BuildArch: noarch
 BuildRequires: git
 BuildRequires: python2-devel
 BuildRequires: python-stevedore
+BuildRequires: python-oslo-context
+BuildRequires: python-oslo-middleware
+BuildRequires: python-oslo-messaging
 BuildRequires: python-setuptools
 BuildRequires: python-oslo-db
 BuildRequires: python-oslo-i18n
 BuildRequires: python-oslo-messaging
 BuildRequires: python-oslo-serialization
 BuildRequires: python-oslo-sphinx
+BuildRequires: python-oslo-i18n
+BuildRequires: python-oslo-db
 BuildRequires: python-oslo-utils
+BuildRequires: python-oslo-log
+BuildRequires: python-oslo-versionedobjects
 BuildRequires: python-argparse
 BuildRequires: python-eventlet
 BuildRequires: python-greenlet
@@ -52,6 +58,7 @@ BuildRequires: python-lxml
 BuildRequires: python-netaddr
 BuildRequires: python-memcached
 BuildRequires: python-migrate
+BuildRequires: python-osprofiler
 BuildRequires: python-qpid
 BuildRequires: python-six
 BuildRequires: PyYAML
@@ -91,16 +98,7 @@ Requires: %{name}-api-cfn = %{version}-%{release}
 Requires: %{name}-api-cloudwatch = %{version}-%{release}
 
 %prep
-%setup -q -n %{full_release}
-
-%patch0001 -p1
-%patch0002 -p1
-
-sed -i s/REDHATHEATVERSION/%{version}/ heat/version.py
-sed -i s/REDHATHEATRELEASE/%{release}/ heat/version.py
-
-# make doc build compatible with python-oslo-sphinx RPM
-sed -i 's/oslosphinx/oslo.sphinx/' doc/source/conf.py
+%setup -q -n heat-%{upstream_version}
 
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
@@ -109,6 +107,9 @@ rm -rf {test-,}requirements.txt tools/{pip,test}-requires
 # Remove tests in contrib
 find contrib -name tests -type d | xargs rm -r
 
+# Generate sample config
+#tools/config/generate_sample.sh -b . -p heat -o etc/heat
+
 # Programmatically update defaults in sample config
 # which is installed at /etc/heat/heat.conf
 
@@ -116,16 +117,16 @@ find contrib -name tests -type d | xargs rm -r
 #  Since icehouse, there was an uncommented keystone_authtoken section
 #  at the end of the file which mimics but also conflicted with our
 #  distro editing that had been done for many releases.
-sed -i '/^[^#[]/{s/^/#/; s/ //g}; /^#[^ ]/s/ = /=/' etc/heat/heat.conf.sample
-sed -i -e "s/^#heat_revision=.*$/heat_revision=%{version}-%{release}/I" etc/heat/heat.conf.sample
+#sed -i '/^[^#[]/{s/^/#/; s/ //g}; /^#[^ ]/s/ = /=/' etc/heat/heat.conf.sample
+#sed -i -e "s/^#heat_revision=.*$/heat_revision=%{version}-%{release}/I" etc/heat/heat.conf.sample
 
 #  TODO: Make this more robust
 #  Note it only edits the first occurance, so assumes a section ordering in sample
 #  and also doesn't support multi-valued variables.
-while read name eq value; do
-  test "$name" && test "$value" || continue
-  sed -i "0,/^# *$name=/{s!^# *$name=.*!#$name=$value!}" etc/heat/heat.conf.sample
-done < %{SOURCE20}
+#while read name eq value; do
+#  test "$name" && test "$value" || continue
+#  sed -i "0,/^# *$name=/{s!^# *$name=.*!#$name=$value!}" etc/heat/heat.conf.sample
+#done < %{SOURCE20}
 
 %build
 %{__python} setup.py build
@@ -171,7 +172,7 @@ rm -rf %{buildroot}/var/lib/heat/.dummy
 rm -f %{buildroot}/usr/bin/cinder-keystone-setup
 rm -rf %{buildroot}/%{python_sitelib}/heat/tests
 
-install -p -D -m 640 etc/heat/heat.conf.sample %{buildroot}/%{_sysconfdir}/heat/heat.conf
+#install -p -D -m 640 etc/heat/heat.conf.sample %{buildroot}/%{_sysconfdir}/heat/heat.conf
 install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/heat/heat-dist.conf
 install -p -D -m 640 etc/heat/api-paste.ini %{buildroot}/%{_datadir}/heat/api-paste-dist.ini
 install -p -D -m 640 etc/heat/policy.json %{buildroot}/%{_sysconfdir}/heat
@@ -188,6 +189,7 @@ Heat provides AWS CloudFormation and CloudWatch functionality for OpenStack.
 Summary: Heat common
 Group: System Environment/Base
 
+Requires: python-pbr
 Requires: python-argparse
 Requires: python-eventlet
 Requires: python-stevedore >= 0.14
@@ -197,6 +199,7 @@ Requires: python-iso8601
 Requires: python-kombu
 Requires: python-lxml
 Requires: python-netaddr
+Requires: python-osprofiler
 Requires: python-paste-deploy
 Requires: python-posix_ipc
 Requires: python-memcached
@@ -214,11 +217,15 @@ Requires: python-babel
 Requires: MySQL-python
 
 Requires: python-oslo-config >= 1:1.2.0
+Requires: python-oslo-context
+Requires: python-oslo-utils
 Requires: python-oslo-db
 Requires: python-oslo-i18n
+Requires: python-oslo-middleware
 Requires: python-oslo-messaging
 Requires: python-oslo-serialization
-Requires: python-oslo-utils
+Requires: python-oslo-log
+Requires: python-oslo-versionedobjects
 
 Requires: python-ceilometerclient
 Requires: python-cinderclient
@@ -250,7 +257,7 @@ Components common to all OpenStack Heat services
 %dir %attr(0755,heat,root) %{_sharedstatedir}/heat
 %dir %attr(0755,heat,root) %{_sysconfdir}/heat
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-heat
-%config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/heat.conf
+#%config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/heat.conf
 %config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/policy.json
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/environment.d/*
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/templates/*
