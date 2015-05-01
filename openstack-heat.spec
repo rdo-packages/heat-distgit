@@ -29,6 +29,7 @@ Source4:	openstack-heat-engine.service
 Source5:	openstack-heat-api-cloudwatch.service
 %endif
 Source20:	heat-dist.conf
+Source21:	heat.conf.sample
 
 BuildArch: noarch
 BuildRequires: git
@@ -107,8 +108,7 @@ rm -rf {test-,}requirements.txt tools/{pip,test}-requires
 # Remove tests in contrib
 find contrib -name tests -type d | xargs rm -r
 
-# Generate sample config
-#tools/config/generate_sample.sh -b . -p heat -o etc/heat
+cp %{SOURCE21} etc/heat/heat.conf.sample
 
 # Programmatically update defaults in sample config
 # which is installed at /etc/heat/heat.conf
@@ -172,7 +172,7 @@ rm -rf %{buildroot}/var/lib/heat/.dummy
 rm -f %{buildroot}/usr/bin/cinder-keystone-setup
 rm -rf %{buildroot}/%{python_sitelib}/heat/tests
 
-#install -p -D -m 640 etc/heat/heat.conf.sample %{buildroot}/%{_sysconfdir}/heat/heat.conf
+install -p -D -m 640 etc/heat/heat.conf.sample %{buildroot}/%{_sysconfdir}/heat/heat.conf
 install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/heat/heat-dist.conf
 install -p -D -m 640 etc/heat/api-paste.ini %{buildroot}/%{_datadir}/heat/api-paste-dist.ini
 install -p -D -m 640 etc/heat/policy.json %{buildroot}/%{_sysconfdir}/heat
@@ -257,7 +257,7 @@ Components common to all OpenStack Heat services
 %dir %attr(0755,heat,root) %{_sharedstatedir}/heat
 %dir %attr(0755,heat,root) %{_sysconfdir}/heat
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-heat
-#%config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/heat.conf
+%config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/heat.conf
 %config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/policy.json
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/environment.d/*
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/templates/*
