@@ -1,13 +1,12 @@
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 %global release_name kilo
-%global milestone .0rc2
 %global service heat
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
-Version:	2015.1
-Release:	0.1%{?milestone}%{?dist}
+Version:	2015.1.0
+Release:	1%{?milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -15,7 +14,8 @@ URL:		http://www.openstack.org
 Obsoletes:	heat < 7-9
 Provides:	heat
 
-Source0:	http://launchpad.net/%{service}/%{release_name}/%{release_name}-rc2/+download/%{service}-%{upstream_version}.tar.gz
+Source0:	http://launchpad.net/%{service}/%{release_name}/%{version}/+download/%{service}-%{upstream_version}.tar.gz
+
 Source1:	heat.logrotate
 %if 0%{?rhel} && 0%{?rhel} <= 6
 Source2:	openstack-heat-api.init
