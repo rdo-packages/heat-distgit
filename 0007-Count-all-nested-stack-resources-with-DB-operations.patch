@@ -1,0 +1,183 @@
+From f6f42dadaf332254d7b186abcf3258f4977202f5 Mon Sep 17 00:00:00 2001
+From: Steve Baker <sbaker@redhat.com>
+Date: Fri, 22 May 2015 10:51:52 -0700
+Subject: [PATCH] Count all nested stack resources with DB operations
+
+The count is performed in 2 parts
+- A function which builds a list of all nested stacks
+  by recursively calling stack_get_all_by_owner_id
+- A query which counts resources which belong to the list
+  of stacks
+
+Considering this will be the basis for fixing bug #1455589 then this
+approach is appropriate for backporting to stable/kilo, but master would
+ideally replace this soon with a new Stack attribute that stores the
+calculated resource count.
+
+Partial-Bug: #1455589
+
+Change-Id: Ifa2e5609fd9a6853e20037e94a5e16696bb378ee
+---
+ heat/db/api.py                       |  4 ++
+ heat/db/sqlalchemy/api.py            | 24 +++++++++++
+ heat/objects/stack.py                |  4 ++
+ heat/tests/db/test_sqlalchemy_api.py | 81 ++++++++++++++++++++++++++++++++++++
+ 4 files changed, 113 insertions(+)
+
+diff --git a/heat/db/api.py b/heat/db/api.py
+index 7c4f050..e062fc1 100644
+--- a/heat/db/api.py
++++ b/heat/db/api.py
+@@ -180,6 +180,10 @@ def stack_get_root_id(context, stack_id):
+     return IMPL.stack_get_root_id(context, stack_id)
+ 
+ 
++def stack_count_total_resources(context, stack_id):
++    return IMPL.stack_count_total_resources(context, stack_id)
++
++
+ def user_creds_create(context):
+     return IMPL.user_creds_create(context)
+ 
+diff --git a/heat/db/sqlalchemy/api.py b/heat/db/sqlalchemy/api.py
+index 7bc283d..a694814 100644
+--- a/heat/db/sqlalchemy/api.py
++++ b/heat/db/sqlalchemy/api.py
+@@ -507,6 +507,30 @@ def stack_get_root_id(context, stack_id):
+     return s.id
+ 
+ 
++def stack_count_total_resources(context, stack_id):
++
++    # start with a stack_get to confirm the context can access the stack
++    if stack_id is None or stack_get(context, stack_id) is None:
++        return 0
++
++    stack_ids = []
++
++    def nested_stacks(sid):
++        stack_ids.append(sid)
++        for stack in stack_get_all_by_owner_id(context, sid):
++            nested_stacks(stack.id)
++
++    nested_stacks(stack_id)
++
++    # count all resources which belong to the stacks
++    results = model_query(
++        context, models.Resource
++    ).filter(
++        models.Resource.stack_id.in_(stack_ids)
++    ).count()
++    return results
++
++
+ def user_creds_create(context):
+     values = context.to_dict()
+     user_creds_ref = models.UserCreds()
+diff --git a/heat/objects/stack.py b/heat/objects/stack.py
+index be2c99b..f1bfa96 100755
+--- a/heat/objects/stack.py
++++ b/heat/objects/stack.py
+@@ -140,6 +140,10 @@ class Stack(
+         return db_api.stack_count_all(context, **kwargs)
+ 
+     @classmethod
++    def count_total_resources(cls, context, stack_id):
++        return db_api.stack_count_total_resources(context, stack_id)
++
++    @classmethod
+     def create(cls, context, values):
+         return db_api.stack_create(context, values)
+ 
+diff --git a/heat/tests/db/test_sqlalchemy_api.py b/heat/tests/db/test_sqlalchemy_api.py
+index 24c4275..501fdc8 100644
+--- a/heat/tests/db/test_sqlalchemy_api.py
++++ b/heat/tests/db/test_sqlalchemy_api.py
+@@ -1598,6 +1598,87 @@ class DBAPIStackTest(common.HeatTestCase):
+         self.assertEqual(root.id, db_api.stack_get_root_id(
+             self.ctx, child_1.id))
+ 
++    def test_stack_count_total_resources(self):
++
++        def add_resources(stack, count):
++            for i in range(count):
++                create_resource(
++                    self.ctx, stack, name='%s-%s' % (stack.name, i))
++
++        root = create_stack(self.ctx, self.template, self.user_creds,
++                            name='root stack')
++
++        # stack with 3 children
++        s_1 = create_stack(self.ctx, self.template, self.user_creds,
++                           name='s_1', owner_id=root.id)
++        s_1_1 = create_stack(self.ctx, self.template, self.user_creds,
++                             name='s_1_1', owner_id=s_1.id)
++        s_1_2 = create_stack(self.ctx, self.template, self.user_creds,
++                             name='s_1_2', owner_id=s_1.id)
++        s_1_3 = create_stack(self.ctx, self.template, self.user_creds,
++                             name='s_1_3', owner_id=s_1.id)
++
++        # stacks 4 ancestors deep
++        s_2 = create_stack(self.ctx, self.template, self.user_creds,
++                           name='s_2', owner_id=root.id)
++        s_2_1 = create_stack(self.ctx, self.template, self.user_creds,
++                             name='s_2_1', owner_id=s_2.id)
++        s_2_1_1 = create_stack(self.ctx, self.template, self.user_creds,
++                               name='s_2_1_1', owner_id=s_2_1.id)
++        s_2_1_1_1 = create_stack(self.ctx, self.template, self.user_creds,
++                                 name='s_2_1_1_1', owner_id=s_2_1_1.id)
++
++        s_3 = create_stack(self.ctx, self.template, self.user_creds,
++                           name='s_3', owner_id=root.id)
++        s_4 = create_stack(self.ctx, self.template, self.user_creds,
++                           name='s_4', owner_id=root.id)
++
++        add_resources(root, 3)
++        add_resources(s_1, 2)
++        add_resources(s_1_1, 4)
++        add_resources(s_1_2, 5)
++        add_resources(s_1_3, 6)
++
++        add_resources(s_2, 1)
++        add_resources(s_2_1_1_1, 1)
++        add_resources(s_3, 4)
++
++        root2 = create_stack(self.ctx, self.template, self.user_creds,
++                             name='root stack 2')
++        s2_1 = create_stack(self.ctx, self.template, self.user_creds,
++                            name='s2_1', owner_id=root2.id)
++        add_resources(root2, 3)
++        add_resources(s2_1, 2)
++
++        self.assertEqual(26, db_api.stack_count_total_resources(
++            self.ctx, root.id))
++
++        self.assertEqual(17, db_api.stack_count_total_resources(
++            self.ctx, s_1.id))
++        self.assertEqual(4, db_api.stack_count_total_resources(
++            self.ctx, s_1_1.id))
++        self.assertEqual(5, db_api.stack_count_total_resources(
++            self.ctx, s_1_2.id))
++        self.assertEqual(6, db_api.stack_count_total_resources(
++            self.ctx, s_1_3.id))
++
++        self.assertEqual(2, db_api.stack_count_total_resources(
++            self.ctx, s_2.id))
++        self.assertEqual(1, db_api.stack_count_total_resources(
++            self.ctx, s_2_1.id))
++        self.assertEqual(1, db_api.stack_count_total_resources(
++            self.ctx, s_2_1_1.id))
++        self.assertEqual(1, db_api.stack_count_total_resources(
++            self.ctx, s_2_1_1_1.id))
++        self.assertEqual(4, db_api.stack_count_total_resources(
++            self.ctx, s_3.id))
++        self.assertEqual(0, db_api.stack_count_total_resources(
++            self.ctx, s_4.id))
++        self.assertEqual(0, db_api.stack_count_total_resources(
++            self.ctx, 'asdf'))
++        self.assertEqual(0, db_api.stack_count_total_resources(
++            self.ctx, None))
++
+ 
+ class DBAPIResourceTest(common.HeatTestCase):
+     def setUp(self):

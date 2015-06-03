@@ -1,0 +1,1621 @@
+From 0238e38d54af7bae4079ba794d56bcc0e28bec92 Mon Sep 17 00:00:00 2001
+From: Zane Bitter <zbitter@redhat.com>
+Date: Wed, 13 May 2015 18:56:32 -0400
+Subject: [PATCH] Get rid of circular references in Resource and Function
+
+Circular references cause practically every bit of data that Heat uses to
+remain in memory until the completion of an operation, and even then to
+only be freed once the loop is detected by the garbage collector. By
+breaking all of the loops using weak references, we can ensure that things
+will get freed when they are no longer referenced without the need to wait
+for garbage collection (which should also take a lot less time). This
+change removes the loops from Resource and Function objects back to the
+Stack.
+
+Change-Id: Ibf80e95e69a2f27ed29754a2e0f1125e8eed0775
+Closes-Bug: #1454873
+(cherry-picked from commits 2032548c4e501ebf90604bf60a69fdf9f64b981d,
+                            203b8e8ecf91ad7c75dd7072c85930de4f8c1c42,
+                            d29bb1927489d5590f17d2f3ef2904b6f5edd0d4,
+                            60300b014952f5b2fa4c2a9010876f5b871f0f66)
+---
+ .../heat_docker/tests/test_docker_container.py     | 53 ++++++------
+ .../heat_gnocchi/tests/test_gnocchi_alarm.py       | 30 +++----
+ .../rackspace/tests/test_cloud_loadbalancer.py     |  4 +-
+ .../rackspace/tests/test_rackspace_cloud_server.py |  6 +-
+ .../rackspace/tests/test_rackspace_dns.py          | 12 +--
+ heat/engine/function.py                            | 13 ++-
+ heat/engine/resource.py                            | 11 +++
+ heat/engine/service.py                             |  7 +-
+ heat/engine/stack.py                               | 23 +++---
+ heat/tests/autoscaling/test_heat_scaling_group.py  | 16 ++--
+ heat/tests/autoscaling/test_heat_scaling_policy.py |  6 +-
+ heat/tests/autoscaling/test_scaling_group.py       | 12 +--
+ heat/tests/autoscaling/test_scaling_policy.py      |  4 +-
+ heat/tests/aws/test_waitcondition.py               |  3 +-
+ heat/tests/neutron/test_neutron_firewall.py        | 18 ++---
+ heat/tests/neutron/test_neutron_loadbalancer.py    | 93 +++++++++++-----------
+ heat/tests/neutron/test_neutron_metering.py        | 12 +--
+ heat/tests/neutron/test_neutron_network_gateway.py | 12 +--
+ heat/tests/neutron/test_neutron_provider_net.py    |  7 +-
+ heat/tests/test_ceilometer_alarm.py                | 14 ++--
+ heat/tests/test_engine_service.py                  |  1 +
+ heat/tests/test_hot.py                             | 13 +--
+ heat/tests/test_instance.py                        |  7 +-
+ heat/tests/test_instance_group.py                  | 10 +--
+ heat/tests/test_instance_network.py                | 20 ++---
+ heat/tests/test_loadbalancer.py                    | 12 +--
+ heat/tests/test_nested_stack.py                    |  7 +-
+ heat/tests/test_nova_floatingip.py                 | 14 ++--
+ heat/tests/test_nova_keypair.py                    |  6 +-
+ heat/tests/test_nova_servergroup.py                | 36 ++++-----
+ heat/tests/test_os_database.py                     | 12 +--
+ heat/tests/test_properties.py                      |  5 +-
+ heat/tests/test_provider_template.py               | 10 +--
+ heat/tests/test_restarter.py                       |  6 +-
+ heat/tests/test_sahara_cluster.py                  |  4 +-
+ heat/tests/test_sahara_templates.py                |  8 +-
+ heat/tests/test_server.py                          | 12 +--
+ heat/tests/test_server_tags.py                     |  8 +-
+ heat/tests/test_stack.py                           | 15 ++--
+ heat/tests/test_stack_user.py                      |  8 +-
+ heat/tests/test_swift.py                           |  4 +-
+ heat/tests/test_template.py                        |  6 +-
+ 42 files changed, 308 insertions(+), 272 deletions(-)
+
+diff --git a/contrib/heat_docker/heat_docker/tests/test_docker_container.py b/contrib/heat_docker/heat_docker/tests/test_docker_container.py
+index 72989f9..133bfe4 100644
+--- a/contrib/heat_docker/heat_docker/tests/test_docker_container.py
++++ b/contrib/heat_docker/heat_docker/tests/test_docker_container.py
+@@ -64,10 +64,11 @@ class DockerContainerTest(common.HeatTestCase):
+ 
+     def create_container(self, resource_name):
+         t = template_format.parse(template)
+-        stack = utils.parse_stack(t)
++        self.stack = utils.parse_stack(t)
+         resource = docker_container.DockerContainer(
+             resource_name,
+-            stack.t.resource_definitions(stack)[resource_name], stack)
++            self.stack.t.resource_definitions(self.stack)[resource_name],
++            self.stack)
+         self.m.StubOutWithMock(resource, 'get_client')
+         resource.get_client().MultipleTimes().AndReturn(
+             fakeclient.FakeDockerClient())
+@@ -93,11 +94,11 @@ class DockerContainerTest(common.HeatTestCase):
+ 
+     def test_create_with_name(self):
+         t = template_format.parse(template)
+-        stack = utils.parse_stack(t)
+-        definition = stack.t.resource_definitions(stack)['Blog']
++        self.stack = utils.parse_stack(t)
++        definition = self.stack.t.resource_definitions(self.stack)['Blog']
+         definition['Properties']['name'] = 'super-blog'
+         resource = docker_container.DockerContainer(
+-            'Blog', definition, stack)
++            'Blog', definition, self.stack)
+         self.m.StubOutWithMock(resource, 'get_client')
+         resource.get_client().MultipleTimes().AndReturn(
+             fakeclient.FakeDockerClient())
+@@ -132,13 +133,13 @@ class DockerContainerTest(common.HeatTestCase):
+ 
+     def test_start_with_bindings_and_links(self):
+         t = template_format.parse(template)
+-        stack = utils.parse_stack(t)
+-        definition = stack.t.resource_definitions(stack)['Blog']
++        self.stack = utils.parse_stack(t)
++        definition = self.stack.t.resource_definitions(self.stack)['Blog']
+         definition['Properties']['port_bindings'] = {
+             '80/tcp': [{'HostPort': '80'}]}
+         definition['Properties']['links'] = {'db': 'mysql'}
+         resource = docker_container.DockerContainer(
+-            'Blog', definition, stack)
++            'Blog', definition, self.stack)
+         self.m.StubOutWithMock(resource, 'get_client')
+         resource.get_client().MultipleTimes().AndReturn(
+             fakeclient.FakeDockerClient())
+@@ -222,12 +223,12 @@ class DockerContainerTest(common.HeatTestCase):
+ 
+     def test_start_with_restart_policy_no(self):
+         t = template_format.parse(template)
+-        stack = utils.parse_stack(t)
+-        definition = stack.t.resource_definitions(stack)['Blog']
++        self.stack = utils.parse_stack(t)
++        definition = self.stack.t.resource_definitions(self.stack)['Blog']
+         definition['Properties']['restart_policy'] = {
+             'Name': 'no', 'MaximumRetryCount': 0}
+         resource = docker_container.DockerContainer(
+-            'Blog', definition, stack)
++            'Blog', definition, self.stack)
+         get_client_mock = self.patchobject(resource, 'get_client')
+         get_client_mock.return_value = fakeclient.FakeDockerClient()
+         self.assertIsNone(resource.validate())
+@@ -241,12 +242,12 @@ class DockerContainerTest(common.HeatTestCase):
+ 
+     def test_start_with_restart_policy_on_failure(self):
+         t = template_format.parse(template)
+-        stack = utils.parse_stack(t)
+-        definition = stack.t.resource_definitions(stack)['Blog']
++        self.stack = utils.parse_stack(t)
++        definition = self.stack.t.resource_definitions(self.stack)['Blog']
+         definition['Properties']['restart_policy'] = {
+             'Name': 'on-failure', 'MaximumRetryCount': 10}
+         resource = docker_container.DockerContainer(
+-            'Blog', definition, stack)
++            'Blog', definition, self.stack)
+         get_client_mock = self.patchobject(resource, 'get_client')
+         get_client_mock.return_value = fakeclient.FakeDockerClient()
+         self.assertIsNone(resource.validate())
+@@ -260,12 +261,12 @@ class DockerContainerTest(common.HeatTestCase):
+ 
+     def test_start_with_restart_policy_always(self):
+         t = template_format.parse(template)
+-        stack = utils.parse_stack(t)
+-        definition = stack.t.resource_definitions(stack)['Blog']
++        self.stack = utils.parse_stack(t)
++        definition = self.stack.t.resource_definitions(self.stack)['Blog']
+         definition['Properties']['restart_policy'] = {
+             'Name': 'always', 'MaximumRetryCount': 0}
+         resource = docker_container.DockerContainer(
+-            'Blog', definition, stack)
++            'Blog', definition, self.stack)
+         get_client_mock = self.patchobject(resource, 'get_client')
+         get_client_mock.return_value = fakeclient.FakeDockerClient()
+         self.assertIsNone(resource.validate())
+@@ -279,12 +280,12 @@ class DockerContainerTest(common.HeatTestCase):
+ 
+     def test_start_with_caps(self):
+         t = template_format.parse(template)
+-        stack = utils.parse_stack(t)
+-        definition = stack.t.resource_definitions(stack)['Blog']
++        self.stack = utils.parse_stack(t)
++        definition = self.stack.t.resource_definitions(self.stack)['Blog']
+         definition['Properties']['cap_add'] = ['NET_ADMIN']
+         definition['Properties']['cap_drop'] = ['MKNOD']
+         resource = docker_container.DockerContainer(
+-            'Blog', definition, stack)
++            'Blog', definition, self.stack)
+         get_client_mock = self.patchobject(resource, 'get_client')
+         get_client_mock.return_value = fakeclient.FakeDockerClient()
+         self.assertIsNone(resource.validate())
+@@ -298,11 +299,11 @@ class DockerContainerTest(common.HeatTestCase):
+ 
+     def test_start_with_read_only(self):
+         t = template_format.parse(template)
+-        stack = utils.parse_stack(t)
+-        definition = stack.t.resource_definitions(stack)['Blog']
++        self.stack = utils.parse_stack(t)
++        definition = self.stack.t.resource_definitions(self.stack)['Blog']
+         definition['Properties']['read_only'] = True
+         resource = docker_container.DockerContainer(
+-            'Blog', definition, stack)
++            'Blog', definition, self.stack)
+         get_client_mock = self.patchobject(resource, 'get_client')
+         get_client_mock.return_value = fakeclient.FakeDockerClient()
+         get_client_mock.return_value.set_api_version('1.17')
+@@ -316,11 +317,11 @@ class DockerContainerTest(common.HeatTestCase):
+ 
+     def test_start_with_read_only_for_low_api_version(self):
+         t = template_format.parse(template)
+-        stack = utils.parse_stack(t)
+-        definition = stack.t.resource_definitions(stack)['Blog']
++        self.stack = utils.parse_stack(t)
++        definition = self.stack.t.resource_definitions(self.stack)['Blog']
+         definition['Properties']['read_only'] = True
+         my_resource = docker_container.DockerContainer(
+-            'Blog', definition, stack)
++            'Blog', definition, self.stack)
+         get_client_mock = self.patchobject(my_resource, 'get_client')
+         get_client_mock.return_value = fakeclient.FakeDockerClient()
+         get_client_mock.return_value.set_api_version('1.16')
+diff --git a/contrib/heat_gnocchi/heat_gnocchi/tests/test_gnocchi_alarm.py b/contrib/heat_gnocchi/heat_gnocchi/tests/test_gnocchi_alarm.py
+index 4ea6438..3d056a3 100644
+--- a/contrib/heat_gnocchi/heat_gnocchi/tests/test_gnocchi_alarm.py
++++ b/contrib/heat_gnocchi/heat_gnocchi/tests/test_gnocchi_alarm.py
+@@ -125,10 +125,10 @@ class GnocchiResourcesAlarmTest(common.HeatTestCase):
+             }
+         ).AndReturn(FakeCeilometerAlarm())
+         snippet = template_format.parse(gnocchi_resources_alarm_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         return gnocchi.CeilometerGnocchiResourcesAlarm(
+-            'GnoResAlarm', resource_defns['GnoResAlarm'], stack)
++            'GnoResAlarm', resource_defns['GnoResAlarm'], self.stack)
+ 
+     def test_update(self):
+         rsrc = self.create_alarm()
+@@ -151,8 +151,8 @@ class GnocchiResourcesAlarmTest(common.HeatTestCase):
+ 
+     def _prepare_check_resource(self):
+         snippet = template_format.parse(gnocchi_resources_alarm_template)
+-        stack = utils.parse_stack(snippet)
+-        res = stack['GnoResAlarm']
++        self.stack = utils.parse_stack(snippet)
++        res = self.stack['GnoResAlarm']
+         res.ceilometer = mock.Mock()
+         mock_alarm = mock.Mock(enabled=True, state='ok')
+         res.ceilometer().alarms.get.return_value = mock_alarm
+@@ -260,11 +260,11 @@ class GnocchiAggregationByMetricsAlarmTest(GnocchiResourcesAlarmTest):
+         ).AndReturn(FakeCeilometerAlarm())
+         snippet = template_format.parse(
+             gnocchi_aggregation_by_metrics_alarm_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         return gnocchi.CeilometerGnocchiAggregationByMetricsAlarm(
+             'GnoAggregationByMetricsAlarm',
+-            resource_defns['GnoAggregationByMetricsAlarm'], stack)
++            resource_defns['GnoAggregationByMetricsAlarm'], self.stack)
+ 
+     def test_update(self):
+         rsrc = self.create_alarm()
+@@ -290,8 +290,8 @@ class GnocchiAggregationByMetricsAlarmTest(GnocchiResourcesAlarmTest):
+     def _prepare_check_resource(self):
+         snippet = template_format.parse(
+             gnocchi_aggregation_by_metrics_alarm_template)
+-        stack = utils.parse_stack(snippet)
+-        res = stack['GnoAggregationByMetricsAlarm']
++        self.stack = utils.parse_stack(snippet)
++        res = self.stack['GnoAggregationByMetricsAlarm']
+         res.ceilometer = mock.Mock()
+         mock_alarm = mock.Mock(enabled=True, state='ok')
+         res.ceilometer().alarms.get.return_value = mock_alarm
+@@ -327,11 +327,11 @@ class GnocchiAggregationByResourcesAlarmTest(GnocchiResourcesAlarmTest):
+         ).AndReturn(FakeCeilometerAlarm())
+         snippet = template_format.parse(
+             gnocchi_aggregation_by_resources_alarm_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         return gnocchi.CeilometerGnocchiAggregationByResourcesAlarm(
+             'GnoAggregationByResourcesAlarm',
+-            resource_defns['GnoAggregationByResourcesAlarm'], stack)
++            resource_defns['GnoAggregationByResourcesAlarm'], self.stack)
+ 
+     def test_update(self):
+         rsrc = self.create_alarm()
+@@ -355,8 +355,8 @@ class GnocchiAggregationByResourcesAlarmTest(GnocchiResourcesAlarmTest):
+     def _prepare_check_resource(self):
+         snippet = template_format.parse(
+             gnocchi_aggregation_by_resources_alarm_template)
+-        stack = utils.parse_stack(snippet)
+-        res = stack['GnoAggregationByResourcesAlarm']
++        self.stack = utils.parse_stack(snippet)
++        res = self.stack['GnoAggregationByResourcesAlarm']
+         res.ceilometer = mock.Mock()
+         mock_alarm = mock.Mock(enabled=True, state='ok')
+         res.ceilometer().alarms.get.return_value = mock_alarm
+diff --git a/contrib/rackspace/rackspace/tests/test_cloud_loadbalancer.py b/contrib/rackspace/rackspace/tests/test_cloud_loadbalancer.py
+index 4eb70d4..4fd9972 100644
+--- a/contrib/rackspace/rackspace/tests/test_cloud_loadbalancer.py
++++ b/contrib/rackspace/rackspace/tests/test_cloud_loadbalancer.py
+@@ -356,9 +356,9 @@ class LoadBalancerTest(common.HeatTestCase):
+ 
+     def _mock_loadbalancer(self, lb_template, expected_name, expected_body):
+         t = template_format.parse(json.dumps(lb_template))
+-        s = utils.parse_stack(t, stack_name=utils.random_name())
++        self.stack = utils.parse_stack(t, stack_name=utils.random_name())
+ 
+-        rsrc, fake_loadbalancer = self._mock_create(s.t, s,
++        rsrc, fake_loadbalancer = self._mock_create(self.stack.t, self.stack,
+                                                     self.
+                                                     _get_first_resource_name(
+                                                         lb_template),
+diff --git a/contrib/rackspace/rackspace/tests/test_rackspace_cloud_server.py b/contrib/rackspace/rackspace/tests/test_rackspace_cloud_server.py
+index f1f1f46..7fdcb76 100644
+--- a/contrib/rackspace/rackspace/tests/test_rackspace_cloud_server.py
++++ b/contrib/rackspace/rackspace/tests/test_rackspace_cloud_server.py
+@@ -92,9 +92,9 @@ class CloudServersTest(common.HeatTestCase):
+         templ = template.Template(
+             t, env=environment.Environment({'key_name': 'test'}))
+ 
+-        stack = parser.Stack(self.ctx, stack_name, templ,
+-                             stack_id=uuidutils.generate_uuid())
+-        return (templ, stack)
++        self.stack = parser.Stack(self.ctx, stack_name, templ,
++                                  stack_id=uuidutils.generate_uuid())
++        return (templ, self.stack)
+ 
+     def _setup_test_server(self, return_server, name, image_id=None,
+                            override_name=False, stub_create=True, exit_code=0):
+diff --git a/contrib/rackspace/rackspace/tests/test_rackspace_dns.py b/contrib/rackspace/rackspace/tests/test_rackspace_dns.py
+index f6b9e44..bee3f06 100644
+--- a/contrib/rackspace/rackspace/tests/test_rackspace_dns.py
++++ b/contrib/rackspace/rackspace/tests/test_rackspace_dns.py
+@@ -103,15 +103,15 @@ class RackspaceDnsTest(common.HeatTestCase):
+         t = parsed_t
+         templ = template.Template(
+             t, env=environment.Environment({'name': 'test'}))
+-        stack = parser.Stack(utils.dummy_context(),
+-                             stack_name,
+-                             templ,
+-                             stack_id=str(uuid.uuid4()))
++        self.stack = parser.Stack(utils.dummy_context(),
++                                  stack_name,
++                                  templ,
++                                  stack_id=str(uuid.uuid4()))
+ 
+         instance = cloud_dns.CloudDns(
+             '%s_name' % name,
+-            templ.resource_definitions(stack)['domain'],
+-            stack)
++            templ.resource_definitions(self.stack)['domain'],
++            self.stack)
+         return instance
+ 
+     def _stubout_create(self, instance, fake_dnsinstance, **create_args):
+diff --git a/heat/engine/function.py b/heat/engine/function.py
+index 99b1cae..1754893 100644
+--- a/heat/engine/function.py
++++ b/heat/engine/function.py
+@@ -14,6 +14,7 @@
+ import abc
+ import collections
+ import itertools
++import weakref
+ 
+ import six
+ 
+@@ -33,10 +34,20 @@ class Function(object):
+             { <fn_name> : <args> }
+         """
+         super(Function, self).__init__()
+-        self.stack = stack
++        self._stackref = weakref.ref(stack) if stack is not None else None
+         self.fn_name = fn_name
+         self.args = args
+ 
++    @property
++    def stack(self):
++        ref = self._stackref
++        if ref is None:
++            return None
++
++        stack = ref()
++        assert stack is not None, "Need a reference to the Stack object"
++        return stack
++
+     def validate(self):
+         """
+         Validate arguments without resolving the function.
+diff --git a/heat/engine/resource.py b/heat/engine/resource.py
+index e1174df..81a4bee 100644
+--- a/heat/engine/resource.py
++++ b/heat/engine/resource.py
+@@ -15,6 +15,7 @@ import base64
+ import contextlib
+ import datetime as dt
+ import warnings
++import weakref
+ 
+ from oslo_config import cfg
+ from oslo_log import log as logging
+@@ -211,6 +212,16 @@ class Resource(object):
+         self.replaced_by = resource.replaced_by
+         self.current_template_id = resource.current_template_id
+ 
++    @property
++    def stack(self):
++        stack = self._stackref()
++        assert stack is not None, "Need a reference to the Stack object"
++        return stack
++
++    @stack.setter
++    def stack(self, stack):
++        self._stackref = weakref.ref(stack)
++
+     def reparse(self):
+         self.properties = self.t.properties(self.properties_schema,
+                                             self.context)
+diff --git a/heat/engine/service.py b/heat/engine/service.py
+index 30617d3..a6c7946 100644
+--- a/heat/engine/service.py
++++ b/heat/engine/service.py
+@@ -1115,8 +1115,7 @@ class EngineService(service.Service):
+                           implementation.
+         '''
+ 
+-        def _resource_signal(rsrc, details):
+-            stack = rsrc.stack
++        def _resource_signal(stack, rsrc, details):
+             LOG.debug("signaling resource %s:%s" % (stack.name, rsrc.name))
+             rsrc.signal(details)
+ 
+@@ -1141,11 +1140,11 @@ class EngineService(service.Service):
+         rsrc = stack[resource_name]
+         if callable(rsrc.signal):
+             if sync_call:
+-                _resource_signal(rsrc, details)
++                _resource_signal(stack, rsrc, details)
+                 return rsrc.metadata_get()
+             else:
+                 self.thread_group_mgr.start(stack.id, _resource_signal,
+-                                            rsrc, details)
++                                            stack, rsrc, details)
+ 
+     @context.request_context
+     def find_physical_resource(self, cnxt, physical_resource_id):
+diff --git a/heat/engine/stack.py b/heat/engine/stack.py
+index 5c757fa..24890f7 100755
+--- a/heat/engine/stack.py
++++ b/heat/engine/stack.py
+@@ -113,7 +113,7 @@ class Stack(collections.Mapping):
+         self.timeout_mins = timeout_mins
+         self.disable_rollback = disable_rollback
+         self.parent_resource_name = parent_resource
+-        self._parent_resource = None
++        self._parent_stack = None
+         self._resources = None
+         self._dependencies = None
+         self._access_allowed_handlers = {}
+@@ -162,19 +162,18 @@ class Stack(collections.Mapping):
+ 
+         Note: this should only be used by "Fn::ResourceFacade"
+         """
+-        if self._parent_resource is not None:
+-            return self._parent_resource
++        if self._parent_stack is None:
++            # we need both parent name and owner id.
++            if self.parent_resource_name is None or self.owner_id is None:
++                return None
+ 
+-        # we need both parent name and owner id.
+-        if self.parent_resource_name is None or self.owner_id is None:
+-            return None
++            try:
++                owner = self.load(self.context, stack_id=self.owner_id)
++            except exception.NotFound:
++                return None
++            self._parent_stack = owner
+ 
+-        try:
+-            owner = self.load(self.context, stack_id=self.owner_id)
+-        except exception.NotFound:
+-            return None
+-        self._parent_resource = owner[self.parent_resource_name]
+-        return self._parent_resource
++        return self._parent_stack[self.parent_resource_name]
+ 
+     def stored_context(self):
+         if self.user_creds_id:
+diff --git a/heat/tests/autoscaling/test_heat_scaling_group.py b/heat/tests/autoscaling/test_heat_scaling_group.py
+index 17f6cb1..0b44291 100644
+--- a/heat/tests/autoscaling/test_heat_scaling_group.py
++++ b/heat/tests/autoscaling/test_heat_scaling_group.py
+@@ -54,8 +54,8 @@ class TestScalingGroupTags(common.HeatTestCase):
+     def setUp(self):
+         super(TestScalingGroupTags, self).setUp()
+         t = template_format.parse(inline_templates.as_heat_template)
+-        stack = utils.parse_stack(t, params=inline_templates.as_params)
+-        self.group = stack['my-group']
++        self.stack = utils.parse_stack(t, params=inline_templates.as_params)
++        self.group = self.stack['my-group']
+ 
+     def test_tags_default(self):
+         expected = [{'Key': 'metering.groupname',
+@@ -118,8 +118,8 @@ class TestGroupAdjust(common.HeatTestCase):
+                                  generic_resource.ResourceWithPropsAndAttrs)
+ 
+         t = template_format.parse(inline_templates.as_heat_template)
+-        stack = utils.parse_stack(t, params=inline_templates.as_params)
+-        self.group = stack['my-group']
++        self.stack = utils.parse_stack(t, params=inline_templates.as_params)
++        self.group = self.stack['my-group']
+         self.stub_ImageConstraint_validate()
+         self.stub_FlavorConstraint_validate()
+         self.stub_SnapshotConstraint_validate()
+@@ -232,8 +232,8 @@ class TestGroupCrud(common.HeatTestCase):
+         self.stub_SnapshotConstraint_validate()
+ 
+         t = template_format.parse(inline_templates.as_heat_template)
+-        stack = utils.parse_stack(t, params=inline_templates.as_params)
+-        self.group = stack['my-group']
++        self.stack = utils.parse_stack(t, params=inline_templates.as_params)
++        self.group = self.stack['my-group']
+         self.assertIsNone(self.group.validate())
+ 
+     def test_handle_create(self):
+@@ -310,8 +310,8 @@ class HeatScalingGroupAttrTest(common.HeatTestCase):
+                                  generic_resource.ResourceWithPropsAndAttrs)
+ 
+         t = template_format.parse(inline_templates.as_heat_template)
+-        stack = utils.parse_stack(t, params=inline_templates.as_params)
+-        self.group = stack['my-group']
++        self.stack = utils.parse_stack(t, params=inline_templates.as_params)
++        self.group = self.stack['my-group']
+         self.assertIsNone(self.group.validate())
+ 
+     def test_no_instance_list(self):
+diff --git a/heat/tests/autoscaling/test_heat_scaling_policy.py b/heat/tests/autoscaling/test_heat_scaling_policy.py
+index 8ba9db5..5d56bcf 100644
+--- a/heat/tests/autoscaling/test_heat_scaling_policy.py
++++ b/heat/tests/autoscaling/test_heat_scaling_policy.py
+@@ -178,9 +178,9 @@ class ScalingPolicyAttrTest(common.HeatTestCase):
+         cfg.CONF.set_default('heat_waitcondition_server_url',
+                              'http://server.test:8000/v1/waitcondition')
+         t = template_format.parse(as_template)
+-        stack = utils.parse_stack(t, params=as_params)
+-        self.stack_name = stack.name
+-        self.policy = stack['my-policy']
++        self.stack = utils.parse_stack(t, params=as_params)
++        self.stack_name = self.stack.name
++        self.policy = self.stack['my-policy']
+         self.assertIsNone(self.policy.validate())
+         scheduler.TaskRunner(self.policy.create)()
+         self.assertEqual((self.policy.CREATE, self.policy.COMPLETE),
+diff --git a/heat/tests/autoscaling/test_scaling_group.py b/heat/tests/autoscaling/test_scaling_group.py
+index c26e0d7..2240855 100644
+--- a/heat/tests/autoscaling/test_scaling_group.py
++++ b/heat/tests/autoscaling/test_scaling_group.py
+@@ -233,8 +233,8 @@ class TestScalingGroupTags(common.HeatTestCase):
+     def setUp(self):
+         super(TestScalingGroupTags, self).setUp()
+         t = template_format.parse(as_template)
+-        stack = utils.parse_stack(t, params=inline_templates.as_params)
+-        self.group = stack['WebServerGroup']
++        self.stack = utils.parse_stack(t, params=inline_templates.as_params)
++        self.group = self.stack['WebServerGroup']
+ 
+     def test_tags_default(self):
+         expected = [{'Key': 'metering.groupname',
+@@ -297,8 +297,8 @@ class TestGroupAdjust(common.HeatTestCase):
+                              'http://server.test:8000/v1/waitcondition')
+ 
+         t = template_format.parse(as_template)
+-        stack = utils.parse_stack(t, params=inline_templates.as_params)
+-        self.group = stack['WebServerGroup']
++        self.stack = utils.parse_stack(t, params=inline_templates.as_params)
++        self.group = self.stack['WebServerGroup']
+         self.stub_ImageConstraint_validate()
+         self.stub_FlavorConstraint_validate()
+         self.stub_SnapshotConstraint_validate()
+@@ -406,8 +406,8 @@ class TestGroupCrud(common.HeatTestCase):
+                              'http://server.test:8000/v1/waitcondition')
+ 
+         t = template_format.parse(as_template)
+-        stack = utils.parse_stack(t, params=inline_templates.as_params)
+-        self.group = stack['WebServerGroup']
++        self.stack = utils.parse_stack(t, params=inline_templates.as_params)
++        self.group = self.stack['WebServerGroup']
+         self.assertIsNone(self.group.validate())
+ 
+     def test_handle_create(self):
+diff --git a/heat/tests/autoscaling/test_scaling_policy.py b/heat/tests/autoscaling/test_scaling_policy.py
+index 4a529ab..db74cc3 100644
+--- a/heat/tests/autoscaling/test_scaling_policy.py
++++ b/heat/tests/autoscaling/test_scaling_policy.py
+@@ -177,8 +177,8 @@ class ScalingPolicyAttrTest(common.HeatTestCase):
+     def setUp(self):
+         super(ScalingPolicyAttrTest, self).setUp()
+         t = template_format.parse(as_template)
+-        stack = utils.parse_stack(t, params=as_params)
+-        self.policy = stack['WebServerScaleUpPolicy']
++        self.stack = utils.parse_stack(t, params=as_params)
++        self.policy = self.stack['WebServerScaleUpPolicy']
+         self.assertIsNone(self.policy.validate())
+         scheduler.TaskRunner(self.policy.create)()
+         self.assertEqual((self.policy.CREATE, self.policy.COMPLETE),
+diff --git a/heat/tests/aws/test_waitcondition.py b/heat/tests/aws/test_waitcondition.py
+index e76484b..25dad90 100644
+--- a/heat/tests/aws/test_waitcondition.py
++++ b/heat/tests/aws/test_waitcondition.py
+@@ -592,7 +592,8 @@ class WaitConditionUpdateTest(common.HeatTestCase):
+         self.m.VerifyAll()
+         self.m.UnsetStubs()
+ 
+-        wait_condition_handle = self.stack['WaitHandle']
++        handle_stack = self.stack
++        wait_condition_handle = handle_stack['WaitHandle']
+         test_metadata = {'Data': 'foo', 'Reason': 'bar',
+                          'Status': 'SUCCESS', 'UniqueId': '1'}
+         self._handle_signal(wait_condition_handle, test_metadata, 2)
+diff --git a/heat/tests/neutron/test_neutron_firewall.py b/heat/tests/neutron/test_neutron_firewall.py
+index 7722b7f..50dfbd5 100644
+--- a/heat/tests/neutron/test_neutron_firewall.py
++++ b/heat/tests/neutron/test_neutron_firewall.py
+@@ -102,10 +102,10 @@ class FirewallTest(common.HeatTestCase):
+         ).AndReturn({'firewall': {'id': '5678'}})
+ 
+         snippet = template_format.parse(firewall_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         return firewall.Firewall(
+-            'firewall', resource_defns['firewall'], stack)
++            'firewall', resource_defns['firewall'], self.stack)
+ 
+     def test_create(self):
+         rsrc = self.create_firewall()
+@@ -230,10 +230,10 @@ class FirewallPolicyTest(common.HeatTestCase):
+         ).AndReturn({'firewall_policy': {'id': '5678'}})
+ 
+         snippet = template_format.parse(firewall_policy_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         return firewall.FirewallPolicy(
+-            'firewall_policy', resource_defns['firewall_policy'], stack)
++            'firewall_policy', resource_defns['firewall_policy'], self.stack)
+ 
+     def test_create(self):
+         rsrc = self.create_firewall_policy()
+@@ -356,10 +356,10 @@ class FirewallRuleTest(common.HeatTestCase):
+         ).AndReturn({'firewall_rule': {'id': '5678'}})
+ 
+         snippet = template_format.parse(firewall_rule_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         return firewall.FirewallRule(
+-            'firewall_rule', resource_defns['firewall_rule'], stack)
++            'firewall_rule', resource_defns['firewall_rule'], self.stack)
+ 
+     def test_create(self):
+         rsrc = self.create_firewall_rule()
+diff --git a/heat/tests/neutron/test_neutron_loadbalancer.py b/heat/tests/neutron/test_neutron_loadbalancer.py
+index a2ecf6b..a7d5c41 100644
+--- a/heat/tests/neutron/test_neutron_loadbalancer.py
++++ b/heat/tests/neutron/test_neutron_loadbalancer.py
+@@ -238,10 +238,10 @@ class HealthMonitorTest(common.HeatTestCase):
+         ).AndReturn({'health_monitor': {'id': '5678'}})
+ 
+         snippet = template_format.parse(health_monitor_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         return loadbalancer.HealthMonitor(
+-            'monitor', resource_defns['monitor'], stack)
++            'monitor', resource_defns['monitor'], self.stack)
+ 
+     def test_create(self):
+         rsrc = self.create_health_monitor()
+@@ -259,10 +259,10 @@ class HealthMonitorTest(common.HeatTestCase):
+         self.m.ReplayAll()
+ 
+         snippet = template_format.parse(health_monitor_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         rsrc = loadbalancer.HealthMonitor(
+-            'monitor', resource_defns['monitor'], stack)
++            'monitor', resource_defns['monitor'], self.stack)
+         error = self.assertRaises(exception.ResourceFailure,
+                                   scheduler.TaskRunner(rsrc.create))
+         self.assertEqual(
+@@ -412,10 +412,10 @@ class PoolTest(common.HeatTestCase):
+             snippet = template_format.parse(pool_template_deprecated)
+             neutronclient.Client.create_vip(stvippsn
+                                             ).AndReturn({'vip': {'id': 'xyz'}})
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         return loadbalancer.Pool(
+-            'pool', resource_defns['pool'], stack)
++            'pool', resource_defns['pool'], self.stack)
+ 
+     def test_create(self):
+         self._test_create()
+@@ -466,10 +466,10 @@ class PoolTest(common.HeatTestCase):
+             {'vip': {'status': 'ACTIVE'}})
+ 
+         snippet = template_format.parse(pool_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         rsrc = loadbalancer.Pool(
+-            'pool', resource_defns['pool'], stack)
++            'pool', resource_defns['pool'], self.stack)
+         self.m.ReplayAll()
+         scheduler.TaskRunner(rsrc.create)()
+         self.assertEqual((rsrc.CREATE, rsrc.COMPLETE), rsrc.state)
+@@ -500,10 +500,10 @@ class PoolTest(common.HeatTestCase):
+             {'pool': {'status': 'ERROR', 'name': '5678'}})
+ 
+         snippet = template_format.parse(pool_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         rsrc = loadbalancer.Pool(
+-            'pool', resource_defns['pool'], stack)
++            'pool', resource_defns['pool'], self.stack)
+         self.m.ReplayAll()
+         error = self.assertRaises(exception.ResourceFailure,
+                                   scheduler.TaskRunner(rsrc.create))
+@@ -538,10 +538,10 @@ class PoolTest(common.HeatTestCase):
+             {'vip': {'status': 'SOMETHING', 'name': 'xyz'}})
+ 
+         snippet = template_format.parse(pool_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         rsrc = loadbalancer.Pool(
+-            'pool', resource_defns['pool'], stack)
++            'pool', resource_defns['pool'], self.stack)
+         self.m.ReplayAll()
+         error = self.assertRaises(exception.ResourceFailure,
+                                   scheduler.TaskRunner(rsrc.create))
+@@ -567,10 +567,10 @@ class PoolTest(common.HeatTestCase):
+         self.m.ReplayAll()
+ 
+         snippet = template_format.parse(pool_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         rsrc = loadbalancer.Pool(
+-            'pool', resource_defns['pool'], stack)
++            'pool', resource_defns['pool'], self.stack)
+         error = self.assertRaises(exception.ResourceFailure,
+                                   scheduler.TaskRunner(rsrc.create))
+         self.assertEqual(
+@@ -606,10 +606,10 @@ class PoolTest(common.HeatTestCase):
+             {'vip': {'status': 'ACTIVE'}})
+ 
+         snippet = template_format.parse(pool_with_session_persistence_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         rsrc = loadbalancer.Pool(
+-            'pool', resource_defns['pool'], stack)
++            'pool', resource_defns['pool'], self.stack)
+         self.m.ReplayAll()
+         scheduler.TaskRunner(rsrc.create)()
+         self.assertEqual((rsrc.CREATE, rsrc.COMPLETE), rsrc.state)
+@@ -626,9 +626,10 @@ class PoolTest(common.HeatTestCase):
+         persistence['type'] = 'APP_COOKIE'
+         persistence['cookie_name'] = None
+ 
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
+-        resource = loadbalancer.Pool('pool', resource_defns['pool'], stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
++        resource = loadbalancer.Pool('pool', resource_defns['pool'],
++                                     self.stack)
+ 
+         error = self.assertRaises(exception.StackValidationFailed,
+                                   resource.validate)
+@@ -637,9 +638,10 @@ class PoolTest(common.HeatTestCase):
+     def test_validation_not_failing_without_session_persistence(self):
+         snippet = template_format.parse(pool_template)
+ 
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
+-        resource = loadbalancer.Pool('pool', resource_defns['pool'], stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
++        resource = loadbalancer.Pool('pool', resource_defns['pool'],
++                                     self.stack)
+         self.stub_SubnetConstraint_validate()
+         self.m.ReplayAll()
+         self.assertIsNone(resource.validate())
+@@ -678,9 +680,10 @@ class PoolTest(common.HeatTestCase):
+         persistence['type'] = 'HTTP_COOKIE'
+         del persistence['cookie_name']
+ 
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
+-        resource = loadbalancer.Pool('pool', resource_defns['pool'], stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
++        resource = loadbalancer.Pool('pool', resource_defns['pool'],
++                                     self.stack)
+ 
+         # assert that properties contain cookie_name property with None value
+         persistence = resource.properties['vip']['session_persistence']
+@@ -828,11 +831,11 @@ class PoolTest(common.HeatTestCase):
+             '5678', {'health_monitor': {'id': 'mon789'}})
+ 
+         snippet = template_format.parse(pool_template)
+-        stack = utils.parse_stack(snippet)
++        self.stack = utils.parse_stack(snippet)
+         snippet['Resources']['pool']['Properties']['monitors'] = [
+             'mon123', 'mon456']
+-        resource_defns = stack.t.resource_definitions(stack)
+-        rsrc = loadbalancer.Pool('pool', resource_defns['pool'], stack)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
++        rsrc = loadbalancer.Pool('pool', resource_defns['pool'], self.stack)
+         self.m.ReplayAll()
+         scheduler.TaskRunner(rsrc.create)()
+ 
+@@ -860,10 +863,10 @@ class PoolMemberTest(common.HeatTestCase):
+                 'address': '1.2.3.4', 'admin_state_up': True}}
+         ).AndReturn({'member': {'id': 'member5678'}})
+         snippet = template_format.parse(member_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         return loadbalancer.PoolMember(
+-            'member', resource_defns['member'], stack)
++            'member', resource_defns['member'], self.stack)
+ 
+     def test_create(self):
+         rsrc = self.create_member()
+@@ -884,10 +887,10 @@ class PoolMemberTest(common.HeatTestCase):
+         snippet = template_format.parse(member_template)
+         snippet['Resources']['member']['Properties']['admin_state_up'] = False
+         snippet['Resources']['member']['Properties']['weight'] = 100
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         rsrc = loadbalancer.PoolMember(
+-            'member', resource_defns['member'], stack)
++            'member', resource_defns['member'], self.stack)
+ 
+         self.m.ReplayAll()
+         scheduler.TaskRunner(rsrc.create)()
+@@ -961,10 +964,10 @@ class LoadBalancerTest(common.HeatTestCase):
+                 'address': '1.2.3.4'}}
+         ).AndReturn({'member': {'id': 'member5678'}})
+         snippet = template_format.parse(lb_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         return loadbalancer.LoadBalancer(
+-            'lb', resource_defns['lb'], stack)
++            'lb', resource_defns['lb'], self.stack)
+ 
+     def test_create(self):
+         rsrc = self.create_load_balancer()
+diff --git a/heat/tests/neutron/test_neutron_metering.py b/heat/tests/neutron/test_neutron_metering.py
+index 9fcd02b..aa30fc8 100644
+--- a/heat/tests/neutron/test_neutron_metering.py
++++ b/heat/tests/neutron/test_neutron_metering.py
+@@ -74,10 +74,10 @@ class MeteringLabelTest(common.HeatTestCase):
+         }).AndReturn({'metering_label': {'id': '1234'}})
+ 
+         snippet = template_format.parse(metering_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         return metering.MeteringLabel(
+-            'label', resource_defns['label'], stack)
++            'label', resource_defns['label'], self.stack)
+ 
+     def test_create(self):
+         rsrc = self.create_metering_label()
+@@ -187,10 +187,10 @@ class MeteringRuleTest(common.HeatTestCase):
+         }).AndReturn({'metering_label_rule': {'id': '5678'}})
+ 
+         snippet = template_format.parse(metering_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         return metering.MeteringRule(
+-            'rule', resource_defns['rule'], stack)
++            'rule', resource_defns['rule'], self.stack)
+ 
+     def test_create(self):
+         rsrc = self.create_metering_label_rule()
+diff --git a/heat/tests/neutron/test_neutron_network_gateway.py b/heat/tests/neutron/test_neutron_network_gateway.py
+index 01046f0..da445f8 100644
+--- a/heat/tests/neutron/test_neutron_network_gateway.py
++++ b/heat/tests/neutron/test_neutron_network_gateway.py
+@@ -141,11 +141,11 @@ class NeutronNetworkGatewayTest(common.HeatTestCase):
+ 
+         t = template_format.parse(gw_template)
+ 
+-        stack = utils.parse_stack(t)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(t)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         rsrc = network_gateway.NetworkGateway(
+             'test_network_gateway',
+-            resource_defns['NetworkGateway'], stack)
++            resource_defns['NetworkGateway'], self.stack)
+         return rsrc
+ 
+     def prepare_create_network_gateway(self, resolve_neutron=True):
+@@ -192,11 +192,11 @@ class NeutronNetworkGatewayTest(common.HeatTestCase):
+         else:
+             t = template_format.parse(gw_template_deprecated)
+ 
+-        stack = utils.parse_stack(t)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(t)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         rsrc = network_gateway.NetworkGateway(
+             'test_network_gateway',
+-            resource_defns['NetworkGateway'], stack)
++            resource_defns['NetworkGateway'], self.stack)
+         return rsrc
+ 
+     def _test_network_gateway_create(self, resolve_neutron=True):
+diff --git a/heat/tests/neutron/test_neutron_provider_net.py b/heat/tests/neutron/test_neutron_provider_net.py
+index f440c1d..95f5128 100644
+--- a/heat/tests/neutron/test_neutron_provider_net.py
++++ b/heat/tests/neutron/test_neutron_provider_net.py
+@@ -88,10 +88,11 @@ class NeutronProviderNetTest(common.HeatTestCase):
+         ).AndReturn(stpna)
+ 
+         t = template_format.parse(provider_network_template)
+-        stack = utils.parse_stack(t)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(t)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         rsrc = provider_net.ProviderNet(
+-            'provider_net', resource_defns['provider_network_vlan'], stack)
++            'provider_net', resource_defns['provider_network_vlan'],
++            self.stack)
+ 
+         return rsrc
+ 
+diff --git a/heat/tests/test_ceilometer_alarm.py b/heat/tests/test_ceilometer_alarm.py
+index fa1c4fb..b5f1ce4 100644
+--- a/heat/tests/test_ceilometer_alarm.py
++++ b/heat/tests/test_ceilometer_alarm.py
+@@ -438,8 +438,8 @@ class CeilometerAlarmTest(common.HeatTestCase):
+ 
+     def _prepare_check_resource(self):
+         snippet = template_format.parse(not_string_alarm_template)
+-        stack = utils.parse_stack(snippet)
+-        res = stack['MEMAlarmHigh']
++        self.stack = utils.parse_stack(snippet)
++        res = self.stack['MEMAlarmHigh']
+         res.ceilometer = mock.Mock()
+         mock_alarm = mock.Mock(enabled=True, state='ok')
+         res.ceilometer().alarms.get.return_value = mock_alarm
+@@ -496,10 +496,10 @@ class CombinationAlarmTest(common.HeatTestCase):
+                               'operator': u'and'}
+         ).AndReturn(FakeCeilometerAlarm())
+         snippet = template_format.parse(combination_alarm_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         return alarm.CombinationAlarm(
+-            'CombinAlarm', resource_defns['CombinAlarm'], stack)
++            'CombinAlarm', resource_defns['CombinAlarm'], self.stack)
+ 
+     def test_create(self):
+         rsrc = self.create_alarm()
+@@ -592,8 +592,8 @@ class CombinationAlarmTest(common.HeatTestCase):
+ 
+     def _prepare_check_resource(self):
+         snippet = template_format.parse(combination_alarm_template)
+-        stack = utils.parse_stack(snippet)
+-        res = stack['CombinAlarm']
++        self.stack = utils.parse_stack(snippet)
++        res = self.stack['CombinAlarm']
+         res.ceilometer = mock.Mock()
+         mock_alarm = mock.Mock(enabled=True, state='ok')
+         res.ceilometer().alarms.get.return_value = mock_alarm
+diff --git a/heat/tests/test_engine_service.py b/heat/tests/test_engine_service.py
+index d87b5fa..4e6ff7c 100644
+--- a/heat/tests/test_engine_service.py
++++ b/heat/tests/test_engine_service.py
+@@ -2652,6 +2652,7 @@ class StackServiceTest(common.HeatTestCase):
+         self.eng.thread_group_mgr.start(stack.id,
+                                         mox.IgnoreArg(),
+                                         mox.IgnoreArg(),
++                                        mox.IgnoreArg(),
+                                         mox.IgnoreArg()).AndReturn(None)
+ 
+         self.m.ReplayAll()
+diff --git a/heat/tests/test_hot.py b/heat/tests/test_hot.py
+index 653c29a..776a446 100644
+--- a/heat/tests/test_hot.py
++++ b/heat/tests/test_hot.py
+@@ -796,7 +796,7 @@ class HOTemplateTest(common.HeatTestCase):
+         stack = parser.Stack(utils.dummy_context(), 'test_stack',
+                              parser.Template(hot_tpl_empty),
+                              parent_resource='parent')
+-        stack._parent_resource = parent_resource
++        stack._parent_stack = dict(parent=parent_resource)
+         self.assertEqual({"foo": "bar"},
+                          self.resolve(metadata_snippet, stack.t, stack))
+         self.assertEqual('Retain',
+@@ -822,7 +822,7 @@ class HOTemplateTest(common.HeatTestCase):
+         stack = parser.Stack(utils.dummy_context(), 'test_stack',
+                              parser.Template(hot_tpl_empty),
+                              parent_resource='parent')
+-        stack._parent_resource = parent_resource
++        stack._parent_stack = dict(parent=parent_resource)
+         self.assertEqual('Retain',
+                          self.resolve(deletion_policy_snippet, stack.t, stack))
+ 
+@@ -842,13 +842,14 @@ class HOTemplateTest(common.HeatTestCase):
+         parent_resource = DummyClass()
+         parent_resource.metadata_set({"foo": "bar"})
+         parent_resource.t = rsrc_defn.ResourceDefinition('parent', 'SomeType')
+-        parent_resource.stack = parser.Stack(utils.dummy_context(),
+-                                             'toplevel_stack',
+-                                             parser.Template(hot_tpl_empty))
++        parent_stack = parser.Stack(utils.dummy_context(),
++                                    'toplevel_stack',
++                                    parser.Template(hot_tpl_empty))
++        parent_stack._resources = {'parent': parent_resource}
+         stack = parser.Stack(utils.dummy_context(), 'test_stack',
+                              parser.Template(hot_tpl_empty),
+                              parent_resource='parent')
+-        stack._parent_resource = parent_resource
++        stack._parent_stack = parent_stack
+         self.assertEqual('Delete', self.resolve(snippet, stack.t, stack))
+ 
+     def test_removed_function(self):
+diff --git a/heat/tests/test_instance.py b/heat/tests/test_instance.py
+index b0db92c..cb58a57 100644
+--- a/heat/tests/test_instance.py
++++ b/heat/tests/test_instance.py
+@@ -107,9 +107,10 @@ class InstancesTest(common.HeatTestCase):
+     def _setup_test_instance(self, return_server, name, image_id=None,
+                              stub_create=True):
+         stack_name = '%s_s' % name
+-        tmpl, stack = self._get_test_template(stack_name, image_id)
+-        resource_defns = tmpl.resource_definitions(stack)
+-        instance = instances.Instance(name, resource_defns['WebServer'], stack)
++        tmpl, self.stack = self._get_test_template(stack_name, image_id)
++        resource_defns = tmpl.resource_definitions(self.stack)
++        instance = instances.Instance(name, resource_defns['WebServer'],
++                                      self.stack)
+         bdm = {"vdb": "9ef5496e-7426-446a-bbc8-01f84d9c9972:snap::True"}
+ 
+         self._mock_get_image_id_success(image_id or 'CentOS 5.2', 1)
+diff --git a/heat/tests/test_instance_group.py b/heat/tests/test_instance_group.py
+index 5495bbd..cc36f7c 100644
+--- a/heat/tests/test_instance_group.py
++++ b/heat/tests/test_instance_group.py
+@@ -34,13 +34,13 @@ class TestInstanceGroup(common.HeatTestCase):
+     def setUp(self):
+         super(TestInstanceGroup, self).setUp()
+         t = template_format.parse(inline_templates.as_template)
+-        stack = utils.parse_stack(t, params=inline_templates.as_params)
++        self.stack = utils.parse_stack(t, params=inline_templates.as_params)
+         self.defn = rsrc_defn.ResourceDefinition(
+             'asg', 'OS::Heat::InstanceGroup',
+             {'Size': 2, 'AvailabilityZones': ['zoneb'],
+              'LaunchConfigurationName': 'config'})
+         self.instance_group = instgrp.InstanceGroup('asg',
+-                                                    self.defn, stack)
++                                                    self.defn, self.stack)
+ 
+     def test_child_template(self):
+         self.instance_group._create_template = mock.Mock(return_value='tpl')
+@@ -327,14 +327,14 @@ class ReplaceTest(common.HeatTestCase):
+         resource._register_class('ResourceWithPropsAndAttrs',
+                                  generic_resource.ResourceWithPropsAndAttrs)
+         t = template_format.parse(inline_templates.as_template)
+-        stack = utils.parse_stack(t, params=inline_templates.as_params)
+-        lc = self.create_launch_config(t, stack)
++        self.stack = utils.parse_stack(t, params=inline_templates.as_params)
++        lc = self.create_launch_config(t, self.stack)
+         lcid = lc.FnGetRefId()
+         self.defn = rsrc_defn.ResourceDefinition(
+             'asg', 'OS::Heat::InstanceGroup',
+             {'Size': 2, 'AvailabilityZones': ['zoneb'],
+              'LaunchConfigurationName': lcid})
+-        self.group = instgrp.InstanceGroup('asg', self.defn, stack)
++        self.group = instgrp.InstanceGroup('asg', self.defn, self.stack)
+ 
+         self.group._lb_reload = mock.Mock()
+         self.group.update_with_template = mock.Mock()
+diff --git a/heat/tests/test_instance_network.py b/heat/tests/test_instance_network.py
+index 12fdefb..a733cfd 100644
+--- a/heat/tests/test_instance_network.py
++++ b/heat/tests/test_instance_network.py
+@@ -203,13 +203,13 @@ class instancesTest(common.HeatTestCase):
+                   'SubnetId': '4156c7a5-e8c4-4aff-a6e1-8f3c7bc83861'}
+         template = parser.Template(t,
+                                    env=environment.Environment(kwargs))
+-        stack = parser.Stack(utils.dummy_context(), stack_name, template,
+-                             stack_id=str(uuid.uuid4()))
++        self.stack = parser.Stack(utils.dummy_context(), stack_name, template,
++                                  stack_id=str(uuid.uuid4()))
+         image_id = 'CentOS 5.2'
+         t['Resources']['WebServer']['Properties']['ImageId'] = image_id
+-        resource_defns = stack.t.resource_definitions(stack)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         instance = instances.Instance('%s_name' % name,
+-                                      resource_defns['WebServer'], stack)
++                                      resource_defns['WebServer'], self.stack)
+         metadata = instance.metadata_get()
+ 
+         self.m.StubOutWithMock(nova.NovaClientPlugin, '_create')
+@@ -258,18 +258,18 @@ class instancesTest(common.HeatTestCase):
+                   'SubnetId': '4156c7a5-e8c4-4aff-a6e1-8f3c7bc83861'}
+         template = parser.Template(t,
+                                    env=environment.Environment(kwargs))
+-        stack = parser.Stack(utils.dummy_context(), stack_name, template,
+-                             stack_id=str(uuid.uuid4()))
++        self.stack = parser.Stack(utils.dummy_context(), stack_name, template,
++                                  stack_id=str(uuid.uuid4()))
+         image_id = 'CentOS 5.2'
+         t['Resources']['WebServer']['Properties']['ImageId'] = image_id
+ 
+-        resource_defns = stack.t.resource_definitions(stack)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         nic = net_interfaces.NetworkInterface('%s_nic' % name,
+                                               resource_defns['nic1'],
+-                                              stack)
++                                              self.stack)
+ 
+         instance = instances.Instance('%s_name' % name,
+-                                      resource_defns['WebServer'], stack)
++                                      resource_defns['WebServer'], self.stack)
+         metadata = instance.metadata_get()
+ 
+         self._mock_get_image_id_success(image_id, 1)
+@@ -309,7 +309,7 @@ class instancesTest(common.HeatTestCase):
+ 
+         # create network interface
+         scheduler.TaskRunner(nic.create)()
+-        stack.resources["nic1"] = nic
++        self.stack.resources["nic1"] = nic
+ 
+         scheduler.TaskRunner(instance.create)()
+         return instance
+diff --git a/heat/tests/test_loadbalancer.py b/heat/tests/test_loadbalancer.py
+index 68666dc..1ebf0f2 100644
+--- a/heat/tests/test_loadbalancer.py
++++ b/heat/tests/test_loadbalancer.py
+@@ -158,11 +158,11 @@ class LoadBalancerTest(common.HeatTestCase):
+         if not include_magic:
+             del template['Parameters']['KeyName']
+             del template['Parameters']['LbFlavor']
+-        stack = utils.parse_stack(template)
++        self.stack = utils.parse_stack(template)
+ 
+         resource_name = 'LoadBalancer'
+-        lb_defn = stack.t.resource_definitions(stack)[resource_name]
+-        return lb.LoadBalancer(resource_name, lb_defn, stack)
++        lb_defn = self.stack.t.resource_definitions(self.stack)[resource_name]
++        return lb.LoadBalancer(resource_name, lb_defn, self.stack)
+ 
+     def test_loadbalancer_refid(self):
+         rsrc = self.setup_loadbalancer()
+@@ -230,10 +230,10 @@ class LoadBalancerTest(common.HeatTestCase):
+ class HaProxyConfigTest(common.HeatTestCase):
+     def setUp(self):
+         super(HaProxyConfigTest, self).setUp()
+-        stack = utils.parse_stack(template_format.parse(lb_template))
++        self.stack = utils.parse_stack(template_format.parse(lb_template))
+         resource_name = 'LoadBalancer'
+-        lb_defn = stack.t.resource_definitions(stack)[resource_name]
+-        self.lb = lb.LoadBalancer(resource_name, lb_defn, stack)
++        lb_defn = self.stack.t.resource_definitions(self.stack)[resource_name]
++        self.lb = lb.LoadBalancer(resource_name, lb_defn, self.stack)
+         self.lb.client_plugin = mock.Mock()
+ 
+     def _mock_props(self, props):
+diff --git a/heat/tests/test_nested_stack.py b/heat/tests/test_nested_stack.py
+index b20a7e9..f8bf463 100644
+--- a/heat/tests/test_nested_stack.py
++++ b/heat/tests/test_nested_stack.py
+@@ -310,8 +310,9 @@ Outputs:
+ 
+         self.ctx = utils.dummy_context('test_username', 'aaaa', 'password')
+         empty_template = {"HeatTemplateFormatVersion": "2012-12-12"}
+-        stack = parser.Stack(self.ctx, 'test', parser.Template(empty_template))
+-        stack.store()
++        self.stack = parser.Stack(self.ctx, 'test',
++                                  parser.Template(empty_template))
++        self.stack.store()
+ 
+         self.patchobject(urlfetch, 'get', return_value=self.nested_template)
+         self.nested_parsed = yaml.load(self.nested_template)
+@@ -322,7 +323,7 @@ Outputs:
+             {"TemplateURL": "https://server.test/the.template",
+              "Parameters": self.nested_params})
+         self.res = stack_res.NestedStack('test_t_res',
+-                                         self.defn, stack)
++                                         self.defn, self.stack)
+         self.assertIsNone(self.res.validate())
+         self.res._store()
+ 
+diff --git a/heat/tests/test_nova_floatingip.py b/heat/tests/test_nova_floatingip.py
+index 4be0cac..49f6c7f 100644
+--- a/heat/tests/test_nova_floatingip.py
++++ b/heat/tests/test_nova_floatingip.py
+@@ -89,12 +89,12 @@ class NovaFloatingIPTest(common.HeatTestCase):
+         )
+ 
+         template = template_format.parse(floating_ip_template)
+-        stack = utils.parse_stack(template)
+-        floating_ip = stack.t.resource_definitions(stack)['MyFloatingIP']
++        self.stack = utils.parse_stack(template)
++        defns = self.stack.t.resource_definitions(self.stack)
+ 
+         return nova_floatingip.NovaFloatingIp('MyFloatingIP',
+-                                              floating_ip,
+-                                              stack)
++                                              defns['MyFloatingIP'],
++                                              self.stack)
+ 
+     def prepare_floating_ip_assoc(self):
+         nova.NovaClientPlugin._create().AndReturn(
+@@ -109,12 +109,12 @@ class NovaFloatingIPTest(common.HeatTestCase):
+         )
+ 
+         template = template_format.parse(floating_ip_template_with_assoc)
+-        stack = utils.parse_stack(template)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(template)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         floating_ip_assoc = resource_defns['MyFloatingIPAssociation']
+ 
+         return nova_floatingip.NovaFloatingIpAssociation(
+-            'MyFloatingIPAssociation', floating_ip_assoc, stack)
++            'MyFloatingIPAssociation', floating_ip_assoc, self.stack)
+ 
+     def test_floating_ip_create(self):
+         rsrc = self.prepare_floating_ip()
+diff --git a/heat/tests/test_nova_keypair.py b/heat/tests/test_nova_keypair.py
+index e68067c..10e886a 100644
+--- a/heat/tests/test_nova_keypair.py
++++ b/heat/tests/test_nova_keypair.py
+@@ -56,9 +56,9 @@ class NovaKeyPairTest(common.HeatTestCase):
+         return mkey
+ 
+     def _get_test_resource(self, template):
+-        stack = utils.parse_stack(template)
+-        definition = stack.t.resource_definitions(stack)['kp']
+-        kp_res = nova_keypair.KeyPair('kp', definition, stack)
++        self.stack = utils.parse_stack(template)
++        definition = self.stack.t.resource_definitions(self.stack)['kp']
++        kp_res = nova_keypair.KeyPair('kp', definition, self.stack)
+         self.m.StubOutWithMock(nova.NovaClientPlugin, '_create')
+         nova.NovaClientPlugin._create().AndReturn(self.fake_nova)
+         return kp_res
+diff --git a/heat/tests/test_nova_servergroup.py b/heat/tests/test_nova_servergroup.py
+index 45dcd2a..def6833 100644
+--- a/heat/tests/test_nova_servergroup.py
++++ b/heat/tests/test_nova_servergroup.py
+@@ -47,8 +47,8 @@ class NovaServerGroupTest(common.HeatTestCase):
+ 
+     def _init_template(self, sg_template):
+         template = template_format.parse(json.dumps(sg_template))
+-        stack = utils.parse_stack(template)
+-        self.sg = stack['ServerGroup']
++        self.stack = utils.parse_stack(template)
++        self.sg = self.stack['ServerGroup']
+         # create mock clients and objects
+         nova = mock.MagicMock()
+         self.sg.nova = mock.MagicMock(return_value=nova)
+@@ -56,24 +56,24 @@ class NovaServerGroupTest(common.HeatTestCase):
+ 
+     def _create_sg(self, name):
+         if name:
+-                sg = sg_template['resources']['ServerGroup']
+-                sg['properties']['name'] = name
+-                self._init_template(sg_template)
+-                self.sg_mgr.create.return_value = FakeGroup(name)
++            sg = sg_template['resources']['ServerGroup']
++            sg['properties']['name'] = name
++            self._init_template(sg_template)
++            self.sg_mgr.create.return_value = FakeGroup(name)
+         else:
+-                try:
+-                        sg = sg_template['resources']['ServerGroup']
+-                        del sg['properties']['name']
+-                except Exception:
+-                        pass
+-                self._init_template(sg_template)
+-                name = 'test'
+-                n = name
++            try:
++                sg = sg_template['resources']['ServerGroup']
++                del sg['properties']['name']
++            except Exception:
++                pass
++            self._init_template(sg_template)
++            name = 'test'
++            n = name
+ 
+-                def fake_create(name, policies):
+-                        self.assertTrue(len(name) > 1)
+-                        return FakeGroup(n)
+-                self.sg_mgr.create = fake_create
++            def fake_create(name, policies):
++                self.assertTrue(len(name) > 1)
++                return FakeGroup(n)
++            self.sg_mgr.create = fake_create
+         scheduler.TaskRunner(self.sg.create)()
+         self.assertEqual((self.sg.CREATE, self.sg.COMPLETE),
+                          self.sg.state)
+diff --git a/heat/tests/test_os_database.py b/heat/tests/test_os_database.py
+index 31e2df6..53ae26e 100644
+--- a/heat/tests/test_os_database.py
++++ b/heat/tests/test_os_database.py
+@@ -106,15 +106,15 @@ class OSDBInstanceTest(common.HeatTestCase):
+     def _setup_test_clouddbinstance(self, name, t):
+         stack_name = '%s_stack' % name
+         template = parser.Template(t)
+-        stack = parser.Stack(utils.dummy_context(),
+-                             stack_name,
+-                             template,
+-                             stack_id=str(uuid.uuid4()))
++        self.stack = parser.Stack(utils.dummy_context(),
++                                  stack_name,
++                                  template,
++                                  stack_id=str(uuid.uuid4()))
+ 
+         instance = os_database.OSDBInstance(
+             '%s_name' % name,
+-            template.resource_definitions(stack)['MySqlCloudDB'],
+-            stack)
++            template.resource_definitions(self.stack)['MySqlCloudDB'],
++            self.stack)
+         return instance
+ 
+     def _stubout_common_create(self):
+diff --git a/heat/tests/test_properties.py b/heat/tests/test_properties.py
+index 41caa04..9203ae0 100644
+--- a/heat/tests/test_properties.py
++++ b/heat/tests/test_properties.py
+@@ -1110,7 +1110,10 @@ class PropertiesTest(common.HeatTestCase):
+         class rsrc(object):
+             action = INIT = "INIT"
+ 
+-        stack = {'another_res': rsrc()}
++        class DummyStack(dict):
++            pass
++
++        stack = DummyStack(another_res=rsrc())
+ 
+         # define properties with function and constraint
+         props = properties.Properties(
+diff --git a/heat/tests/test_provider_template.py b/heat/tests/test_provider_template.py
+index f6a97c3..255fa61 100644
+--- a/heat/tests/test_provider_template.py
++++ b/heat/tests/test_provider_template.py
+@@ -837,16 +837,16 @@ class TemplateResourceCrudTest(common.HeatTestCase):
+         resource._register_class('DummyResource', DummyResource)
+         env.load({'resource_registry':
+                   {'DummyResource': 'test_resource.template'}})
+-        stack = parser.Stack(self.ctx, 'test_stack',
+-                             parser.Template(empty_template, files=files,
+-                                             env=env),
+-                             stack_id=str(uuid.uuid4()))
++        self.stack = parser.Stack(self.ctx, 'test_stack',
++                                  parser.Template(empty_template, files=files,
++                                                  env=env),
++                                  stack_id=str(uuid.uuid4()))
+ 
+         self.defn = rsrc_defn.ResourceDefinition('test_t_res',
+                                                  "DummyResource",
+                                                  {"Foo": "bar"})
+         self.res = template_resource.TemplateResource('test_t_res',
+-                                                      self.defn, stack)
++                                                      self.defn, self.stack)
+         self.assertIsNone(self.res.validate())
+ 
+     def test_handle_create(self):
+diff --git a/heat/tests/test_restarter.py b/heat/tests/test_restarter.py
+index e9e61a6..cc1a902 100644
+--- a/heat/tests/test_restarter.py
++++ b/heat/tests/test_restarter.py
+@@ -45,10 +45,10 @@ class RestarterTest(common.HeatTestCase):
+ 
+     def create_restarter(self):
+         snippet = template_format.parse(restarter_template)
+-        stack = utils.parse_stack(snippet)
+-        resource_defns = stack.t.resource_definitions(stack)
++        self.stack = utils.parse_stack(snippet)
++        resource_defns = self.stack.t.resource_definitions(self.stack)
+         restarter = ha_restarter.Restarter(
+-            'restarter', resource_defns['restarter'], stack)
++            'restarter', resource_defns['restarter'], self.stack)
+         nova.NovaClientPlugin.get_server = mock.Mock(
+             return_value=mock.MagicMock())
+         restarter.handle_create = mock.Mock(return_value=None)
+diff --git a/heat/tests/test_sahara_cluster.py b/heat/tests/test_sahara_cluster.py
+index 93b8fda..7c9ddf2 100644
+--- a/heat/tests/test_sahara_cluster.py
++++ b/heat/tests/test_sahara_cluster.py
+@@ -73,8 +73,8 @@ class SaharaClusterTest(common.HeatTestCase):
+         self.t = template_format.parse(cluster_stack_template)
+ 
+     def _init_cluster(self, template):
+-        stack = utils.parse_stack(template)
+-        cluster = stack['super-cluster']
++        self.stack = utils.parse_stack(template)
++        cluster = self.stack['super-cluster']
+         return cluster
+ 
+     def _create_cluster(self, template):
+diff --git a/heat/tests/test_sahara_templates.py b/heat/tests/test_sahara_templates.py
+index caef86d..0579493 100644
+--- a/heat/tests/test_sahara_templates.py
++++ b/heat/tests/test_sahara_templates.py
+@@ -89,8 +89,8 @@ class SaharaNodeGroupTemplateTest(common.HeatTestCase):
+         self.t = template_format.parse(node_group_template)
+ 
+     def _init_ngt(self, template):
+-        stack = utils.parse_stack(template)
+-        return stack['node-group']
++        self.stack = utils.parse_stack(template)
++        return self.stack['node-group']
+ 
+     def test_ngt_resource_mapping(self):
+         ngt = self._init_ngt(self.t)
+@@ -209,8 +209,8 @@ class SaharaClusterTemplateTest(common.HeatTestCase):
+         self.t = template_format.parse(cluster_template)
+ 
+     def _init_ct(self, template):
+-        stack = utils.parse_stack(template)
+-        return stack['cluster-template']
++        self.stack = utils.parse_stack(template)
++        return self.stack['cluster-template']
+ 
+     def test_ct_resource_mapping(self):
+         ct = self._init_ct(self.t)
+diff --git a/heat/tests/test_server.py b/heat/tests/test_server.py
+index dc56dc6..7cf5866 100644
+--- a/heat/tests/test_server.py
++++ b/heat/tests/test_server.py
+@@ -127,9 +127,9 @@ class ServersTest(common.HeatTestCase):
+         return (templ, stack)
+ 
+     def _prepare_server_check(self):
+-        templ, stack = self._setup_test_stack('server_check')
++        templ, self.stack = self._setup_test_stack('server_check')
+         server = self.fc.servers.list()[1]
+-        res = stack['WebServer']
++        res = self.stack['WebServer']
+         res.nova = mock.Mock()
+         res.nova().servers.get = mock.Mock(return_value=server)
+         return res
+@@ -183,11 +183,11 @@ class ServersTest(common.HeatTestCase):
+                            server_rebuild=False):
+         stack_name = '%s_s' % name
+         server_name = str(name) if override_name else None
+-        tmpl, stack = self._get_test_template(stack_name, server_name,
+-                                              image_id)
+-        resource_defns = tmpl.resource_definitions(stack)
++        tmpl, self.stack = self._get_test_template(stack_name, server_name,
++                                                   image_id)
++        resource_defns = tmpl.resource_definitions(self.stack)
+         server = servers.Server(str(name), resource_defns['WebServer'],
+-                                stack)
++                                self.stack)
+ 
+         self._mock_get_image_id_success(image_id or 'CentOS 5.2', 1,
+                                         server_rebuild=server_rebuild)
+diff --git a/heat/tests/test_server_tags.py b/heat/tests/test_server_tags.py
+index 02bf8bd..ea93fb1 100644
+--- a/heat/tests/test_server_tags.py
++++ b/heat/tests/test_server_tags.py
+@@ -68,13 +68,13 @@ class ServerTagsTest(common.HeatTestCase):
+         template = parser.Template(t,
+                                    env=environment.Environment(
+                                        {'KeyName': 'test'}))
+-        stack = parser.Stack(utils.dummy_context(), stack_name, template,
+-                             stack_id=str(uuid.uuid4()))
++        self.stack = parser.Stack(utils.dummy_context(), stack_name, template,
++                                  stack_id=str(uuid.uuid4()))
+ 
+         t['Resources']['WebServer']['Properties']['Tags'] = intags
+-        resource_defns = template.resource_definitions(stack)
++        resource_defns = template.resource_definitions(self.stack)
+         instance = instances.Instance(stack_name,
+-                                      resource_defns['WebServer'], stack)
++                                      resource_defns['WebServer'], self.stack)
+ 
+         self.m.StubOutWithMock(nova.NovaClientPlugin, '_create')
+         nova.NovaClientPlugin._create().AndReturn(self.fc)
+diff --git a/heat/tests/test_stack.py b/heat/tests/test_stack.py
+index 94b88bf..66e5fba 100644
+--- a/heat/tests/test_stack.py
++++ b/heat/tests/test_stack.py
+@@ -247,10 +247,12 @@ class StackTest(common.HeatTestCase):
+                {'A': {'Type': 'GenericResourceType'}}}
+         self.stack = stack.Stack(self.ctx, 'test_stack',
+                                  template.Template(tpl),
+-                                 status_reason='blarg')
++                                 status_reason='blarg',
++                                 parent_resource='parent')
+ 
+-        self.stack._parent_resource = mock.Mock()
+-        self.stack._parent_resource.stack = None
++        parent_resource = mock.Mock()
++        parent_resource.stack = None
++        self.stack._parent_stack = dict(parent=parent_resource)
+         self.assertEqual(self.stack, self.stack.root_stack)
+ 
+     def test_root_stack_with_parent(self):
+@@ -258,10 +260,11 @@ class StackTest(common.HeatTestCase):
+                'Resources':
+                {'A': {'Type': 'GenericResourceType'}}}
+         stk = stack.Stack(self.ctx, 'test_stack', template.Template(tpl),
+-                          status_reason='blarg')
++                          status_reason='blarg', parent_resource='parent')
+ 
+-        stk._parent_resource = mock.Mock()
+-        stk._parent_resource.stack.root_stack = 'test value'
++        parent_resource = mock.Mock()
++        parent_resource.stack.root_stack = 'test value'
++        stk._parent_stack = dict(parent=parent_resource)
+         self.assertEqual('test value', stk.root_stack)
+ 
+     def test_load_parent_resource(self):
+diff --git a/heat/tests/test_stack_user.py b/heat/tests/test_stack_user.py
+index 21a794b..ee89dc0 100644
+--- a/heat/tests/test_stack_user.py
++++ b/heat/tests/test_stack_user.py
+@@ -48,8 +48,8 @@ class StackUserTest(common.HeatTestCase):
+                      resource_name='user', create_project=True,
+                      password=None):
+         t = template_format.parse(user_template)
+-        stack = utils.parse_stack(t, stack_name=stack_name)
+-        rsrc = stack[resource_name]
++        self.stack = utils.parse_stack(t, stack_name=stack_name)
++        rsrc = self.stack[resource_name]
+ 
+         self.m.StubOutWithMock(stack_user.StackUser, 'keystone')
+         stack_user.StackUser.keystone().MultipleTimes().AndReturn(self.fc)
+@@ -58,9 +58,9 @@ class StackUserTest(common.HeatTestCase):
+             self.m.StubOutWithMock(fakes.FakeKeystoneClient,
+                                    'create_stack_domain_project')
+             fakes.FakeKeystoneClient.create_stack_domain_project(
+-                stack.id).AndReturn(project_id)
++                self.stack.id).AndReturn(project_id)
+         else:
+-            stack.set_stack_user_project_id(project_id)
++            self.stack.set_stack_user_project_id(project_id)
+ 
+         rsrc._store()
+         self.m.StubOutWithMock(short_id, 'get_id')
+diff --git a/heat/tests/test_swift.py b/heat/tests/test_swift.py
+index 5623a7b..05e4027 100644
+--- a/heat/tests/test_swift.py
++++ b/heat/tests/test_swift.py
+@@ -363,8 +363,8 @@ class swiftTest(common.HeatTestCase):
+ 
+     def _get_check_resource(self):
+         t = template_format.parse(swift_template)
+-        stack = utils.parse_stack(t)
+-        res = self.create_resource(t, stack, 'SwiftContainer')
++        self.stack = utils.parse_stack(t)
++        res = self.create_resource(t, self.stack, 'SwiftContainer')
+         res.swift = mock.Mock()
+         return res
+ 
+diff --git a/heat/tests/test_template.py b/heat/tests/test_template.py
+index ec77f05..0a58341 100644
+--- a/heat/tests/test_template.py
++++ b/heat/tests/test_template.py
+@@ -775,7 +775,7 @@ Mappings:
+         stk = stack.Stack(self.ctx, 'test_stack',
+                           template.Template(empty_template),
+                           parent_resource='parent', owner_id=45)
+-        stk._parent_resource = parent_resource
++        stk._parent_stack = dict(parent=parent_resource)
+         self.assertEqual({"foo": "bar"},
+                          self.resolve(metadata_snippet, stk.t, stk))
+         self.assertEqual('Retain',
+@@ -799,7 +799,7 @@ Mappings:
+         stk = stack.Stack(self.ctx, 'test_stack',
+                           template.Template(empty_template),
+                           parent_resource='parent')
+-        stk._parent_resource = parent_resource
++        stk._parent_stack = dict(parent=parent_resource)
+         self.assertEqual('Retain',
+                          self.resolve(deletion_policy_snippet, stk.t, stk))
+ 
+@@ -823,7 +823,7 @@ Mappings:
+         stk = stack.Stack(self.ctx, 'test_stack',
+                           template.Template(empty_template),
+                           parent_resource='parent', owner_id=78)
+-        stk._parent_resource = parent_resource
++        stk._parent_stack = dict(parent=parent_resource)
+         self.assertEqual('Delete', self.resolve(snippet, stk.t, stk))
+ 
+     def test_prevent_parameters_access(self):

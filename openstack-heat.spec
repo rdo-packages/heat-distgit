@@ -6,7 +6,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2015.1.0
-Release:	1%{?milestone}%{?dist}
+Release:	3%{?milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -15,6 +15,15 @@ Obsoletes:	heat < 7-9
 Provides:	heat
 
 Source0:	http://launchpad.net/%{service}/%{release_name}/%{version}/+download/%{service}-%{upstream_version}.tar.gz
+
+Patch0001: 0001-Update-template-paths-for-environment-mapped-Templat.patch
+Patch0002: 0002-Use-SHA256-instead-of-SHA1-for-resource-signature.patch
+Patch0003: 0003-Generate-stack-events-for-stack-state-transitions.patch
+Patch0004: 0004-Sync-oslo-incubator.patch
+Patch0005: 0005-Get-rid-of-circular-references-in-Resource-and-Funct.patch
+Patch0006: 0006-Find-root-stack-ID-with-database-operations.patch
+Patch0007: 0007-Count-all-nested-stack-resources-with-DB-operations.patch
+Patch0008: 0008-Switch-total_resources-to-use-stack_count_total_reso.patch
 
 Source1:	heat.logrotate
 %if 0%{?rhel} && 0%{?rhel} <= 6
@@ -100,6 +109,15 @@ Requires: %{name}-api-cloudwatch = %{version}-%{release}
 
 %prep
 %setup -q -n heat-%{upstream_version}
+
+%patch0001 -p1
+%patch0002 -p1
+%patch0003 -p1
+%patch0004 -p1
+%patch0005 -p1
+%patch0006 -p1
+%patch0007 -p1
+%patch0008 -p1
 
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
@@ -526,6 +544,29 @@ fi
 
 
 %changelog
+* Tue Jun 02 2015 Mike Burns <mburns@redhat.com> 2015.1.0-3
+- Switch total_resources to use stack_count_total_resources
+- Count all nested stack resources with DB operations
+- Find root stack ID with database operations
+- Get rid of circular references in Resource and Function
+- Sync oslo incubator
+- Generate stack events for stack state transitions
+- Use SHA256 instead of SHA1 for resource signature
+- Update template paths for environment-mapped TemplateResources
+
+* Tue Jun 02 2015 Mike Burns <mburns@redhat.com> 2015.1.0-2
+- Switch total_resources to use stack_count_total_resources
+- Count all nested stack resources with DB operations
+- Find root stack ID with database operations
+- Get rid of circular references in Resource and Function
+- Sync oslo incubator
+- Merge "Generate stack events for stack state transitions" into stable/kilo
+- Merge "Use SHA256 instead of SHA1 for resource signature" into stable/kilo
+- Generate stack events for stack state transitions
+- Update template paths for environment-mapped TemplateResources
+- Bump pre-release to 2015.1.1
+- Use SHA256 instead of SHA1 for resource signature
+
 * Fri Apr 10 2015 Ryan S. Brown <rybrown@redhat.com> 2014.2.3-4
 - Update to upstream 2014.2.3
 

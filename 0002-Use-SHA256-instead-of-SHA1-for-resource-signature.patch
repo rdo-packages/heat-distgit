@@ -1,0 +1,47 @@
+From e205b4b9392c0f3df1c34e2eaa6b5585241f642f Mon Sep 17 00:00:00 2001
+From: Ethan Lynn <xjunlin@cn.ibm.com>
+Date: Thu, 23 Apr 2015 13:44:03 +0800
+Subject: [PATCH] Use SHA256 instead of SHA1 for resource signature
+
+SHA1 is not safe for signature, use sha256 instead.
+
+Closes-Bug: #1447904
+Change-Id: I093464d9c1e30d317de75a4ac3d1d51f1c110114
+(cherry picked from commit dc9c3945feb6487f80bb42aa00b742e042da9b13)
+---
+ heat/engine/resources/stack_resource.py | 4 ++--
+ heat/tests/test_stack_resource.py       | 6 ++++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/heat/engine/resources/stack_resource.py b/heat/engine/resources/stack_resource.py
+index 964fce7..8af498c 100644
+--- a/heat/engine/resources/stack_resource.py
++++ b/heat/engine/resources/stack_resource.py
+@@ -484,8 +484,8 @@ class StackResource(resource.Resource):
+     def implementation_signature(self):
+         schema_names = ([prop for prop in self.properties_schema] +
+                         [at for at in self.attributes_schema])
+-        schema_hash = hashlib.sha1(';'.join(schema_names))
++        schema_hash = hashlib.sha256(';'.join(schema_names))
+         definition = {'template': self.child_template(),
+                       'files': self.stack.t.files}
+-        definition_hash = hashlib.sha1(jsonutils.dumps(definition))
++        definition_hash = hashlib.sha256(jsonutils.dumps(definition))
+         return (schema_hash.hexdigest(), definition_hash.hexdigest())
+diff --git a/heat/tests/test_stack_resource.py b/heat/tests/test_stack_resource.py
+index f408db7..dcafbde 100644
+--- a/heat/tests/test_stack_resource.py
++++ b/heat/tests/test_stack_resource.py
+@@ -201,8 +201,10 @@ class StackResourceTest(common.HeatTestCase):
+         self.parent_resource.child_template = mock.Mock(
+             return_value=self.simple_template)
+         sig1, sig2 = self.parent_resource.implementation_signature()
+-        self.assertEqual('3700dc2ae6ff4f0a236e7477ad6b8d51157f2153', sig1)
+-        self.assertEqual('70e69545e0c47123159974c9166741085eb46dba', sig2)
++        self.assertEqual('3ce48c5d860e8e76087897376bc686d23591d4a00'
++                         'e8df8ec25e84e6bd83e70a6', sig1)
++        self.assertEqual('5a58b34cc3dd7f4e11fa35b63daad7b6b3aaa1744'
++                         '19eb1c42b75d102bdda5fc9', sig2)
+         self.parent_stack.t.files["foo"] = "bar"
+         sig1a, sig2a = self.parent_resource.implementation_signature()
+         self.assertEqual(sig1, sig1a)

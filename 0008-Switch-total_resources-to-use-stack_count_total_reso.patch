@@ -1,0 +1,356 @@
+From 67f65ada9035f6b8a4adba570733f7124adcf385 Mon Sep 17 00:00:00 2001
+From: Steve Baker <sbaker@redhat.com>
+Date: Fri, 22 May 2015 14:39:54 -0700
+Subject: [PATCH] Switch total_resources to use stack_count_total_resources
+
+This change uses database queries to count the total number of
+resources in a nested stack tree instead of loading every stack
+and every resource in that stack.
+
+This should result in a significant improvement in memory use
+for stacks with many nested stacks and resources.
+
+Closes-Bug: #1455589
+Change-Id: I8c2f1fa9114dbf68ad4a5f99dd3929b6958b5d7a
+---
+ heat/engine/resources/stack_resource.py |  3 +-
+ heat/engine/stack.py                    | 30 +++------------
+ heat/tests/test_engine_service.py       | 14 +++++--
+ heat/tests/test_nested_stack.py         | 21 +++++++++--
+ heat/tests/test_stack.py                | 67 +++------------------------------
+ heat/tests/test_stack_resource.py       | 21 +++++------
+ 6 files changed, 50 insertions(+), 106 deletions(-)
+
+diff --git a/heat/engine/resources/stack_resource.py b/heat/engine/resources/stack_resource.py
+index 8af498c..9415dfc 100644
+--- a/heat/engine/resources/stack_resource.py
++++ b/heat/engine/resources/stack_resource.py
+@@ -205,8 +205,9 @@ class StackResource(resource.Resource):
+         return parsed_template
+ 
+     def _validate_nested_resources(self, templ):
++        root_stack_id = self.stack.root_stack_id()
+         total_resources = (len(templ[templ.RESOURCES]) +
+-                           self.stack.root_stack.total_resources())
++                           self.stack.total_resources(root_stack_id))
+ 
+         if self.nested():
+             # It's an update and these resources will be deleted
+diff --git a/heat/engine/stack.py b/heat/engine/stack.py
+index 8d3da3a..050874f 100755
+--- a/heat/engine/stack.py
++++ b/heat/engine/stack.py
+@@ -246,16 +246,7 @@ class Stack(collections.Mapping):
+     def root_stack_id(self):
+         if not self.owner_id:
+             return self.id
+-        return stack_object.Stack.get_root_id(self.context, self.id)
+-
+-    @property
+-    def root_stack(self):
+-        '''
+-        Return the root stack if this is nested (otherwise return self).
+-        '''
+-        if (self.parent_resource and self.parent_resource.stack):
+-            return self.parent_resource.stack.root_stack
+-        return self
++        return stack_object.Stack.get_root_id(self.context, self.owner_id)
+ 
+     def object_path_in_stack(self):
+         '''
+@@ -283,25 +274,14 @@ class Stack(collections.Mapping):
+         return [(stckres.name if stckres else None,
+                  stck.name if stck else None) for stckres, stck in opis]
+ 
+-    def total_resources(self):
++    def total_resources(self, stack_id=None):
+         '''
+         Return the total number of resources in a stack, including nested
+         stacks below.
+         '''
+-        def total_nested(res):
+-            get_nested = getattr(res, 'nested', None)
+-            if callable(get_nested):
+-                try:
+-                    nested_stack = get_nested()
+-                except exception.NotFound:
+-                    # when an delete is underway, a nested stack can
+-                    # disapear at any moment.
+-                    return 0
+-                if nested_stack is not None:
+-                    return nested_stack.total_resources()
+-            return 0
+-
+-        return len(self) + sum(total_nested(res) for res in self.itervalues())
++        if not stack_id:
++            stack_id = self.id
++        return stack_object.Stack.count_total_resources(self.context, stack_id)
+ 
+     def _set_param_stackid(self):
+         '''
+diff --git a/heat/tests/test_engine_service.py b/heat/tests/test_engine_service.py
+index 4e6ff7c..bb34507 100644
+--- a/heat/tests/test_engine_service.py
++++ b/heat/tests/test_engine_service.py
+@@ -732,7 +732,8 @@ class StackServiceCreateUpdateDeleteTest(common.HeatTestCase):
+             'Missing required credential: X-Auth-User',
+             six.text_type(ex.exc_info[1]))
+ 
+-    def test_stack_create_total_resources_equals_max(self):
++    @mock.patch.object(stack_object.Stack, 'count_total_resources')
++    def test_stack_create_total_resources_equals_max(self, ctr):
+         stack_name = 'service_create_stack_total_resources_equals_max'
+         params = {}
+         res._register_class('GenericResourceType',
+@@ -745,6 +746,7 @@ class StackServiceCreateUpdateDeleteTest(common.HeatTestCase):
+ 
+         template = templatem.Template(tpl)
+         stack = parser.Stack(self.ctx, stack_name, template)
++        ctr.return_value = 3
+ 
+         self.m.StubOutWithMock(templatem, 'Template')
+         self.m.StubOutWithMock(environment, 'Environment')
+@@ -770,7 +772,8 @@ class StackServiceCreateUpdateDeleteTest(common.HeatTestCase):
+                                        None, {})
+         self.m.VerifyAll()
+         self.assertEqual(stack.identifier(), result)
+-        self.assertEqual(3, stack.total_resources())
++        root_stack_id = stack.root_stack_id()
++        self.assertEqual(3, stack.total_resources(root_stack_id))
+         self.man.thread_group_mgr.groups[stack.id].wait()
+         stack.delete()
+ 
+@@ -1204,7 +1207,8 @@ class StackServiceCreateUpdateDeleteTest(common.HeatTestCase):
+                       "('UPDATE', 'COMPLETE')",
+                       six.text_type(ex.exc_info[1]))
+ 
+-    def test_stack_update_equals(self):
++    @mock.patch.object(stack_object.Stack, 'count_total_resources')
++    def test_stack_update_equals(self, ctr):
+         stack_name = 'test_stack_update_equals_resource_limit'
+         params = {}
+         res._register_class('GenericResourceType',
+@@ -1221,6 +1225,7 @@ class StackServiceCreateUpdateDeleteTest(common.HeatTestCase):
+         sid = old_stack.store()
+         old_stack.set_stack_user_project_id('1234')
+         s = stack_object.Stack.get_by_id(self.ctx, sid)
++        ctr.return_value = 3
+ 
+         stack = parser.Stack(self.ctx, stack_name, template)
+ 
+@@ -1255,7 +1260,8 @@ class StackServiceCreateUpdateDeleteTest(common.HeatTestCase):
+         self.assertEqual(old_stack.identifier(), result)
+         self.assertIsInstance(result, dict)
+         self.assertTrue(result['stack_id'])
+-        self.assertEqual(3, old_stack.root_stack.total_resources())
++        root_stack_id = old_stack.root_stack_id()
++        self.assertEqual(3, old_stack.total_resources(root_stack_id))
+         self.m.VerifyAll()
+ 
+     def test_stack_update_stack_id_equal(self):
+diff --git a/heat/tests/test_nested_stack.py b/heat/tests/test_nested_stack.py
+index f8bf463..8287ea5 100644
+--- a/heat/tests/test_nested_stack.py
++++ b/heat/tests/test_nested_stack.py
+@@ -83,7 +83,9 @@ Outputs:
+         stack.store()
+         return stack
+ 
+-    def test_nested_stack_three_deep(self):
++    @mock.patch.object(parser.Stack, 'root_stack_id')
++    @mock.patch.object(parser.Stack, 'total_resources')
++    def test_nested_stack_three_deep(self, tr, rsi):
+         root_template = '''
+ HeatTemplateFormatVersion: 2012-12-12
+ Resources:
+@@ -115,13 +117,19 @@ Resources:
+             depth2_template,
+             self.nested_template]
+ 
++        rsi.return_value = '1234'
++        tr.return_value = 2
++
+         self.validate_stack(root_template)
+         calls = [mock.call('https://server.test/depth1.template'),
+                  mock.call('https://server.test/depth2.template'),
+                  mock.call('https://server.test/depth3.template')]
+         urlfetch.get.assert_has_calls(calls)
++        tr.assert_called_with('1234')
+ 
+-    def test_nested_stack_six_deep(self):
++    @mock.patch.object(parser.Stack, 'root_stack_id')
++    @mock.patch.object(parser.Stack, 'total_resources')
++    def test_nested_stack_six_deep(self, tr, rsi):
+         template = '''
+ HeatTemplateFormatVersion: 2012-12-12
+ Resources:
+@@ -149,6 +157,9 @@ Resources:
+             depth5_template,
+             self.nested_template]
+ 
++        rsi.return_value = '1234'
++        tr.return_value = 5
++
+         t = template_format.parse(root_template)
+         stack = self.parse_stack(t)
+         res = self.assertRaises(exception.StackValidationFailed,
+@@ -201,7 +212,9 @@ Resources:
+                  mock.call('https://server.test/depth4.template')]
+         urlfetch.get.assert_has_calls(calls, any_order=True)
+ 
+-    def test_nested_stack_infinite_recursion(self):
++    @mock.patch.object(parser.Stack, 'root_stack_id')
++    @mock.patch.object(parser.Stack, 'total_resources')
++    def test_nested_stack_infinite_recursion(self, tr, rsi):
+         template = '''
+ HeatTemplateFormatVersion: 2012-12-12
+ Resources:
+@@ -213,6 +226,8 @@ Resources:
+         urlfetch.get.return_value = template
+         t = template_format.parse(template)
+         stack = self.parse_stack(t)
++        rsi.return_value = '1234'
++        tr.return_value = 2
+         res = self.assertRaises(exception.StackValidationFailed,
+                                 stack.validate)
+         self.assertIn('Recursion depth exceeds', six.text_type(res))
+diff --git a/heat/tests/test_stack.py b/heat/tests/test_stack.py
+index 66e5fba..58568fa 100644
+--- a/heat/tests/test_stack.py
++++ b/heat/tests/test_stack.py
+@@ -170,39 +170,20 @@ class StackTest(common.HeatTestCase):
+     def test_total_resources_empty(self):
+         self.stack = stack.Stack(self.ctx, 'test_stack', self.tmpl,
+                                  status_reason='flimflam')
+-        self.assertEqual(0, self.stack.total_resources())
+ 
+-    def test_total_resources_generic(self):
+-        tpl = {'HeatTemplateFormatVersion': '2012-12-12',
+-               'Resources':
+-               {'A': {'Type': 'GenericResourceType'}}}
+-        self.stack = stack.Stack(self.ctx, 'test_stack',
+-                                 template.Template(tpl),
+-                                 status_reason='blarg')
+-        self.assertEqual(1, self.stack.total_resources())
++        self.assertEqual(0, self.stack.total_resources('1234'))
+ 
+-    def test_total_resources_nested_ok(self):
++    @mock.patch.object(stack.Stack, 'total_resources')
++    def test_total_resources_generic(self, ctr):
+         tpl = {'HeatTemplateFormatVersion': '2012-12-12',
+                'Resources':
+                {'A': {'Type': 'GenericResourceType'}}}
+         self.stack = stack.Stack(self.ctx, 'test_stack',
+                                  template.Template(tpl),
+                                  status_reason='blarg')
+-
+-        self.stack['A'].nested = mock.Mock()
+-        self.stack['A'].nested.return_value.total_resources.return_value = 3
+-        self.assertEqual(4, self.stack.total_resources())
+-
+-    def test_total_resources_nested_not_found(self):
+-        tpl = {'HeatTemplateFormatVersion': '2012-12-12',
+-               'Resources':
+-               {'A': {'Type': 'GenericResourceType'}}}
+-        self.stack = stack.Stack(self.ctx, 'test_stack',
+-                                 template.Template(tpl),
+-                                 status_reason='blarg')
+-
+-        self.stack['A'].nested = mock.Mock(
+-            side_effect=exception.NotFound('gone'))
++        self.stack.id = '1234'
++        ctr.return_value = 1
++        self.assertEqual(1, self.stack.total_resources(self.stack.id))
+         self.assertEqual(1, self.stack.total_resources())
+ 
+     def test_iter_resources(self):
+@@ -231,42 +212,6 @@ class StackTest(common.HeatTestCase):
+         all_resources = list(self.stack.iter_resources(1))
+         self.assertEqual(5, len(all_resources))
+ 
+-    def test_root_stack_no_parent(self):
+-        tpl = {'HeatTemplateFormatVersion': '2012-12-12',
+-               'Resources':
+-               {'A': {'Type': 'GenericResourceType'}}}
+-        self.stack = stack.Stack(self.ctx, 'test_stack',
+-                                 template.Template(tpl),
+-                                 status_reason='blarg')
+-
+-        self.assertEqual(self.stack, self.stack.root_stack)
+-
+-    def test_root_stack_parent_no_stack(self):
+-        tpl = {'HeatTemplateFormatVersion': '2012-12-12',
+-               'Resources':
+-               {'A': {'Type': 'GenericResourceType'}}}
+-        self.stack = stack.Stack(self.ctx, 'test_stack',
+-                                 template.Template(tpl),
+-                                 status_reason='blarg',
+-                                 parent_resource='parent')
+-
+-        parent_resource = mock.Mock()
+-        parent_resource.stack = None
+-        self.stack._parent_stack = dict(parent=parent_resource)
+-        self.assertEqual(self.stack, self.stack.root_stack)
+-
+-    def test_root_stack_with_parent(self):
+-        tpl = {'HeatTemplateFormatVersion': '2012-12-12',
+-               'Resources':
+-               {'A': {'Type': 'GenericResourceType'}}}
+-        stk = stack.Stack(self.ctx, 'test_stack', template.Template(tpl),
+-                          status_reason='blarg', parent_resource='parent')
+-
+-        parent_resource = mock.Mock()
+-        parent_resource.stack.root_stack = 'test value'
+-        stk._parent_stack = dict(parent=parent_resource)
+-        self.assertEqual('test value', stk.root_stack)
+-
+     def test_load_parent_resource(self):
+         self.stack = stack.Stack(self.ctx, 'load_parent_resource', self.tmpl,
+                                  parent_resource='parent')
+diff --git a/heat/tests/test_stack_resource.py b/heat/tests/test_stack_resource.py
+index dcafbde..0be66a0 100644
+--- a/heat/tests/test_stack_resource.py
++++ b/heat/tests/test_stack_resource.py
+@@ -420,7 +420,7 @@ class StackResourceTest(common.HeatTestCase):
+                 'Resources': [1]}
+         template = stack_resource.template.Template(tmpl)
+         root_resources = mock.Mock(return_value=2)
+-        self.parent_resource.stack.root_stack.total_resources = root_resources
++        self.parent_resource.stack.total_resources = root_resources
+ 
+         self.assertRaises(exception.RequestLimitExceeded,
+                           self.parent_resource._validate_nested_resources,
+@@ -520,10 +520,12 @@ class StackResourceTest(common.HeatTestCase):
+ 
+ class StackResourceLimitTest(common.HeatTestCase):
+     scenarios = [
+-        ('1', dict(root=3, templ=4, nested=0, max=10, error=False)),
+-        ('2', dict(root=3, templ=8, nested=0, max=10, error=True)),
+-        ('3', dict(root=3, templ=8, nested=2, max=10, error=False)),
+-        ('4', dict(root=3, templ=12, nested=2, max=10, error=True))]
++        ('3_4_0', dict(root=3, templ=4, nested=0, max=10, error=False)),
++        ('3_8_0', dict(root=3, templ=8, nested=0, max=10, error=True)),
++        ('3_8_2', dict(root=3, templ=8, nested=2, max=10, error=True)),
++        ('3_5_2', dict(root=3, templ=5, nested=2, max=10, error=False)),
++        ('3_6_2', dict(root=3, templ=6, nested=2, max=10, error=True)),
++        ('3_12_2', dict(root=3, templ=12, nested=2, max=10, error=True))]
+ 
+     def setUp(self):
+         super(StackResourceLimitTest, self).setUp()
+@@ -544,14 +546,9 @@ class StackResourceLimitTest(common.HeatTestCase):
+                                    self.parent_stack)
+ 
+     def test_resource_limit(self):
+-        # mock nested resources
+-        nested = mock.MagicMock()
+-        nested.resources = range(self.nested)
+-        self.res.nested = mock.MagicMock(return_value=nested)
+-
+         # mock root total_resources
+-        self.res.stack.root_stack.total_resources = mock.Mock(
+-            return_value=self.root)
++        total_resources = self.root + self.nested
++        parser.Stack.total_resources = mock.Mock(return_value=total_resources)
+ 
+         # setup the config max
+         cfg.CONF.set_default('max_resources_per_stack', self.max)

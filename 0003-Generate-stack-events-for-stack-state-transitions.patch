@@ -1,0 +1,306 @@
+From 0c93b45ee0124e1ae510d608ee3eded0de435674 Mon Sep 17 00:00:00 2001
+From: Steven Hardy <shardy@redhat.com>
+Date: Fri, 1 May 2015 16:40:03 +0100
+Subject: [PATCH] Generate stack events for stack state transitions
+
+Currently, the event-list output is very resource-centric, despite
+being scoped to the stack from an API path perspective.
+
+This, combined with the fact that the stack updated_at timestamp
+is only updated after a succesful update (ref bug #1193269) makes
+it impossible to derive the time when an update started via any API.
+
+This is a problem when trying to use the new hook/breakpoint API,
+because it's necessary to poll for all events since the most recent
+update started, disregarding any stale hook events from previous
+updates (which may have failed or timed out without the hooks getting
+cleared).
+
+To work around this, add an event for each stack state transition,
+such that you can detect the transition to UPDATE_IN_PROGRESS,
+then use that event as a marker to get post-update-started events.
+
+Without this (or some other way to determine when the stack update
+started), the hooks pre-update functionality landed for kilo is
+not really usable (particularly mechanically via scripts).
+
+Change-Id: Idff342b3aecc2d145dfbc7c0f610ad0ca8e52c8b
+Partial-Bug: #1448155
+---
+ heat/engine/stack.py                 | 10 ++++++
+ heat/tests/db/test_sqlalchemy_api.py | 29 ++++++++++-------
+ heat/tests/test_engine_service.py    | 60 ++++++++++++++++++++++--------------
+ 3 files changed, 65 insertions(+), 34 deletions(-)
+
+diff --git a/heat/engine/stack.py b/heat/engine/stack.py
+index a589110..5c757fa 100755
+--- a/heat/engine/stack.py
++++ b/heat/engine/stack.py
+@@ -33,6 +33,7 @@ from heat.common.i18n import _LW
+ from heat.common import identifier
+ from heat.common import lifecycle_plugin_utils
+ from heat.engine import dependencies
++from heat.engine import event
+ from heat.engine import function
+ from heat.engine.notification import stack as notification
+ from heat.engine import parameter_groups as param_groups
+@@ -643,6 +644,14 @@ class Stack(collections.Mapping):
+         '''
+         return any(res.requires_deferred_auth for res in self.values())
+ 
++    def _add_event(self, action, status, reason):
++        '''Add a state change event to the database.'''
++        ev = event.Event(self.context, self, action, status, reason,
++                         self.id, {},
++                         self.name, 'OS::Heat::Stack')
++
++        ev.store()
++
+     @profiler.trace('Stack.state_set', hide_args=False)
+     def state_set(self, action, status, reason):
+         '''Update the stack state in the database.'''
+@@ -671,6 +680,7 @@ class Stack(collections.Mapping):
+                       'name': self.name,
+                       'reason': reason})
+             notification.send(self)
++            self._add_event(action, status, reason)
+ 
+     @property
+     def state(self):
+diff --git a/heat/tests/db/test_sqlalchemy_api.py b/heat/tests/db/test_sqlalchemy_api.py
+index 6467f77..2d511ac 100644
+--- a/heat/tests/db/test_sqlalchemy_api.py
++++ b/heat/tests/db/test_sqlalchemy_api.py
+@@ -605,21 +605,24 @@ class SqlAlchemyTest(common.HeatTestCase):
+         self.m.UnsetStubs()
+ 
+         events = db_api.event_get_all_by_stack(self.ctx, UUID1)
+-        self.assertEqual(2, len(events))
++        self.assertEqual(4, len(events))
+ 
+         # test filter by resource_status
+         filters = {'resource_status': 'COMPLETE'}
+         events = db_api.event_get_all_by_stack(self.ctx, UUID1,
+                                                filters=filters)
+-        self.assertEqual(1, len(events))
++        self.assertEqual(2, len(events))
+         self.assertEqual('COMPLETE', events[0].resource_status)
++        self.assertEqual('COMPLETE', events[1].resource_status)
+         # test filter by resource_action
+         filters = {'resource_action': 'CREATE'}
+         events = db_api.event_get_all_by_stack(self.ctx, UUID1,
+                                                filters=filters)
+-        self.assertEqual(2, len(events))
++        self.assertEqual(4, len(events))
+         self.assertEqual('CREATE', events[0].resource_action)
+         self.assertEqual('CREATE', events[1].resource_action)
++        self.assertEqual('CREATE', events[2].resource_action)
++        self.assertEqual('CREATE', events[3].resource_action)
+         # test filter by resource_type
+         filters = {'resource_type': 'AWS::EC2::Instance'}
+         events = db_api.event_get_all_by_stack(self.ctx, UUID1,
+@@ -649,20 +652,24 @@ class SqlAlchemyTest(common.HeatTestCase):
+         filters = {'resource_status': 'COMPLETE'}
+         events = db_api.event_get_all_by_stack(self.ctx, UUID1,
+                                                filters=filters)
+-        self.assertEqual(2, len(events))
++        self.assertEqual(4, len(events))
+         self.assertEqual('COMPLETE', events[0].resource_status)
+         self.assertEqual('COMPLETE', events[1].resource_status)
++        self.assertEqual('COMPLETE', events[2].resource_status)
++        self.assertEqual('COMPLETE', events[3].resource_status)
+         # test filter by resource_action
+         filters = {'resource_action': 'DELETE',
+                    'resource_status': 'COMPLETE'}
+         events = db_api.event_get_all_by_stack(self.ctx, UUID1,
+                                                filters=filters)
+-        self.assertEqual(1, len(events))
++        self.assertEqual(2, len(events))
+         self.assertEqual('DELETE', events[0].resource_action)
+         self.assertEqual('COMPLETE', events[0].resource_status)
++        self.assertEqual('DELETE', events[1].resource_action)
++        self.assertEqual('COMPLETE', events[1].resource_status)
+         # test limit and marker
+         events_all = db_api.event_get_all_by_stack(self.ctx, UUID1)
+-        self.assertEqual(4, len(events_all))
++        self.assertEqual(8, len(events_all))
+ 
+         marker = events_all[1].uuid
+         events2_uuid = events_all[2].uuid
+@@ -689,14 +696,14 @@ class SqlAlchemyTest(common.HeatTestCase):
+         self.m.UnsetStubs()
+ 
+         num_events = db_api.event_count_all_by_stack(self.ctx, UUID1)
+-        self.assertEqual(2, num_events)
++        self.assertEqual(4, num_events)
+ 
+         self._mock_delete(self.m)
+         self.m.ReplayAll()
+         stack.delete()
+ 
+         num_events = db_api.event_count_all_by_stack(self.ctx, UUID1)
+-        self.assertEqual(4, num_events)
++        self.assertEqual(8, num_events)
+ 
+         self.m.VerifyAll()
+ 
+@@ -709,7 +716,7 @@ class SqlAlchemyTest(common.HeatTestCase):
+         self.m.UnsetStubs()
+ 
+         events = db_api.event_get_all_by_tenant(self.ctx)
+-        self.assertEqual(6, len(events))
++        self.assertEqual(12, len(events))
+ 
+         self._mock_delete(self.m)
+         self.m.ReplayAll()
+@@ -729,14 +736,14 @@ class SqlAlchemyTest(common.HeatTestCase):
+         self.m.UnsetStubs()
+ 
+         events = db_api.event_get_all(self.ctx)
+-        self.assertEqual(6, len(events))
++        self.assertEqual(12, len(events))
+ 
+         self._mock_delete(self.m)
+         self.m.ReplayAll()
+         stacks[0].delete()
+ 
+         events = db_api.event_get_all(self.ctx)
+-        self.assertEqual(4, len(events))
++        self.assertEqual(8, len(events))
+ 
+         self.m.VerifyAll()
+ 
+diff --git a/heat/tests/test_engine_service.py b/heat/tests/test_engine_service.py
+index 578f4e1..d87b5fa 100644
+--- a/heat/tests/test_engine_service.py
++++ b/heat/tests/test_engine_service.py
+@@ -1830,35 +1830,41 @@ class StackServiceTest(common.HeatTestCase):
+ 
+         events = self.eng.list_events(self.ctx, self.stack.identifier())
+ 
+-        self.assertEqual(2, len(events))
++        self.assertEqual(4, len(events))
+         for ev in events:
+             self.assertIn('event_identity', ev)
+             self.assertIsInstance(ev['event_identity'], dict)
+             self.assertTrue(ev['event_identity']['path'].rsplit('/', 1)[1])
+ 
+             self.assertIn('resource_name', ev)
+-            self.assertEqual('WebServer', ev['resource_name'])
++            self.assertIn(ev['resource_name'],
++                          ('service_event_list_test_stack', 'WebServer'))
+ 
+             self.assertIn('physical_resource_id', ev)
+ 
+             self.assertIn('resource_properties', ev)
+             # Big long user data field.. it mentions 'wordpress'
+             # a few times so this should work.
+-            user_data = ev['resource_properties']['UserData']
+-            self.assertIn('wordpress', user_data)
+-            self.assertEqual('F17-x86_64-gold',
+-                             ev['resource_properties']['ImageId'])
+-            self.assertEqual('m1.large',
+-                             ev['resource_properties']['InstanceType'])
++            if ev.get('resource_properties'):
++                user_data = ev['resource_properties']['UserData']
++                self.assertIn('wordpress', user_data)
++                self.assertEqual('F17-x86_64-gold',
++                                 ev['resource_properties']['ImageId'])
++                self.assertEqual('m1.large',
++                                 ev['resource_properties']['InstanceType'])
+ 
+             self.assertEqual('CREATE', ev['resource_action'])
+             self.assertIn(ev['resource_status'], ('IN_PROGRESS', 'COMPLETE'))
+ 
+             self.assertIn('resource_status_reason', ev)
+-            self.assertEqual('state changed', ev['resource_status_reason'])
++            self.assertIn(ev['resource_status_reason'],
++                          ('state changed',
++                           'Stack CREATE started',
++                           'Stack CREATE completed successfully'))
+ 
+             self.assertIn('resource_type', ev)
+-            self.assertEqual('AWS::EC2::Instance', ev['resource_type'])
++            self.assertIn(ev['resource_type'],
++                          ('AWS::EC2::Instance', 'OS::Heat::Stack'))
+ 
+             self.assertIn('stack_identity', ev)
+ 
+@@ -1906,7 +1912,7 @@ class StackServiceTest(common.HeatTestCase):
+         self.assertTrue(result['stack_id'])
+         events = self.eng.list_events(self.ctx, self.stack.identifier())
+ 
+-        self.assertEqual(6, len(events))
++        self.assertEqual(9, len(events))
+ 
+         for ev in events:
+             self.assertIn('event_identity', ev)
+@@ -1918,12 +1924,14 @@ class StackServiceTest(common.HeatTestCase):
+             self.assertIn('resource_properties', ev)
+             self.assertIn('resource_status_reason', ev)
+ 
+-            self.assertIn(ev['resource_action'], ('CREATE', 'DELETE'))
++            self.assertIn(ev['resource_action'],
++                          ('CREATE', 'UPDATE', 'DELETE'))
+             self.assertIn(ev['resource_status'], ('IN_PROGRESS', 'COMPLETE'))
+ 
+             self.assertIn('resource_type', ev)
+             self.assertIn(ev['resource_type'], ('AWS::EC2::Instance',
+-                                                'GenericResourceType'))
++                                                'GenericResourceType',
++                                                'OS::Heat::Stack'))
+ 
+             self.assertIn('stack_identity', ev)
+ 
+@@ -1938,35 +1946,41 @@ class StackServiceTest(common.HeatTestCase):
+     def test_stack_event_list_by_tenant(self):
+         events = self.eng.list_events(self.ctx, None)
+ 
+-        self.assertEqual(2, len(events))
++        self.assertEqual(4, len(events))
+         for ev in events:
+             self.assertIn('event_identity', ev)
+             self.assertIsInstance(ev['event_identity'], dict)
+             self.assertTrue(ev['event_identity']['path'].rsplit('/', 1)[1])
+ 
+             self.assertIn('resource_name', ev)
+-            self.assertEqual('WebServer', ev['resource_name'])
++            self.assertIn(ev['resource_name'],
++                          ('WebServer', 'service_event_list_test_stack'))
+ 
+             self.assertIn('physical_resource_id', ev)
+ 
+             self.assertIn('resource_properties', ev)
+             # Big long user data field.. it mentions 'wordpress'
+             # a few times so this should work.
+-            user_data = ev['resource_properties']['UserData']
+-            self.assertIn('wordpress', user_data)
+-            self.assertEqual('F17-x86_64-gold',
+-                             ev['resource_properties']['ImageId'])
+-            self.assertEqual('m1.large',
+-                             ev['resource_properties']['InstanceType'])
++            if ev.get('resource_properties'):
++                user_data = ev['resource_properties']['UserData']
++                self.assertIn('wordpress', user_data)
++                self.assertEqual('F17-x86_64-gold',
++                                 ev['resource_properties']['ImageId'])
++                self.assertEqual('m1.large',
++                                 ev['resource_properties']['InstanceType'])
+ 
+             self.assertEqual('CREATE', ev['resource_action'])
+             self.assertIn(ev['resource_status'], ('IN_PROGRESS', 'COMPLETE'))
+ 
+             self.assertIn('resource_status_reason', ev)
+-            self.assertEqual('state changed', ev['resource_status_reason'])
++            self.assertIn(ev['resource_status_reason'],
++                          ('state changed',
++                           'Stack CREATE started',
++                           'Stack CREATE completed successfully'))
+ 
+             self.assertIn('resource_type', ev)
+-            self.assertEqual('AWS::EC2::Instance', ev['resource_type'])
++            self.assertIn(ev['resource_type'],
++                          ('AWS::EC2::Instance', 'OS::Heat::Stack'))
+ 
+             self.assertIn('stack_identity', ev)
+ 

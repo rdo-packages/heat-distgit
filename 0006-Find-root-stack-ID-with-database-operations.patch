@@ -1,0 +1,172 @@
+From c4aff8958d6a49970096dc91f60cfa3cfe8a21be Mon Sep 17 00:00:00 2001
+From: Steve Baker <sbaker@redhat.com>
+Date: Tue, 19 May 2015 10:11:25 -0700
+Subject: [PATCH] Find root stack ID with database operations
+
+This change adds a (currently unused) database function
+stack_get_root_id to find the root stack ID for any stack.
+
+Scheduler hints are moved to using Stack.root_stack_id() in this change.
+Remaining uses of Stack.root_stack() will switch to using
+Stack.root_stack_id() later in the series.
+
+Change-Id: I9914b0df5af119edea6346db0d7c62124fbb1313
+Partial-Bug: #1455589
+---
+ heat/db/api.py                                 |  4 ++++
+ heat/db/sqlalchemy/api.py                      |  7 +++++++
+ heat/engine/resources/aws/ec2/instance.py      |  2 +-
+ heat/engine/resources/openstack/nova/server.py |  2 +-
+ heat/engine/stack.py                           |  5 +++++
+ heat/objects/stack.py                          |  4 ++++
+ heat/tests/db/test_sqlalchemy_api.py           | 19 +++++++++++++++++++
+ heat/tests/test_instance.py                    |  2 +-
+ heat/tests/test_server.py                      |  2 +-
+ 9 files changed, 43 insertions(+), 4 deletions(-)
+
+diff --git a/heat/db/api.py b/heat/db/api.py
+index 8744041..7c4f050 100644
+--- a/heat/db/api.py
++++ b/heat/db/api.py
+@@ -176,6 +176,10 @@ def stack_lock_release(stack_id, engine_id):
+     return IMPL.stack_lock_release(stack_id, engine_id)
+ 
+ 
++def stack_get_root_id(context, stack_id):
++    return IMPL.stack_get_root_id(context, stack_id)
++
++
+ def user_creds_create(context):
+     return IMPL.user_creds_create(context)
+ 
+diff --git a/heat/db/sqlalchemy/api.py b/heat/db/sqlalchemy/api.py
+index 5291583..7bc283d 100644
+--- a/heat/db/sqlalchemy/api.py
++++ b/heat/db/sqlalchemy/api.py
+@@ -500,6 +500,13 @@ def stack_lock_release(stack_id, engine_id):
+         return True
+ 
+ 
++def stack_get_root_id(context, stack_id):
++    s = stack_get(context, stack_id)
++    while s.owner_id:
++        s = stack_get(context, s.owner_id)
++    return s.id
++
++
+ def user_creds_create(context):
+     values = context.to_dict()
+     user_creds_ref = models.UserCreds()
+diff --git a/heat/engine/resources/aws/ec2/instance.py b/heat/engine/resources/aws/ec2/instance.py
+index c814933..e9cd62f 100644
+--- a/heat/engine/resources/aws/ec2/instance.py
++++ b/heat/engine/resources/aws/ec2/instance.py
+@@ -528,7 +528,7 @@ class Instance(resource.Resource):
+         if cfg.CONF.stack_scheduler_hints:
+             if scheduler_hints is None:
+                 scheduler_hints = {}
+-            scheduler_hints['heat_root_stack_id'] = self.stack.root_stack.id
++            scheduler_hints['heat_root_stack_id'] = self.stack.root_stack_id()
+             scheduler_hints['heat_stack_id'] = self.stack.id
+             scheduler_hints['heat_stack_name'] = self.stack.name
+             scheduler_hints['heat_path_in_stack'] = self.stack.path_in_stack()
+diff --git a/heat/engine/resources/openstack/nova/server.py b/heat/engine/resources/openstack/nova/server.py
+index 155a601..b58f455 100644
+--- a/heat/engine/resources/openstack/nova/server.py
++++ b/heat/engine/resources/openstack/nova/server.py
+@@ -656,7 +656,7 @@ class Server(stack_user.StackUser):
+         if cfg.CONF.stack_scheduler_hints:
+             if scheduler_hints is None:
+                 scheduler_hints = {}
+-            scheduler_hints['heat_root_stack_id'] = self.stack.root_stack.id
++            scheduler_hints['heat_root_stack_id'] = self.stack.root_stack_id()
+             scheduler_hints['heat_stack_id'] = self.stack.id
+             scheduler_hints['heat_stack_name'] = self.stack.name
+             scheduler_hints['heat_path_in_stack'] = self.stack.path_in_stack()
+diff --git a/heat/engine/stack.py b/heat/engine/stack.py
+index 24890f7..8d3da3a 100755
+--- a/heat/engine/stack.py
++++ b/heat/engine/stack.py
+@@ -243,6 +243,11 @@ class Stack(collections.Mapping):
+     def reset_dependencies(self):
+         self._dependencies = None
+ 
++    def root_stack_id(self):
++        if not self.owner_id:
++            return self.id
++        return stack_object.Stack.get_root_id(self.context, self.id)
++
+     @property
+     def root_stack(self):
+         '''
+diff --git a/heat/objects/stack.py b/heat/objects/stack.py
+index 7cc965c..be2c99b 100755
+--- a/heat/objects/stack.py
++++ b/heat/objects/stack.py
+@@ -82,6 +82,10 @@ class Stack(
+         return stack
+ 
+     @classmethod
++    def get_root_id(cls, context, stack_id):
++        return db_api.stack_get_root_id(context, stack_id)
++
++    @classmethod
+     def get_by_id(cls, context, stack_id, **kwargs):
+         db_stack = db_api.stack_get(context, stack_id, **kwargs)
+         if not db_stack:
+diff --git a/heat/tests/db/test_sqlalchemy_api.py b/heat/tests/db/test_sqlalchemy_api.py
+index 2d511ac..24c4275 100644
+--- a/heat/tests/db/test_sqlalchemy_api.py
++++ b/heat/tests/db/test_sqlalchemy_api.py
+@@ -1579,6 +1579,25 @@ class DBAPIStackTest(common.HeatTestCase):
+             self.assertIsNone(db_api.stack_get(ctx, stacks[s].id,
+                                                show_deleted=True))
+ 
++    def test_stack_get_root_id(self):
++        root = create_stack(self.ctx, self.template, self.user_creds,
++                            name='root stack')
++        child_1 = create_stack(self.ctx, self.template, self.user_creds,
++                               name='child 1 stack', owner_id=root.id)
++        child_2 = create_stack(self.ctx, self.template, self.user_creds,
++                               name='child 2 stack', owner_id=child_1.id)
++        child_3 = create_stack(self.ctx, self.template, self.user_creds,
++                               name='child 3 stack', owner_id=child_2.id)
++
++        self.assertEqual(root.id, db_api.stack_get_root_id(
++            self.ctx, child_3.id))
++        self.assertEqual(root.id, db_api.stack_get_root_id(
++            self.ctx, child_2.id))
++        self.assertEqual(root.id, db_api.stack_get_root_id(
++            self.ctx, root.id))
++        self.assertEqual(root.id, db_api.stack_get_root_id(
++            self.ctx, child_1.id))
++
+ 
+ class DBAPIResourceTest(common.HeatTestCase):
+     def setUp(self):
+diff --git a/heat/tests/test_instance.py b/heat/tests/test_instance.py
+index cb58a57..2cb126e 100644
+--- a/heat/tests/test_instance.py
++++ b/heat/tests/test_instance.py
+@@ -547,7 +547,7 @@ class InstancesTest(common.HeatTestCase):
+                 limit=instance.physical_resource_name_limit),
+             security_groups=None,
+             userdata=mox.IgnoreArg(),
+-            scheduler_hints={'heat_root_stack_id': stack.root_stack.id,
++            scheduler_hints={'heat_root_stack_id': stack.root_stack_id(),
+                              'heat_stack_id': stack.id,
+                              'heat_stack_name': stack.name,
+                              'heat_path_in_stack': [(None, stack.name)],
+diff --git a/heat/tests/test_server.py b/heat/tests/test_server.py
+index 7cf5866..9680f7b 100644
+--- a/heat/tests/test_server.py
++++ b/heat/tests/test_server.py
+@@ -905,7 +905,7 @@ class ServersTest(common.HeatTestCase):
+             name=server_name,
+             security_groups=[],
+             userdata=mox.IgnoreArg(),
+-            scheduler_hints={'heat_root_stack_id': stack.root_stack.id,
++            scheduler_hints={'heat_root_stack_id': stack.root_stack_id(),
+                              'heat_stack_id': stack.id,
+                              'heat_stack_name': stack.name,
+                              'heat_path_in_stack': [(None, stack.name)],
