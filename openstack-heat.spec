@@ -199,6 +199,7 @@ Requires: python-oslo-db
 Requires: python-oslo-i18n
 Requires: python-oslo-middleware
 Requires: python-oslo-messaging
+Requires: python-oslo-policy
 Requires: python-oslo-serialization
 Requires: python-oslo-log
 Requires: python-oslo-versionedobjects
