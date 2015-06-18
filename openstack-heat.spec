@@ -6,7 +6,7 @@
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 Version:	2015.1.0
-Release:	3%{?milestone}%{?dist}
+Release:	4%{?milestone}%{?dist}
 License:	ASL 2.0
 Group:		System Environment/Base
 URL:		http://www.openstack.org
@@ -544,6 +544,9 @@ fi
 
 
 %changelog
+* Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2015.1.0-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Tue Jun 02 2015 Mike Burns <mburns@redhat.com> 2015.1.0-3
 - Switch total_resources to use stack_count_total_resources
 - Count all nested stack resources with DB operations
