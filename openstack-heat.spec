@@ -2,6 +2,9 @@
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
+# Liberty semver reset
+# https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
+Epoch:		1
 Version:	XXX
 Release:	XXX
 License:	ASL 2.0
@@ -84,11 +87,11 @@ BuildRequires: python-glanceclient
 BuildRequires: python-troveclient
 %endif
 
-Requires: %{name}-common = %{version}-%{release}
-Requires: %{name}-engine = %{version}-%{release}
-Requires: %{name}-api = %{version}-%{release}
-Requires: %{name}-api-cfn = %{version}-%{release}
-Requires: %{name}-api-cloudwatch = %{version}-%{release}
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-engine = %{epoch}:%{version}-%{release}
+Requires: %{name}-api = %{epoch}:%{version}-%{release}
+Requires: %{name}-api-cfn = %{epoch}:%{version}-%{release}
+Requires: %{name}-api-cloudwatch = %{epoch}:%{version}-%{release}
 
 %prep
 %setup -q -n heat-%{upstream_version}
@@ -256,7 +259,7 @@ exit 0
 Summary: The Heat engine
 Group: System Environment/Base
 
-Requires: %{name}-common = %{version}-%{release}
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
 %if 0%{?rhel} && 0%{?rhel} <= 6
 Requires(post): chkconfig
@@ -318,7 +321,7 @@ fi
 Summary: The Heat API
 Group: System Environment/Base
 
-Requires: %{name}-common = %{version}-%{release}
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
 %if 0%{?rhel} && 0%{?rhel} <= 6
 Requires(post): chkconfig
@@ -380,7 +383,7 @@ fi
 Summary: Heat CloudFormation API
 Group: System Environment/Base
 
-Requires: %{name}-common = %{version}-%{release}
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
 %if 0%{?rhel} && 0%{?rhel} <= 6
 Requires(post): chkconfig
@@ -442,7 +445,7 @@ fi
 Summary: Heat CloudWatch API
 Group: System Environment/Base
 
-Requires: %{name}-common = %{version}-%{release}
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
 %if 0%{?rhel} && 0%{?rhel} <= 6
 Requires(post): chkconfig
