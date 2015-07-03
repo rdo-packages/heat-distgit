@@ -67,6 +67,7 @@ BuildRequires: python-sqlalchemy
 BuildRequires: python-webob
 BuildRequires: python-pbr
 BuildRequires: python-d2to1
+BuildRequires: python-cryptography
 # These are required to build the config file
 BuildRequires: python-oslo-config
 
@@ -194,7 +195,9 @@ Requires: python-anyjson
 Requires: python-paramiko
 Requires: python-babel
 Requires: MySQL-python
+Requires: python-cryptography
 
+Requires: python-oslo-concurrency
 Requires: python-oslo-config >= 1:1.2.0
 Requires: python-oslo-context
 Requires: python-oslo-utils
@@ -203,7 +206,9 @@ Requires: python-oslo-i18n
 Requires: python-oslo-middleware
 Requires: python-oslo-messaging
 Requires: python-oslo-policy
+Requires: python-oslo-reports
 Requires: python-oslo-serialization
+Requires: python-oslo-service
 Requires: python-oslo-log
 Requires: python-oslo-versionedobjects
 
