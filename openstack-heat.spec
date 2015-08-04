@@ -32,6 +32,7 @@ BuildArch: noarch
 BuildRequires: git
 BuildRequires: python2-devel
 BuildRequires: python-stevedore
+BuildRequires: python-oslo-cache
 BuildRequires: python-oslo-context
 BuildRequires: python-oslo-middleware
 BuildRequires: python-oslo-policy
@@ -197,6 +198,7 @@ Requires: python-babel
 Requires: MySQL-python
 Requires: python-cryptography
 
+Requires: python-oslo-cache
 Requires: python-oslo-concurrency
 Requires: python-oslo-config >= 1:1.2.0
 Requires: python-oslo-context
