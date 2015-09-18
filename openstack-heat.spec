@@ -64,6 +64,8 @@ BuildRequires: python-d2to1
 BuildRequires: python-cryptography
 # These are required to build the config file
 BuildRequires: python-oslo-config
+BuildRequires: python-redis
+BuildRequires: python-zmq
 
 BuildRequires: systemd-units
 
