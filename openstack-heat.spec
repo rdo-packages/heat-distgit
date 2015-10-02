@@ -1,51 +1,39 @@
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
-%global release_name kilo
+%global release_name liberty
+%global milestone .0rc1
 %global service heat
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
-Version:	2015.1.0
-Release:	4%{?milestone}%{?dist}
+# Liberty semver reset
+# https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
+Epoch:		1
+Version:	5.0.0
+Release:	0.1%{?milestone}%{?dist}
 License:	ASL 2.0
-Group:		System Environment/Base
 URL:		http://www.openstack.org
 
 Obsoletes:	heat < 7-9
 Provides:	heat
 
-Source0:	http://launchpad.net/%{service}/%{release_name}/%{version}/+download/%{service}-%{upstream_version}.tar.gz
-
-Patch0001: 0001-Update-template-paths-for-environment-mapped-Templat.patch
-Patch0002: 0002-Use-SHA256-instead-of-SHA1-for-resource-signature.patch
-Patch0003: 0003-Generate-stack-events-for-stack-state-transitions.patch
-Patch0004: 0004-Sync-oslo-incubator.patch
-Patch0005: 0005-Get-rid-of-circular-references-in-Resource-and-Funct.patch
-Patch0006: 0006-Find-root-stack-ID-with-database-operations.patch
-Patch0007: 0007-Count-all-nested-stack-resources-with-DB-operations.patch
-Patch0008: 0008-Switch-total_resources-to-use-stack_count_total_reso.patch
+Source0:        http://launchpad.net/%{service}/%{release_name}/%{release_name}-rc1/+download/%{service}-%{upstream_version}.tar.gz
 
 Source1:	heat.logrotate
-%if 0%{?rhel} && 0%{?rhel} <= 6
-Source2:	openstack-heat-api.init
-Source3:	openstack-heat-api-cfn.init
-Source4:	openstack-heat-engine.init
-Source5:	openstack-heat-api-cloudwatch.init
-%else
 Source2:	openstack-heat-api.service
 Source3:	openstack-heat-api-cfn.service
 Source4:	openstack-heat-engine.service
 Source5:	openstack-heat-api-cloudwatch.service
-%endif
 Source20:	heat-dist.conf
-Source21:	heat.conf.sample
 
 BuildArch: noarch
 BuildRequires: git
 BuildRequires: python2-devel
 BuildRequires: python-stevedore
+BuildRequires: python-oslo-cache
 BuildRequires: python-oslo-context
 BuildRequires: python-oslo-middleware
+BuildRequires: python-oslo-policy
 BuildRequires: python-oslo-messaging
 BuildRequires: python-setuptools
 BuildRequires: python-oslo-db
@@ -82,13 +70,15 @@ BuildRequires: python-sqlalchemy
 BuildRequires: python-webob
 BuildRequires: python-pbr
 BuildRequires: python-d2to1
+BuildRequires: python-cryptography
+# These are required to build the config file
+BuildRequires: python-oslo-config
+BuildRequires: python-redis
+BuildRequires: python-zmq
 
-%if ! (0%{?rhel} && 0%{?rhel} <= 6)
 BuildRequires: systemd-units
-%endif
 
 %if 0%{?with_doc}
-BuildRequires: python-oslo-config
 BuildRequires: python-cinderclient
 BuildRequires: python-keystoneclient
 BuildRequires: python-novaclient
@@ -101,24 +91,14 @@ BuildRequires: python-glanceclient
 BuildRequires: python-troveclient
 %endif
 
-Requires: %{name}-common = %{version}-%{release}
-Requires: %{name}-engine = %{version}-%{release}
-Requires: %{name}-api = %{version}-%{release}
-Requires: %{name}-api-cfn = %{version}-%{release}
-Requires: %{name}-api-cloudwatch = %{version}-%{release}
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-engine = %{epoch}:%{version}-%{release}
+Requires: %{name}-api = %{epoch}:%{version}-%{release}
+Requires: %{name}-api-cfn = %{epoch}:%{version}-%{release}
+Requires: %{name}-api-cloudwatch = %{epoch}:%{version}-%{release}
 
 %prep
 %setup -q -n heat-%{upstream_version}
-
-%patch0001 -p1
-%patch0002 -p1
-%patch0003 -p1
-%patch0004 -p1
-%patch0005 -p1
-%patch0006 -p1
-%patch0007 -p1
-%patch0008 -p1
-
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
 rm -rf {test-,}requirements.txt tools/{pip,test}-requires
@@ -126,28 +106,12 @@ rm -rf {test-,}requirements.txt tools/{pip,test}-requires
 # Remove tests in contrib
 find contrib -name tests -type d | xargs rm -r
 
-cp %{SOURCE21} etc/heat/heat.conf.sample
-
-# Programmatically update defaults in sample config
-# which is installed at /etc/heat/heat.conf
-
-#  First we ensure all values are commented in appropriate format.
-#  Since icehouse, there was an uncommented keystone_authtoken section
-#  at the end of the file which mimics but also conflicted with our
-#  distro editing that had been done for many releases.
-#sed -i '/^[^#[]/{s/^/#/; s/ //g}; /^#[^ ]/s/ = /=/' etc/heat/heat.conf.sample
-#sed -i -e "s/^#heat_revision=.*$/heat_revision=%{version}-%{release}/I" etc/heat/heat.conf.sample
-
-#  TODO: Make this more robust
-#  Note it only edits the first occurance, so assumes a section ordering in sample
-#  and also doesn't support multi-valued variables.
-#while read name eq value; do
-#  test "$name" && test "$value" || continue
-#  sed -i "0,/^# *$name=/{s!^# *$name=.*!#$name=$value!}" etc/heat/heat.conf.sample
-#done < %{SOURCE20}
-
 %build
 %{__python} setup.py build
+
+# Generate sample config and add the current directory to PYTHONPATH so
+# oslo-config-generator doesn't skip heat's entry points.
+PYTHONPATH=. oslo-config-generator --config-file=config-generator.conf
 
 %install
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
@@ -156,19 +120,11 @@ mkdir -p %{buildroot}/var/log/heat/
 mkdir -p %{buildroot}/var/run/heat/
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-heat
 
-%if 0%{?rhel} && 0%{?rhel} <= 6
-# install init scripts
-install -p -D -m 755 %{SOURCE2} %{buildroot}%{_initrddir}/openstack-heat-api
-install -p -D -m 755 %{SOURCE3} %{buildroot}%{_initrddir}/openstack-heat-api-cfn
-install -p -D -m 755 %{SOURCE4} %{buildroot}%{_initrddir}/openstack-heat-engine
-install -p -D -m 755 %{SOURCE5} %{buildroot}%{_initrddir}/openstack-heat-api-cloudwatch
-%else
 # install systemd unit files
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-heat-api.service
 install -p -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/openstack-heat-api-cfn.service
 install -p -D -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/openstack-heat-engine.service
 install -p -D -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/openstack-heat-api-cloudwatch.service
-%endif
 
 mkdir -p %{buildroot}/var/lib/heat/
 mkdir -p %{buildroot}/etc/heat/
@@ -233,6 +189,35 @@ Requires: python-anyjson
 Requires: python-paramiko
 Requires: python-babel
 Requires: MySQL-python
+Requires: python-cryptography
+
+Requires: python-oslo-cache
+Requires: python-oslo-concurrency
+Requires: python-oslo-config >= 1:1.2.0
+Requires: python-oslo-context
+Requires: python-oslo-utils
+Requires: python-oslo-db
+Requires: python-oslo-i18n
+Requires: python-oslo-middleware
+Requires: python-oslo-messaging
+Requires: python-oslo-policy
+Requires: python-oslo-reports
+Requires: python-oslo-serialization
+Requires: python-oslo-service
+Requires: python-oslo-log
+Requires: python-oslo-versionedobjects
+
+Requires: python-ceilometerclient
+Requires: python-cinderclient
+Requires: python-glanceclient
+Requires: python-heatclient
+Requires: python-keystoneclient
+Requires: python-keystonemiddleware
+Requires: python-neutronclient
+Requires: python-novaclient
+Requires: python-saharaclient
+Requires: python-swiftclient
+Requires: python-troveclient
 
 Requires: python-oslo-config >= 1:1.2.0
 Requires: python-oslo-context
@@ -293,22 +278,15 @@ useradd --uid 187 -r -g heat -d %{_sharedstatedir}/heat -s /sbin/nologin \
 -c "OpenStack Heat Daemons" heat
 exit 0
 
+
 %package engine
 Summary: The Heat engine
-Group: System Environment/Base
 
-Requires: %{name}-common = %{version}-%{release}
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-%if 0%{?rhel} && 0%{?rhel} <= 6
-Requires(post): chkconfig
-Requires(preun): chkconfig
-Requires(preun): initscripts
-Requires(postun): initscripts
-%else
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
-%endif
 
 %description engine
 OpenStack API for starting CloudFormation templates on OpenStack
@@ -319,58 +297,29 @@ OpenStack API for starting CloudFormation templates on OpenStack
 %doc doc/build/html/man/heat-engine.html
 %endif
 %{_bindir}/heat-engine
-%if 0%{?rhel} && 0%{?rhel} <= 6
-%{_initrddir}/openstack-heat-engine
-%else
 %{_unitdir}/openstack-heat-engine.service
-%endif
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-engine.1.gz
 %endif
 
 %post engine
-%if 0%{?rhel} && 0%{?rhel} <= 6
-/sbin/chkconfig --add openstack-heat-engine
-%else
 %systemd_post openstack-heat-engine.service
-%endif
 
 %preun engine
-%if 0%{?rhel} && 0%{?rhel} <= 6
-if [ $1 -eq 0 ]; then
-    /sbin/service openstack-heat-engine stop >/dev/null 2>&1
-    /sbin/chkconfig --del openstack-heat-engine
-fi
-%else
 %systemd_preun openstack-heat-engine.service
-%endif
 
 %postun engine
-%if 0%{?rhel} && 0%{?rhel} <= 6
-if [ $1 -ge 1 ]; then
-    /sbin/service openstack-heat-engine condrestart >/dev/null 2>&1 || :
-fi
-%else
-%systemd_postun_with_restart openstack-heat-engine.service
-%endif
+systemd_postun_with_restart openstack-heat-engine.service
 
 
 %package api
 Summary: The Heat API
-Group: System Environment/Base
 
-Requires: %{name}-common = %{version}-%{release}
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-%if 0%{?rhel} && 0%{?rhel} <= 6
-Requires(post): chkconfig
-Requires(preun): chkconfig
-Requires(preun): initscripts
-Requires(postun): initscripts
-%else
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
-%endif
 
 %description api
 OpenStack-native ReST API to the Heat Engine
@@ -381,58 +330,29 @@ OpenStack-native ReST API to the Heat Engine
 %doc doc/build/html/man/heat-api.html
 %endif
 %{_bindir}/heat-api
-%if 0%{?rhel} && 0%{?rhel} <= 6
-%{_initrddir}/openstack-heat-api
-%else
 %{_unitdir}/openstack-heat-api.service
-%endif
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-api.1.gz
 %endif
 
 %post api
-%if 0%{?rhel} && 0%{?rhel} <= 6
-/sbin/chkconfig --add openstack-heat-api
-%else
 %systemd_post openstack-heat-api.service
-%endif
 
 %preun api
-%if 0%{?rhel} && 0%{?rhel} <= 6
-if [ $1 -eq 0 ]; then
-    /sbin/service openstack-heat-api stop >/dev/null 2>&1
-    /sbin/chkconfig --del openstack-heat-api
-fi
-%else
 %systemd_preun openstack-heat-api.service
-%endif
 
 %postun api
-%if 0%{?rhel} && 0%{?rhel} <= 6
-if [ $1 -ge 1 ]; then
-    /sbin/service openstack-heat-api condrestart >/dev/null 2>&1 || :
-fi
-%else
 %systemd_postun_with_restart openstack-heat-api.service
-%endif
 
 
 %package api-cfn
 Summary: Heat CloudFormation API
-Group: System Environment/Base
 
-Requires: %{name}-common = %{version}-%{release}
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-%if 0%{?rhel} && 0%{?rhel} <= 6
-Requires(post): chkconfig
-Requires(preun): chkconfig
-Requires(preun): initscripts
-Requires(postun): initscripts
-%else
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
-%endif
 
 %description api-cfn
 AWS CloudFormation-compatible API to the Heat Engine
@@ -443,58 +363,29 @@ AWS CloudFormation-compatible API to the Heat Engine
 %doc doc/build/html/man/heat-api-cfn.html
 %endif
 %{_bindir}/heat-api-cfn
-%if 0%{?rhel} && 0%{?rhel} <= 6
-%{_initrddir}/openstack-heat-api-cfn
-%else
 %{_unitdir}/openstack-heat-api-cfn.service
-%endif
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-api-cfn.1.gz
 %endif
 
 %post api-cfn
-%if 0%{?rhel} && 0%{?rhel} <= 6
-/sbin/chkconfig --add openstack-heat-api-cfn
-%else
 %systemd_post openstack-heat-api-cloudwatch.service
-%endif
 
 %preun api-cfn
-%if 0%{?rhel} && 0%{?rhel} <= 6
-if [ $1 -eq 0 ]; then
-    /sbin/service openstack-heat-api-cfn stop >/dev/null 2>&1
-    /sbin/chkconfig --del openstack-heat-api-cfn
-fi
-%else
 %systemd_preun openstack-heat-api-cloudwatch.service
-%endif
 
 %postun api-cfn
-%if 0%{?rhel} && 0%{?rhel} <= 6
-if [ $1 -ge 1 ]; then
-    /sbin/service openstack-heat-api-cfn condrestart >/dev/null 2>&1 || :
-fi
-%else
 %systemd_postun_with_restart openstack-heat-api-cloudwatch.service
-%endif
 
 
 %package api-cloudwatch
 Summary: Heat CloudWatch API
-Group: System Environment/Base
 
-Requires: %{name}-common = %{version}-%{release}
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-%if 0%{?rhel} && 0%{?rhel} <= 6
-Requires(post): chkconfig
-Requires(preun): chkconfig
-Requires(preun): initscripts
-Requires(postun): initscripts
-%else
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
-%endif
 
 %description api-cloudwatch
 AWS CloudWatch-compatible API to the Heat Engine
@@ -505,317 +396,21 @@ AWS CloudWatch-compatible API to the Heat Engine
 %doc doc/build/html/man/heat-api-cloudwatch.html
 %endif
 %{_bindir}/heat-api-cloudwatch
-%if 0%{?rhel} && 0%{?rhel} <= 6
-%{_initrddir}/openstack-heat-api-cloudwatch
-%else
 %{_unitdir}/openstack-heat-api-cloudwatch.service
-%endif
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-api-cloudwatch.1.gz
 %endif
 
 %post api-cloudwatch
-%if 0%{?rhel} && 0%{?rhel} <= 6
-/sbin/chkconfig --add openstack-heat-api-cloudwatch
-%else
 %systemd_post openstack-heat-api-cfn.service
-%endif
 
 %preun api-cloudwatch
-%if 0%{?rhel} && 0%{?rhel} <= 6
-/sbin/chkconfig --add openstack-heat-api-cloudwatch
-%else
 %systemd_preun openstack-heat-api-cfn.service
-%endif
 
 %postun api-cloudwatch
-%if 0%{?rhel} && 0%{?rhel} <= 6
-if [ $1 -eq 0 ]; then
-    /sbin/service openstack-heat-api-cloudwatch stop >/dev/null 2>&1
-    /sbin/chkconfig --del openstack-heat-api-cloudwatch
-fi
-
-if [ $1 -ge 1 ]; then
-    /sbin/service openstack-heat-api-cloudwatch condrestart >/dev/null 2>&1 || :
-fi
-%else
 %systemd_postun_with_restart openstack-heat-api-cfn.service
-%endif
 
 
 %changelog
-* Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2015.1.0-4
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
-
-* Tue Jun 02 2015 Mike Burns <mburns@redhat.com> 2015.1.0-3
-- Switch total_resources to use stack_count_total_resources
-- Count all nested stack resources with DB operations
-- Find root stack ID with database operations
-- Get rid of circular references in Resource and Function
-- Sync oslo incubator
-- Generate stack events for stack state transitions
-- Use SHA256 instead of SHA1 for resource signature
-- Update template paths for environment-mapped TemplateResources
-
-* Tue Jun 02 2015 Mike Burns <mburns@redhat.com> 2015.1.0-2
-- Switch total_resources to use stack_count_total_resources
-- Count all nested stack resources with DB operations
-- Find root stack ID with database operations
-- Get rid of circular references in Resource and Function
-- Sync oslo incubator
-- Merge "Generate stack events for stack state transitions" into stable/kilo
-- Merge "Use SHA256 instead of SHA1 for resource signature" into stable/kilo
-- Generate stack events for stack state transitions
-- Update template paths for environment-mapped TemplateResources
-- Bump pre-release to 2015.1.1
-- Use SHA256 instead of SHA1 for resource signature
-
-* Fri Apr 10 2015 Ryan S. Brown <rybrown@redhat.com> 2014.2.3-4
-- Update to upstream 2014.2.3
-
-* Fri Feb 06 2015 Ryan Brown <ryansb@redhat.com> 2014.2.2-1
-- Rebase to upstream 2014.2.2
-
-* Fri Dec 12 2014 Jeff Peeler <jpeeler@redhat.com> 2014.2.1-2
-- change systemd service files to not explicitly define logfile (rhbz#1083057)
-
-* Fri Dec 05 2014 Jeff Peeler <jpeeler@redhat.com> 2014.2.1-1
-- Update to upstream 2014.2.1
-
-* Fri Oct 17 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-1
-- Update to upstream 2014.2
-
-* Mon Oct 13 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.8.rc3
-- Update to upstream 2014.2.rc3
-
-* Mon Oct 13 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.7.rc2
-- Update to upstream 2014.2.rc2
-
-* Fri Oct  3 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.6.rc1
-- Update to upstream 2014.2.rc1
-
-* Tue Sep  9 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.5.b3
-- Add dependencies for oslo-i18n, keystonemiddleware, and saharaclient
-- Update patches for 2014.2.b3
-
-* Tue Sep  9 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.1.b3
-- Update to upstream 2014.2.b3
-
-* Wed Aug 13 2014 Ryan Brown <rybrown@redhat.com> - 2014.2-0.4.b2
-- Merge epel6 and fedora specfiles.
-
-* Mon Aug  4 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.2-0.3.b2
-- set qpid_topology_version=2 in heat-dist.conf (rhbz #1124137)
-- add client requires (rhbz #1108056)
-- remove m2crypto as it's no longer required
-
-* Fri Jul 25 2014 Ryan S. Brown <rybrown@redhat.com> 2014.2-0.1.b2
-- Update to upstream 2014.2.b2
-
-* Tue Jul 15 2014 Ryan Brown <ryansb@redhat.com> - 2014.2-0.2.b1
-- At build time add build+release to /etc/heat/heat.conf
-
-* Fri Jun 20 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.2-0.1.b1
-- updated to juno-1
-
-* Fri Jun 13 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1.1-2.1
-- added heat-keystone-setup-domain script
-
-* Tue Jun 10 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1.1-2.0
-- updated to 2014.1.1
-- removed patch to build against python-oslo-sphinx and put change in spec
-
-* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2014.1-2.0
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
-
-* Tue Apr 22 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-1.0
-- update to icehouse final
-
-* Mon Apr 14 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-0.5.rc2
-- update to icehouse-rc2
-
-* Mon Apr  7 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-0.5.rc1
-- update to icehouse-rc1
-
-* Thu Mar  6 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-0.5.b3
-- update to icehouse-3
-
-* Tue Feb  4 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-0.5.b2
-- fix heat-manage (rhbz 1060904)
-
-* Mon Jan 27 2014 Jeff Peeler <jpeeler@redhat.com> - 2014.1-0.4.b2
-- update to icehouse-2
-
-* Mon Jan 06 2014 Pádraig Brady <pbrady@redhat.com> - 2014.1-0.4.b1
-- Avoid [keystone_authtoken] config corruption in heat.conf
-
-* Mon Jan 06 2014 Jeff Peeler <jpeeler@redhat.com> 2014-1.0.3.b1
-- added MySQL-python requires
-- removed heat-db-setup (rhbz 1046326)
-
-* Mon Jan 06 2014 Pádraig Brady <pbrady@redhat.com> - 2014.1-0.2.b1
-- Set python-six min version to ensure updated
-
-* Mon Dec 09 2013 Jeff Peeler <jpeeler@redhat.com> 2014-1.0.1.b1
-- update to icehouse-1
-- add python-heatclient to BuildRequires
-
-* Thu Oct 17 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-1
-- update to havana final
-
-* Mon Oct 14 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.9.rc2
-- rebase to havana-rc2
-- remove pbr dependency
-
-* Thu Oct 3 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.9.rc1
-- update to rc1
-- exclude doc builds if with_doc 0
-
-* Thu Sep 19 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.9.b3
-- fix the python-oslo-config dependency to cater for epoch
-- add api-paste-dist.ini to /usr/share/heat
-
-*  Tue Sep 17 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.8.b3
-- Depend on python-oslo-config >= 1.2 so it upgraded automatically
-- Distribute dist defaults in heat-dist.conf separate to user heat.conf (rhbz 1008560)
-
-* Wed Sep 11 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.7.b3
-- fix init scripts (rhbz 1006868)
-- added python-babel
-- added python-pbr (rhbz 1006911)
-
-* Mon Sep 9 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.6.b3
-- rebase to havana-3
-- remove tests from common
-- remove cli package and move heat-manage into common
-- added requires for python-heatclient
-- remove python-boto as boto has been moved to another repo
-- remove heat-cfn bash completion
-- add /var/run/heat directory
-
-* Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2013.2-0.5.b2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
-
-* Tue Jul 30 2013 Pádraig Brady <pbrady@redhat.com> 2013.2-0.4.b2
-- avoid python runtime dependency management
-
-* Mon Jul 22 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.3.b2
-- rebase to havana-2
-
-* Mon Jun 10 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.2.b1
-- fix m2crypto patch
-
-* Tue Jun  4 2013 Jeff Peeler <jpeeler@redhat.com> 2013.2-0.1.b1
-- rebase to havana-1
-- consolidate api-paste files into one file in common
-- removed runner.py as it is no longer present
-- added heat-manage
-- added new buildrequires pbr and d2to1
-
-* Tue May 28 2013 Jeff Peeler <jpeeler@redhat.com> 2013.1-1.4
-- bumped obsoletes for f18 rebuilds of the old heat package
-- added missing policy.json file (rhbz#965549)
-- changed require from python-paste to python-paste-deploy (rhbz#963207)
-
-* Wed May  8 2013 Jeff Peeler <jpeeler@redhat.com> 2013.1-1.3
-- removed python-crypto require
-
-* Wed May  8 2013 Jeff Peeler <jpeeler@redhat.com> 2013.1-1.2
-- re-added m2crypto patch (rhbz960165)
-
-* Mon Apr 29 2013 Jeff Peeler <jpeeler@redhat.com> 2013.1-1.1
-- modified engine script to not require full openstack install to start
-
-* Mon Apr  8 2013 Jeff Peeler <jpeeler@redhat.com> 2013.1-1.0
-- update to grizzly final
-
-* Thu Mar 28 2013 Jeff Peeler <jpeeler@redhat.com> 2013.1-0.7.rc2
-- bump to rc2
-
-* Thu Mar 21 2013 Steven Dake <sdake@redhat.com> 2013.1-0.7.rc1
-- Add all dependencies required
-- Remove buildrequires of python-glanceclient
-
-* Wed Mar 20 2013 Jeff Peeler <jpeeler@redhat.com> 2013.1-0.6.rc1
-- Updated URL
-- Added version for Obsoletes
-- Removed dev suffix in builddir
-- Added missing man pages
-
-* Mon Mar 11 2013 Steven Dake <sdake@redhat.com> 2013.1-0.5.g3
-- Assign heat user with 167:167
-- Rename packages from *-api to api-*
-- Rename clients to cli
-- change user/gid to heat from openstack-heat
-- use shared state dir macro for shared state
-- Add /etc/heat dir to owned directory list
-- set proper uid/gid for files
-- set proper read/write/execute bits
-
-* Thu Dec 20 2012 Jeff Peeler <jpeeler@redhat.com> 2013.1-2
-- split into subpackages
-
-* Fri Dec 14 2012 Steve Baker <sbaker@redhat.com> 2013.1-1
-- rebase to 2013.1
-- expunge heat-metadata
-- generate man pages and html developer docs with sphinx
-
-* Tue Oct 23 2012 Zane Bitter <zbitter@redhat.com> 7-1
-- rebase to v7
-- add heat-api daemon (OpenStack-native API)
-
-* Fri Sep 21 2012 Jeff Peeler <jpeeler@redhat.com> 6-5
-- update m2crypto patch (Fedora)
-- fix user/group install permissions
-
-* Tue Sep 18 2012 Steven Dake <sdake@redhat.com> 6-4
-- update to new v6 binary names in heat
-
-* Tue Aug 21 2012 Jeff Peeler <jpeeler@redhat.com> 6-3
-- updated systemd scriptlets
-
-* Tue Aug  7 2012 Jeff Peeler <jpeeler@redhat.com> 6-2
-- change user/group ids to openstack-heat
-
-* Wed Aug 1 2012 Jeff Peeler <jpeeler@redhat.com> 6-1
-- create heat user and change file permissions
-- set systemd scripts to run as heat user
-
-* Fri Jul 27 2012 Ian Main <imain@redhat.com> - 5-1
-- added m2crypto patch.
-- bumped version for new release.
-- added boto.cfg to sysconfigdir
-
-* Tue Jul 24 2012 Jeff Peeler <jpeeler@redhat.com> - 4-5
-- added LICENSE to docs
-- added dist tag
-- added heat directory to files section
-- removed unnecessary defattr 
-
-* Tue Jul 24 2012 Jeff Peeler <jpeeler@redhat.com> - 4-4
-- remove pycrypto requires
-
-* Fri Jul 20 2012 Jeff Peeler <jpeeler@redhat.com> - 4-3
-- change python-devel to python2-devel
-
-* Wed Jul 11 2012 Jeff Peeler <jpeeler@redhat.com> - 4-2
-- add necessary requires
-- removed shebang line for scripts not requiring executable permissions
-- add logrotate, removes all rpmlint warnings except for python-httplib2
-- remove buildroot tag since everything since F10 has a default buildroot
-- remove clean section as it is not required as of F13
-- add systemd unit files
-- change source URL to download location which doesn't require a SHA
-
-* Fri Jun 8 2012 Steven Dake <sdake@redhat.com> - 4-1
-- removed jeos from packaging since that comes from another repository
-- compressed all separate packages into one package
-- removed setup options which were producing incorrect results
-- replaced python with {__python}
-- added a br on python-devel
-- added a --skip-build to the install step
-- added percent-dir for directories
-- fixed most rpmlint warnings/errors
-
-* Mon Apr 16 2012 Chris Alfonso <calfonso@redhat.com> - 3-1
-- initial openstack package log
+* Fri Oct 02 2015 Alan Pevec <apevec@redhat.com> - 1:5.0.0-0.1.0rc1
+- Update to upstream 5.0.0.0rc1
