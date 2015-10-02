@@ -10,7 +10,7 @@ Summary:	OpenStack Orchestration (heat)
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:		1
 Version:	5.0.0
-Release:	0.1%{?milestone}%{?dist}
+Release:	0.2%{?milestone}%{?dist}
 License:	ASL 2.0
 URL:		http://www.openstack.org
 
@@ -309,7 +309,7 @@ OpenStack API for starting CloudFormation templates on OpenStack
 %systemd_preun openstack-heat-engine.service
 
 %postun engine
-systemd_postun_with_restart openstack-heat-engine.service
+%systemd_postun_with_restart openstack-heat-engine.service
 
 
 %package api
@@ -412,5 +412,5 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
-* Fri Oct 02 2015 Alan Pevec <apevec@redhat.com> - 1:5.0.0-0.1.0rc1
+* Fri Oct 02 2015 Alan Pevec <apevec@redhat.com> - 1:5.0.0-0.2.0rc1
 - Update to upstream 5.0.0.0rc1
