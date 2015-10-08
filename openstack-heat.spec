@@ -1,6 +1,6 @@
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 %global release_name liberty
-%global milestone .0rc1
+%global milestone .0rc2
 %global service heat
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 
@@ -10,14 +10,18 @@ Summary:	OpenStack Orchestration (heat)
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:		1
 Version:	5.0.0
-Release:	0.2%{?milestone}%{?dist}
+Release:	0.3%{?milestone}%{?dist}
 License:	ASL 2.0
 URL:		http://www.openstack.org
 
 Obsoletes:	heat < 7-9
 Provides:	heat
 
-Source0:        http://launchpad.net/%{service}/%{release_name}/%{release_name}-rc1/+download/%{service}-%{upstream_version}.tar.gz
+Source0:        http://launchpad.net/%{service}/%{release_name}/%{release_name}-rc2/+download/%{service}-%{upstream_version}.tar.gz
+
+#
+# patches_base=5.0.0.0rc2
+#
 
 Source1:	heat.logrotate
 Source2:	openstack-heat-api.service
@@ -412,5 +416,8 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Thu Oct 08 2015 Alan Pevec <alan.pevec@redhat.com> 1:5.0.0-0.3.0rc2
+- Update to upstream 5.0.0.0rc2
+
 * Fri Oct 02 2015 Alan Pevec <apevec@redhat.com> - 1:5.0.0-0.2.0rc1
 - Update to upstream 5.0.0.0rc1
