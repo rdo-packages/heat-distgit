@@ -180,7 +180,6 @@ Requires: PyYAML
 Requires: python-anyjson
 Requires: python-paramiko
 Requires: python-babel
-Requires: MySQL-python
 Requires: python-cryptography
 
 Requires: python-oslo-cache
