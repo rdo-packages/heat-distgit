@@ -297,6 +297,7 @@ OpenStack-native ReST API to the Heat Engine
 %doc doc/build/html/man/heat-api.html
 %endif
 %{_bindir}/heat-api
+%{_bindir}/heat-wsgi-api
 %{_unitdir}/openstack-heat-api.service
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-api.1.gz
@@ -330,6 +331,7 @@ AWS CloudFormation-compatible API to the Heat Engine
 %doc doc/build/html/man/heat-api-cfn.html
 %endif
 %{_bindir}/heat-api-cfn
+%{_bindir}/heat-wsgi-api-cfn
 %{_unitdir}/openstack-heat-api-cfn.service
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-api-cfn.1.gz
@@ -363,6 +365,7 @@ AWS CloudWatch-compatible API to the Heat Engine
 %doc doc/build/html/man/heat-api-cloudwatch.html
 %endif
 %{_bindir}/heat-api-cloudwatch
+%{_bindir}/heat-wsgi-api-cloudwatch
 %{_unitdir}/openstack-heat-api-cloudwatch.service
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-api-cloudwatch.1.gz
