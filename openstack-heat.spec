@@ -157,6 +157,7 @@ Group: System Environment/Base
 
 Requires: python-pbr
 Requires: python-argparse
+Requires: python-croniter
 Requires: python-eventlet
 Requires: python-stevedore >= 0.14
 Requires: python-greenlet
