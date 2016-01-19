@@ -1,3 +1,5 @@
-# UUID                                  	Group Name
-#
-6d4f7336719d18a8ccd4e5a8c8c5271f14dbc2be	heat-distgit-ptl
+# UUID          Group Name
+6ddfecad023c6f4fa3ac8c4d2583c502ea675a73 	Non-Interactive Users
+51022e24b0636d2fd1f4bbab529ad8e5ec3bbbb7       	heat-distgit-core
+6d4f7336719d18a8ccd4e5a8c8c5271f14dbc2be        	heat-distgit-ptl
+global:Registered-Users		Registered Users
