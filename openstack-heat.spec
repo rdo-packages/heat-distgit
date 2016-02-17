@@ -16,7 +16,7 @@ URL:		http://www.openstack.org
 Obsoletes:	heat < 7-9
 Provides:	heat
 
-Source0:	http://tarballs.openstack.org/%{service}/%{service}-%{upstream_version}.tar.gz
+Source0:        http://tarballs.openstack.org/%{service}/%{service}-%{upstream_version}.tar.gz
 
 Source1:	heat.logrotate
 Source2:	openstack-heat-api.service
@@ -28,7 +28,7 @@ Source20:	heat-dist.conf
 BuildArch: noarch
 BuildRequires: git
 BuildRequires: python2-devel
-BuildRequires: python2-stevedore
+BuildRequires: python-stevedore
 BuildRequires: python-oslo-cache
 BuildRequires: python-oslo-context
 BuildRequires: python-oslo-middleware
@@ -165,7 +165,7 @@ Group: System Environment/Base
 Requires: python-pbr
 Requires: python-argparse
 Requires: python-eventlet
-Requires: python2-stevedore >= 0.14
+Requires: python-stevedore >= 0.14
 Requires: python-greenlet
 Requires: python-httplib2
 Requires: python-iso8601
@@ -414,8 +414,8 @@ AWS CloudWatch-compatible API to the Heat Engine
 * Wed Feb 17 2016 Alan Pevec <alan.pevec@redhat.com> 1:5.0.1-1
 - Update to 5.0.1
 
-* Thu Nov 19 2015 Ryan S Brown <ryansb@redhat.com> 1:5.0.0-2
-- Explicitly use python2-stevedore as dependency name
+* Sat Oct 17 2015 Haikel Guemar <hguemar@fedoraproject.org> 1:5.0.0-1
+- Update to upstream 5.0.0
 
 * Thu Oct 08 2015 Alan Pevec <alan.pevec@redhat.com> 1:5.0.0-0.3.0rc2
 - Update to upstream 5.0.0.0rc2
