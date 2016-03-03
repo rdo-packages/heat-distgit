@@ -88,6 +88,14 @@ Requires: %{name}-api = %{epoch}:%{version}-%{release}
 Requires: %{name}-api-cfn = %{epoch}:%{version}-%{release}
 Requires: %{name}-api-cloudwatch = %{epoch}:%{version}-%{release}
 
+%package -n python-heat-tests
+Summary:        Heat tests
+Requires:       %{name}-common = %{epoch}:%{version}-%{release}
+
+%description -n python-heat-tests
+Heat provides AWS CloudFormation and CloudWatch functionality for OpenStack.
+This package contains the Heat test files.
+
 %prep
 %setup -q -n heat-%{upstream_version}
 
@@ -136,7 +144,6 @@ rm -f %{buildroot}/%{_bindir}/heat-db-setup
 rm -f %{buildroot}/%{_mandir}/man1/heat-db-setup.*
 rm -rf %{buildroot}/var/lib/heat/.dummy
 rm -f %{buildroot}/usr/bin/cinder-keystone-setup
-rm -rf %{buildroot}/%{python_sitelib}/heat/tests
 
 install -p -D -m 640 etc/heat/heat.conf.sample %{buildroot}/%{_sysconfdir}/heat/heat.conf
 install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/heat/heat-dist.conf
@@ -222,6 +229,7 @@ Components common to all OpenStack Heat services
 %{_bindir}/heat-keystone-setup
 %{_bindir}/heat-keystone-setup-domain
 %{python_sitelib}/heat*
+%exclude %{python2_sitelib}/heat/tests
 %attr(-, root, heat) %{_datadir}/heat/heat-dist.conf
 %attr(-, root, heat) %{_datadir}/heat/api-paste-dist.ini
 %dir %attr(0755,heat,root) %{_localstatedir}/log/heat
@@ -238,6 +246,10 @@ Components common to all OpenStack Heat services
 %{_mandir}/man1/heat-keystone-setup-domain.1.gz
 %{_mandir}/man1/heat-manage.1.gz
 %endif
+
+%files -n python-heat-tests
+%license LICENSE
+%{python2_sitelib}/heat/tests
 
 %pre common
 # 187:187 for heat - rhbz#845078
