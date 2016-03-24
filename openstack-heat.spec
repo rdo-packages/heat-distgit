@@ -1,15 +1,19 @@
+%define milestone .0rc1
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
+
+
+%{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 # Liberty semver reset
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:		1
-Version:	XXX
-Release:	XXX
+Version:	6.0.0
+Release:	0.1%{?milestone}%{?dist}
 License:	ASL 2.0
 URL:		http://www.openstack.org
-Source0:	http://tarballs.openstack.org/heat/heat-master.tar.gz
+Source0:	http://tarballs.openstack.org/heat/heat-%{version}%{?milestone}.tar.gz
 Obsoletes:	heat < 7-9
 Provides:	heat
 
@@ -395,3 +399,5 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Thu Mar 24 2016 RDO <rdo-list@redhat.com> 6.0.0-0.1.0rc1
+- RC1 Rebuild for Mitaka rc1
