@@ -1,4 +1,4 @@
-%define milestone .0rc1
+%define milestone .0rc3
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 
@@ -10,10 +10,14 @@ Summary:	OpenStack Orchestration (heat)
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:		1
 Version:	6.0.0
-Release:	0.1%{?milestone}%{?dist}
+Release:	0.2%{?milestone}%{?dist}
 License:	ASL 2.0
 URL:		http://www.openstack.org
 Source0:	http://tarballs.openstack.org/heat/heat-%{version}%{?milestone}.tar.gz
+#
+# patches_base=6.0.0.0rc3
+#
+
 Obsoletes:	heat < 7-9
 Provides:	heat
 
@@ -399,5 +403,8 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Sat Apr 02 2016 Haikel Guemar <hguemar@fedoraproject.org> 1:6.0.0-0.2.0rc3
+- Update to 6.0.0.0rc3
+
 * Thu Mar 24 2016 RDO <rdo-list@redhat.com> 6.0.0-0.1.0rc1
 - RC1 Rebuild for Mitaka rc1
