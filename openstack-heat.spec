@@ -1,6 +1,4 @@
-%define milestone .0rc3
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
-
 
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 
@@ -10,13 +8,10 @@ Summary:	OpenStack Orchestration (heat)
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:		1
 Version:	6.0.0
-Release:	0.2%{?milestone}%{?dist}
+Release:	1%{?dist}
 License:	ASL 2.0
 URL:		http://www.openstack.org
 Source0:	http://tarballs.openstack.org/heat/heat-%{version}%{?milestone}.tar.gz
-#
-# patches_base=6.0.0.0rc3
-#
 
 Obsoletes:	heat < 7-9
 Provides:	heat
