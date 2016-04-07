@@ -32,7 +32,7 @@ Source20:	heat-dist.conf
 BuildArch: noarch
 BuildRequires: git
 BuildRequires: python2-devel
-BuildRequires: python-stevedore
+BuildRequires: python-stevedore >= 1.5.0
 BuildRequires: python-oslo-cache
 BuildRequires: python-oslo-context
 BuildRequires: python-oslo-middleware
@@ -71,7 +71,7 @@ BuildRequires: python-pbr
 BuildRequires: python-d2to1
 BuildRequires: python-cryptography
 # These are required to build the config file
-BuildRequires: python-oslo-config
+BuildRequires: python-oslo-config >= 2:3.7.0
 BuildRequires: python-redis
 BuildRequires: python-zmq
 
@@ -174,7 +174,7 @@ Requires: python-pbr
 Requires: python-argparse
 Requires: python-croniter
 Requires: python-eventlet
-Requires: python-stevedore >= 0.14
+Requires: python-stevedore >= 1.5.0
 Requires: python-greenlet
 Requires: python-httplib2
 Requires: python-iso8601
@@ -191,16 +191,16 @@ Requires: python-sqlalchemy
 Requires: python-migrate
 Requires: python-qpid
 Requires: python-webob
-Requires: python-six >= 1.4.1
+Requires: python-six >= 1.9.0
 Requires: PyYAML
 Requires: python-anyjson
 Requires: python-paramiko
-Requires: python-babel
-Requires: python-cryptography
+Requires: python-babel >= 1.3
+Requires: python-cryptography >= 1.0
 
 Requires: python-oslo-cache
 Requires: python-oslo-concurrency
-Requires: python-oslo-config >= 1:1.2.0
+Requires: python-oslo-config >= 2:3.7.0
 Requires: python-oslo-context
 Requires: python-oslo-utils
 Requires: python-oslo-db
