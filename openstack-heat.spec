@@ -66,6 +66,8 @@ BuildRequires: python-cryptography
 BuildRequires: python-oslo-config >= 2:3.7.0
 BuildRequires: python-redis
 BuildRequires: python-zmq
+# Required to compile translation files
+BuildRequires: python-babel
 
 BuildRequires: systemd-units
 
@@ -107,6 +109,18 @@ rm -rf {test-,}requirements.txt tools/{pip,test}-requires
 find contrib -name tests -type d | xargs rm -r
 
 %build
+# Generate i18n files
+
+%{__python2} setup.py compile_catalog
+echo >> heat.egg-info/SOURCES.txt
+ls heat/locale/*/LC_*/heat*mo >> heat.egg-info/SOURCES.txt
+sed -i '/heat\/locale\/.*\/LC_.*\/heat.*.po/d' heat.egg-info/SOURCES.txt
+sed -i '/heat\/locale\/heat.*.pot/d' heat.egg-info/SOURCES.txt
+
+# I need to remove .git to avoid egg-info regeneration on build
+rm -rf .git*
+
+# Build
 %{__python} setup.py build
 
 # Generate sample config and add the current directory to PYTHONPATH so
@@ -153,6 +167,13 @@ install -p -D -m 640 etc/heat/policy.json %{buildroot}/%{_sysconfdir}/heat
 # TODO: move this to setup.cfg
 cp -vr etc/heat/templates %{buildroot}/%{_sysconfdir}/heat
 cp -vr etc/heat/environment.d %{buildroot}/%{_sysconfdir}/heat
+
+# Install i18n files
+install -d -m 755 %{buildroot}%{_datadir}
+mv %{buildroot}%{python2_sitelib}/heat/locale %{buildroot}%{_datadir}/locale
+
+# Find language files
+%find_lang heat
 
 %description
 Heat provides AWS CloudFormation and CloudWatch functionality for OpenStack.
@@ -223,7 +244,7 @@ Requires(pre): shadow-utils
 %description common
 Components common to all OpenStack Heat services
 
-%files common
+%files common -f heat.lang
 %doc LICENSE
 %{_bindir}/heat-manage
 %{_bindir}/heat-keystone-setup
