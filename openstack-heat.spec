@@ -66,6 +66,8 @@ BuildRequires: python-cryptography
 BuildRequires: python-oslo-config >= 2:3.7.0
 BuildRequires: python-redis
 BuildRequires: python-zmq
+# Required to compile translation files
+BuildRequires: python-babel
 
 BuildRequires: systemd-units
 
@@ -108,6 +110,9 @@ find contrib -name tests -type d | xargs rm -r
 
 %build
 %{__python} setup.py build
+
+# Generate i18n files
+%{__python2} setup.py compile_catalog -d build/lib/heat/locale
 
 # Generate sample config and add the current directory to PYTHONPATH so
 # oslo-config-generator doesn't skip heat's entry points.
@@ -153,6 +158,15 @@ install -p -D -m 640 etc/heat/policy.json %{buildroot}/%{_sysconfdir}/heat
 # TODO: move this to setup.cfg
 cp -vr etc/heat/templates %{buildroot}/%{_sysconfdir}/heat
 cp -vr etc/heat/environment.d %{buildroot}/%{_sysconfdir}/heat
+
+# Install i18n .mo files (.po and .pot are not required)
+install -d -m 755 %{buildroot}%{_datadir}
+rm -f %{buildroot}%{python2_sitelib}/heat/locale/*/LC_*/heat*po
+rm -f %{buildroot}%{python2_sitelib}/heat/locale/*pot
+mv %{buildroot}%{python2_sitelib}/heat/locale %{buildroot}%{_datadir}/locale
+
+# Find language files
+%find_lang heat --all-name
 
 %description
 Heat provides AWS CloudFormation and CloudWatch functionality for OpenStack.
@@ -223,7 +237,7 @@ Requires(pre): shadow-utils
 %description common
 Components common to all OpenStack Heat services
 
-%files common
+%files common -f heat.lang
 %doc LICENSE
 %{_bindir}/heat-manage
 %{_bindir}/heat-keystone-setup
