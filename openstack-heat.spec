@@ -48,7 +48,6 @@ BuildRequires: python-netaddr
 BuildRequires: python-memcached
 BuildRequires: python-migrate
 BuildRequires: python-osprofiler
-BuildRequires: python-qpid
 BuildRequires: python-six
 BuildRequires: PyYAML
 BuildRequires: python-sphinx
@@ -181,7 +180,6 @@ Requires: python-requests
 Requires: python-routes
 Requires: python-sqlalchemy
 Requires: python-migrate
-Requires: python-qpid
 Requires: python-webob
 Requires: python-six >= 1.9.0
 Requires: PyYAML
