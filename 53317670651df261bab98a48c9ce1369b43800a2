@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dabed58f_1e5899f9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 85
+      },
+      "writtenOn": "2016-05-19T22:30:48Z",
+      "side": 1,
+      "message": "Commit message answers why not what\n\nIn this case, something like \"pthon-qpid is leftover dependency of oslo-incubator messaging code which since has been removed, oslo.messaging library is now used\"",
+      "revId": "53317670651df261bab98a48c9ce1369b43800a2",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
