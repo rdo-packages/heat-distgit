@@ -53,6 +53,7 @@ BuildRequires: PyYAML
 BuildRequires: python-sphinx
 BuildRequires: m2crypto
 BuildRequires: python-paramiko
+BuildRequires: python-yaql
 # These are required to build due to the requirements check added
 BuildRequires: python-paste-deploy
 BuildRequires: python-routes
@@ -187,6 +188,7 @@ Requires: python-anyjson
 Requires: python-paramiko
 Requires: python-babel >= 1.3
 Requires: python-cryptography >= 1.0
+Requires: python-yaql >= 1.1.0
 
 Requires: python-oslo-cache
 Requires: python-oslo-concurrency
