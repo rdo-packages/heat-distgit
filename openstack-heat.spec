@@ -393,3 +393,4 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+# REMOVEME: error caused by commit 
