@@ -67,6 +67,7 @@ BuildRequires: python-oslo-config >= 2:3.7.0
 BuildRequires: python-redis
 BuildRequires: python-zmq
 BuildRequires: openstack-utils
+BuildRequires: python-crypto
 # Required to compile translation files
 BuildRequires: python-babel
 
