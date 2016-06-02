@@ -67,6 +67,7 @@ BuildRequires: python-oslo-config >= 2:3.7.0
 BuildRequires: python-redis
 BuildRequires: python-zmq
 BuildRequires: openstack-utils
+BuildRequires: python-crypto
 # Required to compile translation files
 BuildRequires: python-babel
 
@@ -233,6 +234,18 @@ Requires: python-novaclient
 Requires: python-saharaclient
 Requires: python-swiftclient
 Requires: python-troveclient
+
+Requires: python-debtcollector >= 1.2.0
+Requires: python-keystoneauth1 >= 2.1.0
+Requires: python-crypto >= 2.6
+Requires: python-barbicanclient >= 4.0.0
+Requires: python-designateclient >= 1.5.0
+Requires: python-manilaclient >= 1.3.0
+Requires: python-mistralclient >= 1.0.0
+Requires: python-openstackclient >= 2.1.0
+Requires: python-zaqarclient >= 1.0.0
+Requires: pytz
+Requires: python-retrying >= 1.2.3
 
 Requires(pre): shadow-utils
 
