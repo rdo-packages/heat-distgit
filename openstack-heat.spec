@@ -66,7 +66,7 @@ BuildRequires: python-cryptography
 BuildRequires: python-oslo-config >= 2:3.7.0
 BuildRequires: python-redis
 BuildRequires: python-zmq
-BuildRequires: openstack-utils
+BuildRequires: crudini
 BuildRequires: python-crypto
 # Required to compile translation files
 BuildRequires: python-babel
@@ -154,7 +154,7 @@ rm -f %{buildroot}/usr/bin/cinder-keystone-setup
 
 install -p -D -m 640 etc/heat/heat.conf.sample %{buildroot}/%{_sysconfdir}/heat/heat.conf
 install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/heat/heat-dist.conf
-openstack-config --set %{buildroot}%{_datadir}/heat/heat-dist.conf revision heat_revision %{version}
+crudini --set %{buildroot}%{_datadir}/heat/heat-dist.conf revision heat_revision %{version}
 install -p -D -m 640 etc/heat/api-paste.ini %{buildroot}/%{_datadir}/heat/api-paste-dist.ini
 install -p -D -m 640 etc/heat/policy.json %{buildroot}/%{_sysconfdir}/heat
 
