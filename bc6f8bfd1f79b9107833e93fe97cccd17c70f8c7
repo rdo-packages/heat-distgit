@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a106d94_c31656f1",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 85
+      },
+      "writtenOn": "2016-07-27T22:19:07Z",
+      "side": 1,
+      "message": "keep man pages outside %if with_doc",
+      "revId": "bc6f8bfd1f79b9107833e93fe97cccd17c70f8c7",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
