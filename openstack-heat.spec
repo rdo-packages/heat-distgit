@@ -68,6 +68,8 @@ BuildRequires: python-redis
 BuildRequires: python-zmq
 BuildRequires: crudini
 BuildRequires: python-crypto
+BuildRequires: python-keystoneauth1
+BuildRequires: python-keystoneclient
 # Required to compile translation files
 BuildRequires: python-babel
 
@@ -75,7 +77,6 @@ BuildRequires: systemd-units
 
 %if 0%{?with_doc}
 BuildRequires: python-cinderclient
-BuildRequires: python-keystoneclient
 BuildRequires: python-novaclient
 BuildRequires: python-saharaclient
 BuildRequires: python-neutronclient
