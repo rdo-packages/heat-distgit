@@ -70,6 +70,8 @@ BuildRequires: crudini
 BuildRequires: python-crypto
 BuildRequires: python-keystoneauth1
 BuildRequires: python-keystoneclient
+# Required to build man pages
+BuildRequires: python-swiftclient
 # Required to compile translation files
 BuildRequires: python-babel
 
@@ -80,7 +82,6 @@ BuildRequires: python-cinderclient
 BuildRequires: python-novaclient
 BuildRequires: python-saharaclient
 BuildRequires: python-neutronclient
-BuildRequires: python-swiftclient
 BuildRequires: python-heatclient
 BuildRequires: python-ceilometerclient
 BuildRequires: python-glanceclient
@@ -141,16 +142,16 @@ install -p -D -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/openstack-heat-api-cloud
 mkdir -p %{buildroot}/var/lib/heat/
 mkdir -p %{buildroot}/etc/heat/
 
-%if 0%{?with_doc}
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
 pushd doc
+%if 0%{?with_doc}
 sphinx-build -b html -d build/doctrees source build/html
+%endif
 sphinx-build -b man -d build/doctrees source build/man
 
 mkdir -p %{buildroot}%{_mandir}/man1
 install -p -D -m 644 build/man/*.1 %{buildroot}%{_mandir}/man1/
 popd
-%endif
 
 rm -f %{buildroot}/%{_bindir}/heat-db-setup
 rm -f %{buildroot}/%{_mandir}/man1/heat-db-setup.*
@@ -277,11 +278,9 @@ Components common to all OpenStack Heat services
 %config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/policy.json
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/environment.d/*
 %config(noreplace) %attr(-,root,heat) %{_sysconfdir}/heat/templates/*
-%if 0%{?with_doc}
 %{_mandir}/man1/heat-keystone-setup.1.gz
 %{_mandir}/man1/heat-keystone-setup-domain.1.gz
 %{_mandir}/man1/heat-manage.1.gz
-%endif
 
 %files -n python-heat-tests
 %license LICENSE
@@ -314,9 +313,7 @@ OpenStack API for starting CloudFormation templates on OpenStack
 %endif
 %{_bindir}/heat-engine
 %{_unitdir}/openstack-heat-engine.service
-%if 0%{?with_doc}
 %{_mandir}/man1/heat-engine.1.gz
-%endif
 
 %post engine
 %systemd_post openstack-heat-engine.service
@@ -348,9 +345,7 @@ OpenStack-native ReST API to the Heat Engine
 %{_bindir}/heat-api
 %{_bindir}/heat-wsgi-api
 %{_unitdir}/openstack-heat-api.service
-%if 0%{?with_doc}
 %{_mandir}/man1/heat-api.1.gz
-%endif
 
 %post api
 %systemd_post openstack-heat-api.service
@@ -382,9 +377,7 @@ AWS CloudFormation-compatible API to the Heat Engine
 %{_bindir}/heat-api-cfn
 %{_bindir}/heat-wsgi-api-cfn
 %{_unitdir}/openstack-heat-api-cfn.service
-%if 0%{?with_doc}
 %{_mandir}/man1/heat-api-cfn.1.gz
-%endif
 
 %post api-cfn
 %systemd_post openstack-heat-api-cloudwatch.service
@@ -416,9 +409,7 @@ AWS CloudWatch-compatible API to the Heat Engine
 %{_bindir}/heat-api-cloudwatch
 %{_bindir}/heat-wsgi-api-cloudwatch
 %{_unitdir}/openstack-heat-api-cloudwatch.service
-%if 0%{?with_doc}
 %{_mandir}/man1/heat-api-cloudwatch.1.gz
-%endif
 
 %post api-cloudwatch
 %systemd_post openstack-heat-api-cfn.service
