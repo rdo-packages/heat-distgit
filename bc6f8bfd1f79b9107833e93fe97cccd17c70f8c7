@@ -16,6 +16,24 @@
       "revId": "bc6f8bfd1f79b9107833e93fe97cccd17c70f8c7",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_839f3e50",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 127
+      },
+      "writtenOn": "2016-07-28T02:13:11Z",
+      "side": 1,
+      "message": "would be good idea but let\u0027s do that as part of a separate review.  This changeset is about allowing .config generations to work.",
+      "parentUuid": "1a106d94_c31656f1",
+      "revId": "bc6f8bfd1f79b9107833e93fe97cccd17c70f8c7",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
     }
   ]
 }
