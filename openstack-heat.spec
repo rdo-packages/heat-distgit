@@ -354,13 +354,13 @@ AWS CloudFormation-compatible API to the Heat Engine
 %endif
 
 %post api-cfn
-%systemd_post openstack-heat-api-cloudwatch.service
+%systemd_post openstack-heat-api-cfn.service
 
 %preun api-cfn
-%systemd_preun openstack-heat-api-cloudwatch.service
+%systemd_preun openstack-heat-api-cfn.service
 
 %postun api-cfn
-%systemd_postun_with_restart openstack-heat-api-cloudwatch.service
+%systemd_postun_with_restart openstack-heat-api-cfn.service
 
 
 %package api-cloudwatch
@@ -388,13 +388,13 @@ AWS CloudWatch-compatible API to the Heat Engine
 %endif
 
 %post api-cloudwatch
-%systemd_post openstack-heat-api-cfn.service
+%systemd_post openstack-heat-api-cloudwatch.service
 
 %preun api-cloudwatch
-%systemd_preun openstack-heat-api-cfn.service
+%systemd_preun openstack-heat-api-cloudwatch.service
 
 %postun api-cloudwatch
-%systemd_postun_with_restart openstack-heat-api-cfn.service
+%systemd_postun_with_restart openstack-heat-api-cloudwatch.service
 
 
 %changelog
