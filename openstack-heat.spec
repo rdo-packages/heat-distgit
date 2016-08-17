@@ -97,6 +97,10 @@ Requires: %{name}-api-cloudwatch = %{epoch}:%{version}-%{release}
 Summary:        Heat tests
 Requires:       %{name}-common = %{epoch}:%{version}-%{release}
 
+Requires: python-mox3
+Requires: python-oslotest
+Requires: python-testresources
+
 %description -n python-heat-tests
 Heat provides AWS CloudFormation and CloudWatch functionality for OpenStack.
 This package contains the Heat test files.
