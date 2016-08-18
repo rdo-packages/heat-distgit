@@ -249,8 +249,6 @@ Requires: python-manilaclient >= 1.3.0
 Requires: python-mistralclient >= 1.0.0
 Requires: python-openstackclient >= 2.1.0
 Requires: python-zaqarclient >= 1.0.0
-Requires: python-aodhclient >= 0.6.0
-Requires: python-magnumclient >= 2.2.0
 Requires: pytz
 Requires: python-retrying >= 1.2.3
 
