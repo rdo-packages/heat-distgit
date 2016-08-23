@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a106d94_cf25d00b",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 3
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 111
+      },
+      "writtenOn": "2016-08-23T18:26:07Z",
+      "side": 1,
+      "message": "Add this line here \n%exclude {python2_sitelib}/heat_integrationtests to avoid shipping twice the same files and creating conflicts.",
+      "revId": "582d7932f54cba2cfc8d9275d270fc02cd745f31",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
