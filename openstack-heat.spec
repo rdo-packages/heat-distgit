@@ -21,6 +21,8 @@ Source5:	openstack-heat-api-cloudwatch.service
 
 Source20:	heat-dist.conf
 
+Patch0001:      0001-setup-cfg.patch
+
 BuildArch: noarch
 BuildRequires: git
 BuildRequires: python2-devel
@@ -107,6 +109,8 @@ This package contains the Heat test files.
 
 %prep
 %setup -q -n heat-%{upstream_version}
+
+%patch0001 -p1
 
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
@@ -264,7 +268,8 @@ Components common to all OpenStack Heat services
 %{_bindir}/heat-manage
 %{_bindir}/heat-keystone-setup
 %{_bindir}/heat-keystone-setup-domain
-%{python_sitelib}/heat*
+%{python2_sitelib}/heat
+%{python2_sitelib}/*.egg-info
 %exclude %{python2_sitelib}/heat/tests
 %attr(-, root, heat) %{_datadir}/heat/heat-dist.conf
 %attr(-, root, heat) %{_datadir}/heat/api-paste-dist.ini
@@ -286,6 +291,7 @@ Components common to all OpenStack Heat services
 %files -n python-heat-tests
 %license LICENSE
 %{python2_sitelib}/heat/tests
+%{python2_sitelib}/heat_integrationtests
 
 %pre common
 # 187:187 for heat - rhbz#845078
