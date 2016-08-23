@@ -286,6 +286,7 @@ Components common to all OpenStack Heat services
 %files -n python-heat-tests
 %license LICENSE
 %{python2_sitelib}/heat/tests
+%{python2_sitelib}/heat_integrationtests
 
 %pre common
 # 187:187 for heat - rhbz#845078
