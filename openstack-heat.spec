@@ -102,7 +102,8 @@ Requires: python-oslotest
 Requires: python-testresources
 
 %description -n python-heat-tests
-Heat provides AWS CloudFormation and CloudWatch functionality for OpenStack.
+Heat is a service to orchestrate composite cloud applications using a
+declarative template format through an OpenStack-native REST API.
 This package contains the Heat test files.
 
 %prep
@@ -177,8 +178,8 @@ mv %{buildroot}%{python2_sitelib}/heat/locale %{buildroot}%{_datadir}/locale
 %find_lang heat --all-name
 
 %description
-Heat provides AWS CloudFormation and CloudWatch functionality for OpenStack.
-
+Heat is a service to orchestrate composite cloud applications using a
+declarative template format through an OpenStack-native REST API.
 
 %package common
 Summary: Heat common
@@ -307,7 +308,11 @@ Requires(preun): systemd
 Requires(postun): systemd
 
 %description engine
-OpenStack API for starting CloudFormation templates on OpenStack
+Heat is a service to orchestrate composite cloud applications using a
+declarative template format through an OpenStack-native REST API.
+
+The heat-engine's main responsibility is to orchestrate the launching of
+templates and provide events back to the API consumer.
 
 %files engine
 %doc README.rst LICENSE
@@ -340,7 +345,11 @@ Requires(preun): systemd
 Requires(postun): systemd
 
 %description api
-OpenStack-native ReST API to the Heat Engine
+Heat is a service to orchestrate composite cloud applications using a
+declarative template format through an OpenStack-native REST API.
+
+The heat-api component provides an OpenStack-native REST API that processes API
+requests by sending them to the heat-engine over RPC.
 
 %files api
 %doc README.rst LICENSE
@@ -374,7 +383,12 @@ Requires(preun): systemd
 Requires(postun): systemd
 
 %description api-cfn
-AWS CloudFormation-compatible API to the Heat Engine
+Heat is a service to orchestrate composite cloud applications using a
+declarative template format through an OpenStack-native REST API.
+
+The heat-api-cfn component provides an AWS Query API that is compatible with
+AWS CloudFormation and processes API requests by sending them to the
+heat-engine over RPC.
 
 %files api-cfn
 %doc README.rst LICENSE
@@ -408,6 +422,9 @@ Requires(preun): systemd
 Requires(postun): systemd
 
 %description api-cloudwatch
+Heat is a service to orchestrate composite cloud applications using a
+declarative template format through an OpenStack-native REST API.
+
 AWS CloudWatch-compatible API to the Heat Engine
 
 %files api-cloudwatch
