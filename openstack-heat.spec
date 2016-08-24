@@ -21,8 +21,6 @@ Source5:	openstack-heat-api-cloudwatch.service
 
 Source20:	heat-dist.conf
 
-Patch0001:      0001-setup-cfg.patch
-
 BuildArch: noarch
 BuildRequires: git
 BuildRequires: python2-devel
@@ -109,8 +107,6 @@ This package contains the Heat test files.
 
 %prep
 %setup -q -n heat-%{upstream_version}
-
-%patch0001 -p1
 
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
