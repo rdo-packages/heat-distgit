@@ -1,0 +1,2 @@
+[tempest.test_plugins]
+heat_tests = heat_integrationtests.plugin:HeatTempestPlugin
