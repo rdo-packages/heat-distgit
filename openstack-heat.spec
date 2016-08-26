@@ -20,6 +20,7 @@ Source4:	openstack-heat-engine.service
 Source5:	openstack-heat-api-cloudwatch.service
 
 Source20:	heat-dist.conf
+Source21:	heat_integrationtests-entry-points.txt
 
 BuildArch: noarch
 BuildRequires: git
@@ -106,6 +107,37 @@ Heat is a service to orchestrate composite cloud applications using a
 declarative template format through an OpenStack-native REST API.
 This package contains the Heat test files.
 
+%package -n python-heat-tests-tempest
+Summary:        Heat Tempest tests
+
+Requires: python-oslotest
+Requires: python-oslo-log
+Requires: python-oslo-utils
+Requires: python-heatclient
+Requires: python-cinderclient
+Requires: python-zaqarclient
+Requires: python-keystoneclient
+Requires: python-swiftclient
+Requires: python-paramiko
+Requires: python-kombu
+Requires: python-oslo-config >= 2:3.7.0
+Requires: python-oslo-concurrency
+Requires: python-requests
+Requires: python-eventlet
+Requires: PyYAML
+Requires: python-six >= 1.9.0
+Requires: openstack-tempest
+
+%description -n python-heat-tests-tempest
+Heat is a service to orchestrate composite cloud applications using a
+declarative template format through an OpenStack-native REST API.
+This package contributes a tempest plugin for Heat integration testing.
+
+%files -n python-heat-tests-tempest
+%license LICENSE
+%{python2_sitelib}/heat_integrationtests
+%{python2_sitelib}/heat_integrationtests-%{upstream_version}-*.egg-info
+
 %prep
 %setup -q -n heat-%{upstream_version}
 
@@ -129,6 +161,24 @@ PYTHONPATH=. oslo-config-generator --config-file=config-generator.conf
 %install
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
 sed -i -e '/^#!/,1 d' %{buildroot}/%{python_sitelib}/heat/db/sqlalchemy/migrate_repo/manage.py
+
+# Dulicate unmodified egg-info directory for the tempest plugin subpackage
+egg_path=$(ls -d %{buildroot}/%{python_sitelib}/heat-%{upstream_version}-*.egg-info)
+tempest_egg_path=$(echo $egg_path | sed 's:site-packages/heat-:site-packages/heat_integrationtests-:')
+cp -vr $egg_path $tempest_egg_path
+
+# Remove any reference to heat_integrationtests in the installed entry points,
+# sources, etc, so the tempest plugin entry point doesn't go into the common package
+sed -i '/heat_integrationtests/d' $egg_path/entry_points.txt
+sed -i '/heat_integrationtests/d' $egg_path/SOURCES.txt
+sed -i '/heat_integrationtests/d' $egg_path/top_level.txt
+
+# Fix egg-info packaged in python-heat-tests-tempest
+install -p -D -m 644 %{SOURCE21} $tempest_egg_path/entry_points.txt
+sed -i 's/^Name: heat/Name: heat_integrationtests/' $tempest_egg_path/PKG-INFO
+sed -i '/heat_integrationtests/!d' $tempest_egg_path/SOURCES.txt
+sed -i '/heat_integrationtests/!d' $tempest_egg_path/top_level.txt
+
 mkdir -p %{buildroot}/var/log/heat/
 mkdir -p %{buildroot}/var/run/heat/
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-heat
@@ -266,7 +316,7 @@ Components common to all OpenStack Heat services
 %{_bindir}/heat-keystone-setup
 %{_bindir}/heat-keystone-setup-domain
 %{python2_sitelib}/heat
-%{python2_sitelib}/*.egg-info
+%{python2_sitelib}/heat-%{upstream_version}-*.egg-info
 %exclude %{python2_sitelib}/heat/tests
 %attr(-, root, heat) %{_datadir}/heat/heat-dist.conf
 %attr(-, root, heat) %{_datadir}/heat/api-paste-dist.ini
@@ -288,7 +338,6 @@ Components common to all OpenStack Heat services
 %files -n python-heat-tests
 %license LICENSE
 %{python2_sitelib}/heat/tests
-%{python2_sitelib}/heat_integrationtests
 
 %pre common
 # 187:187 for heat - rhbz#845078
