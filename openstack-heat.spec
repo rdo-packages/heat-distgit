@@ -100,6 +100,22 @@ Requires:       %{name}-common = %{epoch}:%{version}-%{release}
 Requires: python-mox3
 Requires: python-oslotest
 Requires: python-testresources
+Requires: python-oslotest
+Requires: python-oslo-log
+Requires: python-oslo-utils
+Requires: python-heatclient
+Requires: python-cinderclient
+Requires: python-zaqarclient
+Requires: python-keystoneclient
+Requires: python-swiftclient
+Requires: python-paramiko
+Requires: python-kombu
+Requires: python-oslo-config >= 2:3.7.0
+Requires: python-oslo-concurrency
+Requires: python-requests
+Requires: python-eventlet
+Requires: PyYAML
+Requires: python-six >= 1.9.0
 
 %description -n python-heat-tests
 Heat is a service to orchestrate composite cloud applications using a
@@ -129,6 +145,23 @@ PYTHONPATH=. oslo-config-generator --config-file=config-generator.conf
 %install
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
 sed -i -e '/^#!/,1 d' %{buildroot}/%{python_sitelib}/heat/db/sqlalchemy/migrate_repo/manage.py
+
+# Create fake egg-info for the tempest plugin
+# TODO switch to %{service} everywhere as in openstack-example.spec
+%global service heat
+egg_path=%{buildroot}%{python2_sitelib}/%{service}-*.egg-info
+tempest_egg_path=%{buildroot}%{python2_sitelib}/%{service}_tests.egg-info
+mkdir $tempest_egg_path
+grep "tempest\|Tempest" %{service}.egg-info/entry_points.txt >$tempest_egg_path/entry_points.txt
+cat > $tempest_egg_path/PKG-INFO <<EOF
+Metadata-Version: 1.1
+Name: %{service}_tests
+Version: %{upstream_version}
+Summary: %{summary} Tempest Plugin
+EOF
+# Remove any reference to Tempest plugin in the main package entry point
+sed -i "/tempest\|Tempest/d" $egg_path/entry_points.txt
+
 mkdir -p %{buildroot}/var/log/heat/
 mkdir -p %{buildroot}/var/run/heat/
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-heat
@@ -265,7 +298,7 @@ Components common to all OpenStack Heat services
 %{_bindir}/heat-keystone-setup
 %{_bindir}/heat-keystone-setup-domain
 %{python2_sitelib}/heat
-%{python2_sitelib}/*.egg-info
+%{python2_sitelib}/heat-%{upstream_version}-*.egg-info
 %exclude %{python2_sitelib}/heat/tests
 %attr(-, root, heat) %{_datadir}/heat/heat-dist.conf
 %attr(-, root, heat) %{_datadir}/heat/api-paste-dist.ini
@@ -288,6 +321,7 @@ Components common to all OpenStack Heat services
 %license LICENSE
 %{python2_sitelib}/heat/tests
 %{python2_sitelib}/heat_integrationtests
+%{python2_sitelib}/%{service}_tests.egg-info
 
 %pre common
 # 187:187 for heat - rhbz#845078
