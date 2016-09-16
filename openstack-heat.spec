@@ -1,3 +1,4 @@
+%global milestone .0b2
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
@@ -6,11 +7,15 @@ Summary:	OpenStack Orchestration (heat)
 # Liberty semver reset
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:		1
-Version:	XXX
-Release:	XXX
+Version:	7.0.0
+Release:	0.1%{?milestone}%{?dist}
 License:	ASL 2.0
 URL:		http://www.openstack.org
 Source0:	https://tarballs.openstack.org/heat/heat-%{upstream_version}.tar.gz
+#
+# patches_base=7.0.0.0b2
+#
+
 Obsoletes:	heat < 7-9
 Provides:	heat
 
@@ -451,3 +456,6 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Fri Sep 16 2016 Haikel Guemar <hguemar@fedoraproject.org> 1:7.0.0-0.1
+- Update to 7.0.0.0b2
+
