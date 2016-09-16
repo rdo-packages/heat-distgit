@@ -24,7 +24,7 @@ Source20:	heat-dist.conf
 BuildArch: noarch
 BuildRequires: git
 BuildRequires: python2-devel
-BuildRequires: python-stevedore >= 1.5.0
+BuildRequires: python-stevedore >= 1.16.0
 BuildRequires: python-oslo-cache
 BuildRequires: python-oslo-context
 BuildRequires: python-oslo-middleware
@@ -189,7 +189,7 @@ Requires: python-pbr
 Requires: python-argparse
 Requires: python-croniter
 Requires: python-eventlet
-Requires: python-stevedore >= 1.5.0
+Requires: python-stevedore >= 1.16.0
 Requires: python-greenlet
 Requires: python-httplib2
 Requires: python-iso8601
@@ -209,13 +209,13 @@ Requires: python-six >= 1.9.0
 Requires: PyYAML
 Requires: python-anyjson
 Requires: python-paramiko
-Requires: python-babel >= 1.3
+Requires: python-babel >= 2.3.4
 Requires: python-cryptography >= 1.0
 Requires: python-yaql >= 1.1.0
 
 Requires: python-oslo-cache
 Requires: python-oslo-concurrency
-Requires: python-oslo-config >= 2:3.7.0
+Requires: python-oslo-config >= 2:3.14.0
 Requires: python-oslo-context
 Requires: python-oslo-utils
 Requires: python-oslo-db
@@ -242,16 +242,16 @@ Requires: python-swiftclient
 Requires: python-troveclient
 
 Requires: python-debtcollector >= 1.2.0
-Requires: python-keystoneauth1 >= 2.1.0
+Requires: python-keystoneauth1 >= 2.10.0
 Requires: python-crypto >= 2.6
 Requires: python-barbicanclient >= 4.0.0
 Requires: python-designateclient >= 1.5.0
-Requires: python-manilaclient >= 1.3.0
-Requires: python-mistralclient >= 1.0.0
+Requires: python-manilaclient >= 1.10.0
+Requires: python-mistralclient >= 2.0.0
 Requires: python-openstackclient >= 2.1.0
 Requires: python-zaqarclient >= 1.0.0
-Requires: python-aodhclient >= 0.6.0
-Requires: python-magnumclient >= 2.2.0
+Requires: python-aodhclient >= 0.5.0
+Requires: python-magnumclient >= 2.0.0
 Requires: pytz
 Requires: python-retrying >= 1.2.3
 
