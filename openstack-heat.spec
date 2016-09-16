@@ -1,3 +1,4 @@
+%{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:		openstack-heat
@@ -9,7 +10,7 @@ Version:	XXX
 Release:	XXX
 License:	ASL 2.0
 URL:		http://www.openstack.org
-Source0:	http://tarballs.openstack.org/heat/heat-master.tar.gz
+Source0:	https://tarballs.openstack.org/heat/heat-%{upstream_version}.tar.gz
 Obsoletes:	heat < 7-9
 Provides:	heat
 
