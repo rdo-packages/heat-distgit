@@ -38,7 +38,6 @@ BuildRequires: python-oslo-db
 BuildRequires: python-oslo-utils
 BuildRequires: python-oslo-log
 BuildRequires: python-oslo-versionedobjects
-BuildRequires: python-argparse
 BuildRequires: python-eventlet
 BuildRequires: python-greenlet
 BuildRequires: python-httplib2
@@ -187,7 +186,6 @@ Summary: Heat common
 Group: System Environment/Base
 
 Requires: python-pbr
-Requires: python-argparse
 Requires: python-croniter
 Requires: python-eventlet
 Requires: python-stevedore >= 1.16.0
