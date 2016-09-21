@@ -22,6 +22,9 @@ Source5:	openstack-heat-api-cloudwatch.service
 
 Source20:	heat-dist.conf
 
+# Test https://review.openstack.org/#/c/374340/ to fix https://launchpad.net/bugs/1626173
+Patch0001: 0001-PATCH-Dont-delete-RawTemplate-if-it-referenced-by-a-stack.patch
+
 BuildArch: noarch
 BuildRequires: git
 BuildRequires: python2-devel

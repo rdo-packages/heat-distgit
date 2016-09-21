@@ -1,0 +1,67 @@
+From a156228b126c55f14348a1fd1df9f11264c53b33 Mon Sep 17 00:00:00 2001
+From: Zane Bitter <zbitter@redhat.com>
+Date: Wed, 21 Sep 2016 14:57:22 -0400
+Subject: [PATCH] Don't delete RawTemplate if it referenced by a stack
+
+When creating a nested stack and pre-storing the raw template, we
+previously used a try/finally block to ensure that if the stack creation
+was never started (e.g. because the template failed validation at the other
+end) that we would delete the raw template again rather than leave it lying
+around in the DB. However, this catches too broad a range of exceptions. If
+an exception such as GreenletExit occurs inside this block, then we will
+attempt to delete the raw template, resulting in a DB IntegrityError either
+here (because the template id is already referenced by a stack) or when
+trying to store the stack (because the template is gone).
+
+Resolve this by only doing the cleanup on HeatExceptions, which indicates
+that the other engine has bailed out without storing the stack.
+
+Change-Id: Ie24a82b7ce16281c72d4eb66cca8683248628b46
+Closes-Bug: #1626173
+---
+ heat/engine/resources/stack_resource.py | 18 ++++++++----------
+ 1 file changed, 8 insertions(+), 10 deletions(-)
+
+diff --git a/heat/engine/resources/stack_resource.py b/heat/engine/resources/stack_resource.py
+index 751c6c1..378a44a 100644
+--- a/heat/engine/resources/stack_resource.py
++++ b/heat/engine/resources/stack_resource.py
+@@ -283,14 +283,14 @@ class StackResource(resource.Resource):
+             'parent_resource_name': self.name
+         })
+         with self.translate_remote_exceptions:
+-            result = None
+             try:
+                 result = self.rpc_client()._create_stack(self.context,
+                                                          **kwargs)
+-            finally:
+-                if adopt_data is None and not result:
+-                    raw_template.RawTemplate.delete(self.context,
+-                                                    kwargs['template_id'])
++            except exception.HeatException:
++                with excutils.save_and_reraise_exception():
++                    if adopt_data is None:
++                        raw_template.RawTemplate.delete(self.context,
++                                                        kwargs['template_id'])
+ 
+         self.resource_id_set(result['stack_id'])
+ 
+@@ -478,12 +478,10 @@ class StackResource(resource.Resource):
+             'args': {rpc_api.PARAM_TIMEOUT: timeout_mins}
+         })
+         with self.translate_remote_exceptions:
+-            result = None
+             try:
+-                result = self.rpc_client()._update_stack(self.context,
+-                                                         **kwargs)
+-            finally:
+-                if not result:
++                self.rpc_client()._update_stack(self.context, **kwargs)
++            except exception.HeatException:
++                with excutils.save_and_reraise_exception():
+                     raw_template.RawTemplate.delete(self.context,
+                                                     kwargs['template_id'])
+         return cookie
+-- 
+1.9.1
+
