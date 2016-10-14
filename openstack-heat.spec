@@ -19,6 +19,7 @@ Source2:	openstack-heat-api.service
 Source3:	openstack-heat-api-cfn.service
 Source4:	openstack-heat-engine.service
 Source5:	openstack-heat-api-cloudwatch.service
+Source6:	openstack-heat-all.service
 
 Source20:	heat-dist.conf
 
@@ -162,6 +163,7 @@ install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-heat-api.servi
 install -p -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/openstack-heat-api-cfn.service
 install -p -D -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/openstack-heat-engine.service
 install -p -D -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/openstack-heat-api-cloudwatch.service
+install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-heat-all.service
 
 mkdir -p %{buildroot}/var/lib/heat/
 mkdir -p %{buildroot}/etc/heat/
@@ -345,7 +347,6 @@ templates and provide events back to the API consumer.
 %doc doc/build/html/man/heat-engine.html
 %endif
 %{_bindir}/heat-engine
-%{_bindir}/heat-all
 %{_unitdir}/openstack-heat-engine.service
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-engine.1.gz
@@ -473,6 +474,39 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 %postun api-cloudwatch
 %systemd_postun_with_restart openstack-heat-api-cfn.service
+
+
+%package monolith
+Summary: The combined Heat engine/API
+
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
+
+%description monolith
+Heat is a service to orchestrate composite cloud applications using a
+declarative template format through an OpenStack-native REST API.
+
+The heat-all process bundles together any (or all) of heat-engine, heat-api,
+heat-cfn-api, and heat-cloudwatch-api into a single process. This can be used
+to bootstrap a minimal TripleO deployment, but is not the recommended way of
+running the Heat service in general.
+
+%files monolith
+%doc README.rst LICENSE
+%{_bindir}/heat-all
+%{_unitdir}/openstack-heat-all.service
+
+%post monolith
+%systemd_post openstack-heat-all.service
+
+%preun monolith
+%systemd_preun openstack-heat-all.service
+
+%postun monolith
+%systemd_postun_with_restart openstack-heat-all.service
 
 
 %changelog
