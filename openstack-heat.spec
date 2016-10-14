@@ -94,8 +94,8 @@ Requires: %{name}-api-cfn = %{epoch}:%{version}-%{release}
 Requires: %{name}-api-cloudwatch = %{epoch}:%{version}-%{release}
 
 %package -n python-heat-tests
-Summary:        Heat tests
-Requires:       %{name}-common = %{epoch}:%{version}-%{release}
+Summary:	Heat tests
+Requires:	%{name}-common = %{epoch}:%{version}-%{release}
 
 Requires: python-mox3
 Requires: python-oslotest
