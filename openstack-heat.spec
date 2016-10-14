@@ -319,6 +319,7 @@ templates and provide events back to the API consumer.
 %doc doc/build/html/man/heat-engine.html
 %endif
 %{_bindir}/heat-engine
+%{_bindir}/heat-all
 %{_unitdir}/openstack-heat-engine.service
 %if 0%{?with_doc}
 %{_mandir}/man1/heat-engine.1.gz
