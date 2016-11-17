@@ -8,8 +8,8 @@ Summary:	OpenStack Orchestration (heat)
 # Liberty semver reset
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:		1
-Version:	5.0.1
-Release:	1%{?milestone}%{?dist}
+Version:	5.0.3
+Release:	1%{?dist}
 License:	ASL 2.0
 URL:		http://www.openstack.org
 
@@ -165,7 +165,7 @@ Group: System Environment/Base
 Requires: python-pbr
 Requires: python-argparse
 Requires: python-eventlet
-Requires: python-stevedore >= 0.14
+Requires: python-stevedore >= 1.5.0
 Requires: python-greenlet
 Requires: python-httplib2
 Requires: python-iso8601
@@ -182,7 +182,7 @@ Requires: python-sqlalchemy
 Requires: python-migrate
 Requires: python-qpid
 Requires: python-webob
-Requires: python-six >= 1.4.1
+Requires: python-six >= 1.9.0
 Requires: PyYAML
 Requires: python-anyjson
 Requires: python-paramiko
@@ -192,7 +192,7 @@ Requires: python-cryptography
 
 Requires: python-oslo-cache
 Requires: python-oslo-concurrency
-Requires: python-oslo-config >= 1:1.2.0
+Requires: python-oslo-config >= 1:2.3.0
 Requires: python-oslo-context
 Requires: python-oslo-utils
 Requires: python-oslo-db
@@ -218,7 +218,7 @@ Requires: python-saharaclient
 Requires: python-swiftclient
 Requires: python-troveclient
 
-Requires: python-oslo-config >= 1:1.2.0
+Requires: python-oslo-config >= 1:2.3.0
 Requires: python-oslo-context
 Requires: python-oslo-utils
 Requires: python-oslo-db
@@ -411,6 +411,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Thu Nov 17 2016 Haikel Guemar <hguemar@fedoraproject.org> 1:5.0.3-1
+- Update to 5.0.3
+
 * Wed Feb 17 2016 Alan Pevec <alan.pevec@redhat.com> 1:5.0.1-1
 - Update to 5.0.1
 
