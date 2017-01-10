@@ -7,7 +7,7 @@ Summary:	OpenStack Orchestration (heat)
 # Liberty semver reset
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:		1
-Version:	6.0.0
+Version:	6.1.0
 Release:	1%{?dist}
 License:	ASL 2.0
 URL:		http://www.openstack.org
@@ -65,6 +65,7 @@ BuildRequires: python-webob
 BuildRequires: python-pbr
 BuildRequires: python-d2to1
 BuildRequires: python-cryptography
+BuildRequires: python-crypto
 # These are required to build the config file
 BuildRequires: python-oslo-config >= 2:3.7.0
 BuildRequires: python-redis
@@ -192,6 +193,7 @@ Requires: python-anyjson
 Requires: python-paramiko
 Requires: python-babel >= 1.3
 Requires: python-cryptography >= 1.0
+Requires: python-crypto >= 2.6
 
 Requires: python-oslo-cache
 Requires: python-oslo-concurrency
@@ -398,6 +400,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Tue Jan 10 2017 Haikel Guemar <hguemar@fedoraproject.org> 1:6.1.0-1
+- Update to 6.1.0
+
 * Sat Apr 02 2016 Haikel Guemar <hguemar@fedoraproject.org> 1:6.0.0-0.2.0rc3
 - Update to 6.0.0.0rc3
 
