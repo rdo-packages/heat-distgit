@@ -24,6 +24,7 @@ Source20:	heat-dist.conf
 
 BuildArch: noarch
 BuildRequires: git
+BuildRequires: openstack-macros
 BuildRequires: python2-devel
 BuildRequires: python-stevedore >= 1.16.0
 BuildRequires: python-oslo-cache
