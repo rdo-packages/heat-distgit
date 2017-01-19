@@ -117,6 +117,7 @@ Requires: python-requests
 Requires: python-eventlet
 Requires: PyYAML
 Requires: python-six >= 1.9.0
+Requires: python-gabbi
 
 %description -n python-heat-tests
 Heat is a service to orchestrate composite cloud applications using a
