@@ -475,3 +475,4 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+# REMOVEME: error caused by commit http://git.openstack.org/cgit/openstack/heat/commit/?id=b59be50c074ff63e342f77e46ad7120e7dfbdd3f
