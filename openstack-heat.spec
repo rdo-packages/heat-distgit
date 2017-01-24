@@ -464,3 +464,4 @@ AWS CloudWatch-compatible API to the Heat Engine
 * Fri Sep 16 2016 Haikel Guemar <hguemar@fedoraproject.org> 1:7.0.0-0.1.0b2
 - Update to 7.0.0.0b2
 
+# REMOVEME: error caused by commit http://git.openstack.org/cgit/openstack/heat/commit/?id=b883783627b80abbeeebfd9b53b661927938c1c6
