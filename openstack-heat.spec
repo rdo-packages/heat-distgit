@@ -64,7 +64,7 @@ BuildRequires: python-pbr
 BuildRequires: python-d2to1
 BuildRequires: python-cryptography
 # These are required to build the config file
-BuildRequires: python-oslo-config >= 2:3.7.0
+BuildRequires: python-oslo-config
 BuildRequires: python-redis
 BuildRequires: python-zmq
 BuildRequires: crudini
@@ -111,7 +111,7 @@ Requires: python-keystoneclient
 Requires: python-swiftclient
 Requires: python-paramiko
 Requires: python-kombu
-Requires: python-oslo-config >= 2:3.7.0
+Requires: python-oslo-config >= 2:3.14.0
 Requires: python-oslo-concurrency
 Requires: python-requests
 Requires: python-eventlet
@@ -212,7 +212,7 @@ Group: System Environment/Base
 Requires: python-pbr
 Requires: python-croniter
 Requires: python-eventlet
-Requires: python-stevedore >= 1.16.0
+Requires: python-stevedore >= 1.17.1
 Requires: python-greenlet
 Requires: python-httplib2
 Requires: python-iso8601
@@ -236,47 +236,48 @@ Requires: python-babel >= 2.3.4
 Requires: python-cryptography >= 1.0
 Requires: python-yaql >= 1.1.0
 
-Requires: python-oslo-cache
-Requires: python-oslo-concurrency
+Requires: python-oslo-cache >= 1.5.0
+Requires: python-oslo-concurrency >= 3.8.0
 Requires: python-oslo-config >= 2:3.14.0
-Requires: python-oslo-context
-Requires: python-oslo-utils
-Requires: python-oslo-db
-Requires: python-oslo-i18n
-Requires: python-oslo-middleware
-Requires: python-oslo-messaging
-Requires: python-oslo-policy
-Requires: python-oslo-reports
-Requires: python-oslo-serialization
-Requires: python-oslo-service
-Requires: python-oslo-log
-Requires: python-oslo-versionedobjects
+Requires: python-oslo-context >= 2.9.0
+Requires: python-oslo-utils >= 3.18.0
+Requires: python-oslo-db >= 4.15.0
+Requires: python-oslo-i18n >= 2.1.0
+Requires: python-oslo-middleware >= 3.0.0
+Requires: python-oslo-messaging >= 5.14.0
+Requires: python-oslo-policy >= 1.17.0
+Requires: python-oslo-reports >= 0.6.0
+Requires: python-oslo-serialization  >= 1.10.0
+Requires: python-oslo-service >= 1.10.0
+Requires: python-oslo-log >= 3.11.0
+Requires: python-oslo-versionedobjects >= 1.17.0
 
-Requires: python-ceilometerclient
-Requires: python-cinderclient
-Requires: python-glanceclient
-Requires: python-heatclient
-Requires: python-keystoneclient
-Requires: python-keystonemiddleware
-Requires: python-neutronclient
-Requires: python-novaclient
-Requires: python-saharaclient
-Requires: python-swiftclient
-Requires: python-troveclient
+Requires: python-ceilometerclient >= 2.5.0
+Requires: python-cinderclient >= 1.6.0
+Requires: python-glanceclient >= 1:2.5.0
+Requires: python-heatclient >= 1.6.1
+Requires: python-keystoneclient >= 1:3.8.0
+Requires: python-keystonemiddleware >= 4.12.0
+Requires: python-neutronclient >= 5.1.0
+Requires: python-novaclient >= 1:6.0.0
+Requires: python-saharaclient >= 1.1.0
+Requires: python-swiftclient >= 3.2.0
+Requires: python-troveclient >= 2.2.0
 
 Requires: python-debtcollector >= 1.2.0
-Requires: python-keystoneauth1 >= 2.10.0
+Requires: python-keystoneauth1 >= 2.18.0
 Requires: python-crypto >= 2.6
 Requires: python-barbicanclient >= 4.0.0
 Requires: python-designateclient >= 1.5.0
-Requires: python-manilaclient >= 1.10.0
+Requires: python-manilaclient >= 1.12.0
 Requires: python-mistralclient >= 2.0.0
-Requires: python-openstackclient >= 2.1.0
+Requires: python-openstackclient >= 3.3.0
 Requires: python-zaqarclient >= 1.0.0
-Requires: python-aodhclient >= 0.5.0
+Requires: python-aodhclient >= 0.7.0
 Requires: python-magnumclient >= 2.0.0
 Requires: pytz
 Requires: python-retrying >= 1.2.3
+Requires: python-tenacity >= 3.2.1
 
 Requires(pre): shadow-utils
 
