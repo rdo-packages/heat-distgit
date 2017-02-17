@@ -154,8 +154,8 @@ sed -i -e '/^#!/,1 d' %{buildroot}/%{python_sitelib}/heat/db/sqlalchemy/migrate_
 %global service heat
 %py2_entrypoint %{service} %{service}
 
-mkdir -p %{buildroot}/var/log/heat/
-mkdir -p %{buildroot}/var/run/heat/
+mkdir -p %{buildroot}/%{_localstatedir}/log/heat/
+mkdir -p %{buildroot}/%{_localstatedir}/run/heat/
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-heat
 
 # install systemd unit files
@@ -165,8 +165,8 @@ install -p -D -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/openstack-heat-engine.se
 install -p -D -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/openstack-heat-api-cloudwatch.service
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-heat-all.service
 
-mkdir -p %{buildroot}/var/lib/heat/
-mkdir -p %{buildroot}/etc/heat/
+mkdir -p %{buildroot}/%{_sharedstatedir}/heat/
+mkdir -p %{buildroot}/%{_sysconfdir}/heat/
 
 %if 0%{?with_doc}
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
