@@ -7,7 +7,7 @@ Summary:	OpenStack Orchestration (heat)
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:		1
 Version:	7.0.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	ASL 2.0
 URL:		http://www.openstack.org
 Source0:	https://tarballs.openstack.org/heat/heat-%{upstream_version}.tar.gz
@@ -449,6 +449,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Mon Feb 27 2017 Jason Joyce <jjoyce@redhat.com> 1:7.0.2-2
+- Fix log dir world readable
+
 * Thu Feb 02 2017 Alfredo Moralejo <amoralej@redhat.com> 1:7.0.2-1
 - Update to 7.0.2
 
