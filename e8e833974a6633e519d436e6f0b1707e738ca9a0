@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5ac4a560_beab5dd5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 85
+      },
+      "writtenOn": "2017-02-27T22:41:24Z",
+      "side": 1,
+      "message": "It looks confusing in the git history, maybe we should document different commit message for the changelog + rebuild review e.g. just \"Rebuild\" ?",
+      "revId": "e8e833974a6633e519d436e6f0b1707e738ca9a0",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
