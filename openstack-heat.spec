@@ -139,7 +139,8 @@ find contrib -name tests -type d | xargs rm -r
 %{__python} setup.py build
 
 # Generate i18n files
-%{__python2} setup.py compile_catalog -d build/lib/heat/locale
+# (amoralej) we can remove '-D heat' once https://review.openstack.org/#/c/439505/ is merged
+%{__python2} setup.py compile_catalog -d build/lib/heat/locale -D heat
 
 # Generate sample config and add the current directory to PYTHONPATH so
 # oslo-config-generator doesn't skip heat's entry points.
