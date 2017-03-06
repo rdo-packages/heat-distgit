@@ -171,8 +171,9 @@ mkdir -p %{buildroot}/%{_sysconfdir}/heat/
 %if 0%{?with_doc}
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
 pushd doc
-sphinx-build -b html -d build/doctrees source build/html
-sphinx-build -b man -d build/doctrees source build/man
+# (amoralej) ignore errors building docs until https://review.openstack.org/#/c/441051/ is fixed
+sphinx-build -b html -d build/doctrees source build/html ||:
+sphinx-build -b man -d build/doctrees source build/man ||:
 
 mkdir -p %{buildroot}%{_mandir}/man1
 install -p -D -m 644 build/man/*.1 %{buildroot}%{_mandir}/man1/
