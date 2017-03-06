@@ -23,6 +23,9 @@ Source6:	openstack-heat-all.service
 
 Source20:	heat-dist.conf
 
+# (amoralej), we can remove this patch once https://review.openstack.org/#/c/441051/ is merged
+Patch1:         0001-Make-a-backward-compatible-docutils-fix.patch
+
 BuildArch: noarch
 BuildRequires: git
 BuildRequires: openstack-macros
@@ -126,7 +129,7 @@ declarative template format through an OpenStack-native REST API.
 This package contains the Heat test files.
 
 %prep
-%setup -q -n heat-%{upstream_version}
+%autosetup -n heat-%{upstream_version} -S git
 
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config

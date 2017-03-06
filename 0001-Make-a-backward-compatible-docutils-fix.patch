@@ -1,0 +1,31 @@
+From ae6711d661ea892cbd1b1feaa089dafd097803db Mon Sep 17 00:00:00 2001
+From: Thomas Herve <therve@redhat.com>
+Date: Fri, 3 Mar 2017 11:57:06 +0100
+Subject: [PATCH] Make a backward compatible docutils fix
+
+THe fix for docutils 0.13 doesn't work with 0.12, obviously. This works
+around the issue handling both version of the internal API.
+
+Change-Id: I3bebb206a3205a6f3fa77a7844e50c2e090630a4
+---
+ doc/source/ext/tablefromtext.py | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/doc/source/ext/tablefromtext.py b/doc/source/ext/tablefromtext.py
+index c99a7cd..81480fd 100644
+--- a/doc/source/ext/tablefromtext.py
++++ b/doc/source/ext/tablefromtext.py
+@@ -59,7 +59,9 @@ class TableFromText(Table):
+         tgroup = nodes.tgroup(max_cols)
+         table += tgroup
+ 
+-        col_widths = self.get_column_widths(max_cols)[1]
++        col_widths = self.get_column_widths(max_cols)
++        if isinstance(col_widths, tuple):
++            col_widths = col_widths[1]
+         tgroup.extend(nodes.colspec(colwidth=col_width) for
+                       col_width in col_widths)
+ 
+-- 
+1.8.3.1
+
