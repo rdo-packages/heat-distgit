@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5ac4a560_2a31c30b",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 85
+      },
+      "writtenOn": "2017-03-07T09:39:36Z",
+      "side": 1,
+      "message": "same as in cinder change, maybe we should keep explicit list of domains?",
+      "revId": "245712c5124c634f4ed2e6a62ffa23b19cb9b30a",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
