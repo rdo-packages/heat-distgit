@@ -67,7 +67,6 @@ BuildRequires: python-cryptography
 # These are required to build the config file
 BuildRequires: python-oslo-config
 BuildRequires: python-redis
-BuildRequires: python-zmq
 BuildRequires: crudini
 BuildRequires: python-crypto
 BuildRequires: python-keystoneauth1
