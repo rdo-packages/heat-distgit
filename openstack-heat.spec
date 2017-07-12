@@ -34,7 +34,7 @@ BuildRequires: python-oslo-middleware
 BuildRequires: python-oslo-policy
 BuildRequires: python-oslo-messaging
 BuildRequires: python-setuptools
-BuildRequires: python-oslo-sphinx
+BuildRequires: python-openstackdocstheme
 BuildRequires: python-oslo-i18n
 BuildRequires: python-oslo-db
 BuildRequires: python-oslo-utils
@@ -125,7 +125,7 @@ declarative template format through an OpenStack-native REST API.
 This package contains the Heat test files.
 
 %prep
-%setup -q -n heat-%{upstream_version}
+%autosetup -n heat-%{upstream_version} -S git
 
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
@@ -169,13 +169,10 @@ mkdir -p %{buildroot}/%{_sysconfdir}/heat/
 
 %if 0%{?with_doc}
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
-pushd doc
-sphinx-build -b html -d build/doctrees source build/html
-sphinx-build -b man -d build/doctrees source build/man
-
+%{__python2} setup.py build_sphinx -b html
+%{__python2} setup.py build_sphinx -b man
 mkdir -p %{buildroot}%{_mandir}/man1
 install -p -D -m 644 build/man/*.1 %{buildroot}%{_mandir}/man1/
-popd
 %endif
 
 rm -f %{buildroot}/%{_bindir}/heat-db-setup
