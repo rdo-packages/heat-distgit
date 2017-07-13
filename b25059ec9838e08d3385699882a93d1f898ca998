@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9aa7fdbe_b7d8a754",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 4
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 403
+      },
+      "writtenOn": "2017-07-13T06:33:14Z",
+      "side": 1,
+      "message": "This is not required now, i can cleanup it later with fixes of warning-is-error.",
+      "range": {
+        "startLine": 171,
+        "startChar": 0,
+        "endLine": 171,
+        "endChar": 40
+      },
+      "revId": "b25059ec9838e08d3385699882a93d1f898ca998",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
