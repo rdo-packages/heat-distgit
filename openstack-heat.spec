@@ -86,6 +86,21 @@ BuildRequires: python-heatclient
 BuildRequires: python-ceilometerclient
 BuildRequires: python-glanceclient
 BuildRequires: python-troveclient
+BuildRequires: python-aodhclient
+BuildRequires: python-barbicanclient
+BuildRequires: python-designateclient
+BuildRequires: python-magnumclient
+BuildRequires: python-monascaclient
+BuildRequires: python-manilaclient
+BuildRequires: python-zaqarclient
+BuildRequires: python-croniter
+BuildRequires: python-gabbi
+BuildRequires: python-testscenarios
+BuildRequires: python-tempest
+BuildRequires: python-gabbi
+# NOTE(ykarel) senlincient and zunclient are not packaged yet.
+#BuildRequires: python-senlinclient
+#BuildRequires: python-zunclient
 %endif
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
