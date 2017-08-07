@@ -183,7 +183,6 @@ mkdir -p %{buildroot}/%{_sharedstatedir}/heat/
 mkdir -p %{buildroot}/%{_sysconfdir}/heat/
 
 %if 0%{?with_doc}
-export PYTHONPATH="$( pwd ):$PYTHONPATH"
 %{__python2} setup.py build_sphinx -b html
 %{__python2} setup.py build_sphinx -b man
 mkdir -p %{buildroot}%{_mandir}/man1
