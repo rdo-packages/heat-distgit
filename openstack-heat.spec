@@ -27,7 +27,7 @@ BuildArch: noarch
 BuildRequires: git
 BuildRequires: openstack-macros
 BuildRequires: python2-devel
-BuildRequires: python-stevedore >= 1.16.0
+BuildRequires: python-stevedore >= 1.20.0
 BuildRequires: python-oslo-cache
 BuildRequires: python-oslo-context
 BuildRequires: python-oslo-middleware
@@ -41,13 +41,9 @@ BuildRequires: python-oslo-utils
 BuildRequires: python-oslo-log
 BuildRequires: python-oslo-versionedobjects
 BuildRequires: python-eventlet
-BuildRequires: python-greenlet
-BuildRequires: python-httplib2
-BuildRequires: python-iso8601
 BuildRequires: python-kombu
 BuildRequires: python-lxml
 BuildRequires: python-netaddr
-BuildRequires: python-memcached
 BuildRequires: python-migrate
 BuildRequires: python-osprofiler
 BuildRequires: python-six
@@ -98,8 +94,8 @@ BuildRequires: python-gabbi
 BuildRequires: python-testscenarios
 BuildRequires: python-tempest
 BuildRequires: python-gabbi
-# NOTE(ykarel) senlincient and zunclient are not packaged yet.
-#BuildRequires: python-senlinclient
+# NOTE(ykarel) zunclient are not packaged yet.
+BuildRequires: python-senlinclient
 #BuildRequires: python-zunclient
 %endif
 
@@ -126,12 +122,12 @@ Requires: python-keystoneclient
 Requires: python-swiftclient
 Requires: python-paramiko
 Requires: python-kombu
-Requires: python-oslo-config >= 2:3.14.0
+Requires: python-oslo-config
 Requires: python-oslo-concurrency
 Requires: python-requests
 Requires: python-eventlet
 Requires: PyYAML
-Requires: python-six >= 1.9.0
+Requires: python-six
 Requires: python-gabbi
 
 %description -n python-heat-tests
@@ -224,17 +220,11 @@ Group: System Environment/Base
 Requires: python-pbr
 Requires: python-croniter
 Requires: python-eventlet
-Requires: python-stevedore >= 1.17.1
-Requires: python-greenlet
-Requires: python-httplib2
-Requires: python-iso8601
-Requires: python-kombu
+Requires: python-stevedore >= 1.20.0
 Requires: python-lxml
 Requires: python-netaddr
 Requires: python-osprofiler
 Requires: python-paste-deploy
-Requires: python-posix_ipc
-Requires: python-memcached
 Requires: python-requests
 Requires: python-routes
 Requires: python-sqlalchemy
@@ -242,53 +232,53 @@ Requires: python-migrate
 Requires: python-webob
 Requires: python-six >= 1.9.0
 Requires: PyYAML
-Requires: python-anyjson
 Requires: python-paramiko
 Requires: python-babel >= 2.3.4
-Requires: python-cryptography >= 1.0
+Requires: python-cryptography >= 1.6
 Requires: python-yaql >= 1.1.0
 
 Requires: python-oslo-cache >= 1.5.0
 Requires: python-oslo-concurrency >= 3.8.0
-Requires: python-oslo-config >= 2:3.14.0
-Requires: python-oslo-context >= 2.9.0
-Requires: python-oslo-utils >= 3.18.0
-Requires: python-oslo-db >= 4.15.0
+Requires: python-oslo-config >= 2:4.0.0
+Requires: python-oslo-context >= 2.14.0
+Requires: python-oslo-utils >= 3.20.0
+Requires: python-oslo-db >= 4.24.0
 Requires: python-oslo-i18n >= 2.1.0
-Requires: python-oslo-middleware >= 3.0.0
-Requires: python-oslo-messaging >= 5.14.0
-Requires: python-oslo-policy >= 1.17.0
+Requires: python-oslo-middleware >= 3.27.0
+Requires: python-oslo-messaging >= 5.24.2
+Requires: python-oslo-policy >= 1.23.0
 Requires: python-oslo-reports >= 0.6.0
 Requires: python-oslo-serialization  >= 1.10.0
 Requires: python-oslo-service >= 1.10.0
-Requires: python-oslo-log >= 3.11.0
+Requires: python-oslo-log >= 3.22.0
 Requires: python-oslo-versionedobjects >= 1.17.0
 
 Requires: python-ceilometerclient >= 2.5.0
-Requires: python-cinderclient >= 1.6.0
-Requires: python-glanceclient >= 1:2.5.0
+Requires: python-cinderclient >= 3.1.0
+Requires: python-glanceclient >= 1:2.8.0
 Requires: python-heatclient >= 1.6.1
 Requires: python-keystoneclient >= 1:3.8.0
 Requires: python-keystonemiddleware >= 4.12.0
-Requires: python-neutronclient >= 5.1.0
-Requires: python-novaclient >= 1:6.0.0
+Requires: python-neutronclient >= 6.3.0
+Requires: python-novaclient >= 1:9.0.0
 Requires: python-saharaclient >= 1.1.0
 Requires: python-swiftclient >= 3.2.0
 Requires: python-troveclient >= 2.2.0
 
 Requires: python-debtcollector >= 1.2.0
-Requires: python-keystoneauth1 >= 2.18.0
+Requires: python-keystoneauth1 >= 3.1.0
 Requires: python-crypto >= 2.6
 Requires: python-barbicanclient >= 4.0.0
 Requires: python-designateclient >= 1.5.0
 Requires: python-manilaclient >= 1.12.0
-Requires: python-mistralclient >= 2.0.0
+Requires: python-mistralclient >= 3.1.0
 Requires: python-openstackclient >= 3.3.0
 Requires: python-zaqarclient >= 1.0.0
 Requires: python-aodhclient >= 0.7.0
 Requires: python-magnumclient >= 2.0.0
+Requires: python-senlinclient >= 1.1.0
+Requires: python-openstacksdk >= 0.9.17
 Requires: pytz
-Requires: python-retrying >= 1.2.3
 Requires: python-tenacity >= 3.2.1
 
 Requires(pre): shadow-utils
