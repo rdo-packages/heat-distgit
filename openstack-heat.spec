@@ -6,7 +6,7 @@ Summary:	OpenStack Orchestration (heat)
 # Liberty semver reset
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:		1
-Version:	7.0.5
+Version:	7.0.6
 Release:	1%{?dist}
 License:	ASL 2.0
 URL:		http://www.openstack.org
@@ -449,6 +449,9 @@ AWS CloudWatch-compatible API to the Heat Engine
 
 
 %changelog
+* Mon Aug 28 2017 rdo-trunk <javier.pena@redhat.com> 1:7.0.6-1
+- Update to 7.0.6
+
 * Thu Aug 03 2017 rdo-trunk <javier.pena@redhat.com> 1:7.0.5-1
 - Update to 7.0.5
 
