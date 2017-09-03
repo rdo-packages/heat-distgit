@@ -1,6 +1,10 @@
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
+%global common_desc \
+Heat is a service to orchestrate composite cloud applications using a \
+declarative template format through an OpenStack-native REST API.
+
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
 # Liberty semver reset
@@ -131,8 +135,7 @@ Requires: python-six
 Requires: python-gabbi
 
 %description -n python-heat-tests
-Heat is a service to orchestrate composite cloud applications using a
-declarative template format through an OpenStack-native REST API.
+%{common_desc}
 This package contains the Heat test files.
 
 %prep
@@ -210,8 +213,7 @@ mv %{buildroot}%{python2_sitelib}/heat/locale %{buildroot}%{_datadir}/locale
 %find_lang heat --all-name
 
 %description
-Heat is a service to orchestrate composite cloud applications using a
-declarative template format through an OpenStack-native REST API.
+%{common_desc}
 
 %package common
 Summary: Heat common
@@ -335,8 +337,7 @@ Requires(preun): systemd
 Requires(postun): systemd
 
 %description engine
-Heat is a service to orchestrate composite cloud applications using a
-declarative template format through an OpenStack-native REST API.
+%{common_desc}
 
 The heat-engine's main responsibility is to orchestrate the launching of
 templates and provide events back to the API consumer.
@@ -372,8 +373,7 @@ Requires(preun): systemd
 Requires(postun): systemd
 
 %description api
-Heat is a service to orchestrate composite cloud applications using a
-declarative template format through an OpenStack-native REST API.
+%{common_desc}
 
 The heat-api component provides an OpenStack-native REST API that processes API
 requests by sending them to the heat-engine over RPC.
@@ -399,7 +399,6 @@ requests by sending them to the heat-engine over RPC.
 %postun api
 %systemd_postun_with_restart openstack-heat-api.service
 
-
 %package api-cfn
 Summary: Heat CloudFormation API
 
@@ -410,8 +409,7 @@ Requires(preun): systemd
 Requires(postun): systemd
 
 %description api-cfn
-Heat is a service to orchestrate composite cloud applications using a
-declarative template format through an OpenStack-native REST API.
+%{common_desc}
 
 The heat-api-cfn component provides an AWS Query API that is compatible with
 AWS CloudFormation and processes API requests by sending them to the
@@ -449,8 +447,7 @@ Requires(preun): systemd
 Requires(postun): systemd
 
 %description api-cloudwatch
-Heat is a service to orchestrate composite cloud applications using a
-declarative template format through an OpenStack-native REST API.
+%{common_desc}
 
 AWS CloudWatch-compatible API to the Heat Engine
 
@@ -486,8 +483,7 @@ Requires(preun): systemd
 Requires(postun): systemd
 
 %description monolith
-Heat is a service to orchestrate composite cloud applications using a
-declarative template format through an OpenStack-native REST API.
+%{common_desc}
 
 The heat-all process bundles together any (or all) of heat-engine, heat-api,
 heat-cfn-api, and heat-cloudwatch-api into a single process. This can be used
