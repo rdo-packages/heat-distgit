@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a890539_e873214b",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 424
+      },
+      "writtenOn": "2017-09-04T13:35:23Z",
+      "side": 1,
+      "message": "Sorry, no, I mean these tabs should be converted to spaces.\nThey appear in the online editor as two red \u003e icons.\nYou can normally convert them with vim.",
+      "revId": "0731ffb9eb548c72e0b1ff8e89572e95e5dbe11b",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
