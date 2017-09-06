@@ -1,5 +1,6 @@
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
+%global rhosp 0
 
 Name:		openstack-heat
 Summary:	OpenStack Orchestration (heat)
@@ -95,7 +96,9 @@ BuildRequires: python-testscenarios
 BuildRequires: python-tempest
 BuildRequires: python-gabbi
 # NOTE(ykarel) zunclient are not packaged yet.
+%if 0%{rhosp} == 0
 BuildRequires: python-senlinclient
+%endif
 #BuildRequires: python-zunclient
 %endif
 
@@ -276,7 +279,9 @@ Requires: python-openstackclient >= 3.3.0
 Requires: python-zaqarclient >= 1.0.0
 Requires: python-aodhclient >= 0.7.0
 Requires: python-magnumclient >= 2.0.0
+%if 0%{rhosp} == 0
 Requires: python-senlinclient >= 1.1.0
+%endif
 Requires: python-openstacksdk >= 0.9.17
 Requires: pytz
 Requires: python-tenacity >= 3.2.1
