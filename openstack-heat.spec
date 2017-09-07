@@ -1,27 +1,27 @@
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
-Name:		openstack-heat
-Summary:	OpenStack Orchestration (heat)
+Name:           openstack-heat
+Summary:        OpenStack Orchestration (heat)
 # Liberty semver reset
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
-Epoch:		1
-Version:	XXX
-Release:	XXX
-License:	ASL 2.0
-URL:		http://www.openstack.org
-Source0:	https://tarballs.openstack.org/heat/heat-%{upstream_version}.tar.gz
-Obsoletes:	heat < 7-9
-Provides:	heat
+Epoch:          1
+Version:        XXX
+Release:        XXX
+License:        ASL 2.0
+URL:            http://www.openstack.org
+Source0:        https://tarballs.openstack.org/heat/heat-%{upstream_version}.tar.gz
+Obsoletes:      heat < 7-9
+Provides:       heat
 
-Source1:	heat.logrotate
-Source2:	openstack-heat-api.service
-Source3:	openstack-heat-api-cfn.service
-Source4:	openstack-heat-engine.service
-Source5:	openstack-heat-api-cloudwatch.service
-Source6:	openstack-heat-all.service
+Source1:        heat.logrotate
+Source2:        openstack-heat-api.service
+Source3:        openstack-heat-api-cfn.service
+Source4:        openstack-heat-engine.service
+Source5:        openstack-heat-api-cloudwatch.service
+Source6:        openstack-heat-all.service
 
-Source20:	heat-dist.conf
+Source20:       heat-dist.conf
 
 BuildArch: noarch
 BuildRequires: git
@@ -106,8 +106,8 @@ Requires: %{name}-api-cfn = %{epoch}:%{version}-%{release}
 Requires: %{name}-api-cloudwatch = %{epoch}:%{version}-%{release}
 
 %package -n python-heat-tests
-Summary:	Heat tests
-Requires:	%{name}-common = %{epoch}:%{version}-%{release}
+Summary:        Heat tests
+Requires:       %{name}-common = %{epoch}:%{version}-%{release}
 
 Requires: python-mox3
 Requires: python-oslotest
