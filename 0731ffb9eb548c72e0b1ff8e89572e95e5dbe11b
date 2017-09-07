@@ -16,6 +16,24 @@
       "revId": "0731ffb9eb548c72e0b1ff8e89572e95e5dbe11b",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a890539_487350e9",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 127
+      },
+      "writtenOn": "2017-09-07T11:32:58Z",
+      "side": 1,
+      "message": "please do that as part of a separate patch not mixed in with other changes to make it easier to verify only whitespace changes.",
+      "parentUuid": "5a890539_e873214b",
+      "revId": "0731ffb9eb548c72e0b1ff8e89572e95e5dbe11b",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
     }
   ]
 }
