@@ -334,9 +334,7 @@ Summary: The Heat engine
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-Requires(post): systemd
-Requires(preun): systemd
-Requires(postun): systemd
+%{?systemd_requires}
 
 %description engine
 Heat is a service to orchestrate composite cloud applications using a
@@ -371,9 +369,7 @@ Summary: The Heat API
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-Requires(post): systemd
-Requires(preun): systemd
-Requires(postun): systemd
+%{?systemd_requires}
 
 %description api
 Heat is a service to orchestrate composite cloud applications using a
@@ -409,9 +405,7 @@ Summary: Heat CloudFormation API
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-Requires(post): systemd
-Requires(preun): systemd
-Requires(postun): systemd
+%{?systemd_requires}
 
 %description api-cfn
 Heat is a service to orchestrate composite cloud applications using a
@@ -448,9 +442,7 @@ Summary: Heat CloudWatch API
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-Requires(post): systemd
-Requires(preun): systemd
-Requires(postun): systemd
+%{?systemd_requires}
 
 %description api-cloudwatch
 Heat is a service to orchestrate composite cloud applications using a
@@ -485,9 +477,7 @@ Summary: The combined Heat engine/API
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-Requires(post): systemd
-Requires(preun): systemd
-Requires(postun): systemd
+%{?systemd_requires}
 
 %description monolith
 Heat is a service to orchestrate composite cloud applications using a
