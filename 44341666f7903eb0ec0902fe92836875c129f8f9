@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "1a930d6b_8e1f3b09",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 6
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 85
+      },
+      "writtenOn": "2017-09-25T13:17:17Z",
+      "side": 1,
+      "message": "this should mv files installed by data_files",
+      "revId": "44341666f7903eb0ec0902fe92836875c129f8f9",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a930d6b_ae6eb794",
         "filename": "openstack-heat.spec",
         "patchSetId": 6
