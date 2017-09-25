@@ -198,9 +198,10 @@ crudini --set %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf revision %
 install -p -D -m 640 etc/%{service}/api-paste.ini %{buildroot}/%{_datadir}/%{service}/api-paste-dist.ini
 install -p -D -m 640 etc/%{service}/policy.json %{buildroot}/%{_sysconfdir}/%{service}
 
-# TODO: move this to setup.cfg
-cp -vr etc/%{service}/templates %{buildroot}/%{_sysconfdir}/%{service}
-cp -vr etc/%{service}/environment.d %{buildroot}/%{_sysconfdir}/%{service}
+install -p -D -t %{buildroot}/%{_sysconfdir}/%{service}/environment.d %{buildroot}%{_prefix}/etc/heat/environment.d/*
+install -p -D -t %{buildroot}/%{_sysconfdir}/%{service}/templates %{buildroot}%{_prefix}/etc/heat/templates/*
+# Remove duplicate config files under /usr/etc/heat
+rm -rf %{buildroot}%{_prefix}/etc
 
 # Install i18n .mo files (.po and .pot are not required)
 install -d -m 755 %{buildroot}%{_datadir}
