@@ -16,6 +16,24 @@
       "revId": "d9ae2ba65acf7c728059dd175f873b03e0957440",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a930d6b_2e872763",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 4
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 128
+      },
+      "writtenOn": "2017-09-25T09:47:20Z",
+      "side": 1,
+      "message": "We can\u0027t avoid using the rm at least to remove the parent directories /usr/etc/heat. About why using install instead of mv, yeah, we can do it. It was just for consistency with previous commands",
+      "parentUuid": "1a930d6b_2ea007f4",
+      "revId": "d9ae2ba65acf7c728059dd175f873b03e0957440",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
     }
   ]
 }
