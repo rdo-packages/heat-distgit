@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a930d6b_ae6eb794",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 6
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 85
+      },
+      "writtenOn": "2017-09-25T13:14:29Z",
+      "side": 1,
+      "message": "rmdir %{buildroot}%{_prefix}/etc/heat\nwould warn when new config files shows up upstream",
+      "revId": "44341666f7903eb0ec0902fe92836875c129f8f9",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
