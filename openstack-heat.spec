@@ -195,12 +195,12 @@ rm -f %{buildroot}/usr/bin/cinder-keystone-setup
 install -p -D -m 640 etc/%{service}/%{service}.conf.sample %{buildroot}/%{_sysconfdir}/%{service}/%{service}.conf
 install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf
 crudini --set %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf revision %{service}_revision %{version}
-install -p -D -m 640 etc/%{service}/api-paste.ini %{buildroot}/%{_datadir}/%{service}/api-paste-dist.ini
-install -p -D -m 640 etc/%{service}/policy.json %{buildroot}/%{_sysconfdir}/%{service}
-
-# TODO: move this to setup.cfg
-cp -vr etc/%{service}/templates %{buildroot}/%{_sysconfdir}/%{service}
-cp -vr etc/%{service}/environment.d %{buildroot}/%{_sysconfdir}/%{service}
+mv %{buildroot}%{_prefix}/etc/%{service}/api-paste.ini %{buildroot}/%{_datadir}/%{service}/api-paste-dist.ini
+mv %{buildroot}%{_prefix}/etc/%{service}/policy.json %{buildroot}/%{_sysconfdir}/%{service}
+mv %{buildroot}%{_prefix}/etc/heat/environment.d %{buildroot}/%{_sysconfdir}/%{service}
+mv %{buildroot}%{_prefix}/etc/heat/templates %{buildroot}/%{_sysconfdir}/%{service}
+# Remove duplicate config files under /usr/etc/heat
+rmdir %{buildroot}%{_prefix}/etc/heat
 
 # Install i18n .mo files (.po and .pot are not required)
 install -d -m 755 %{buildroot}%{_datadir}
