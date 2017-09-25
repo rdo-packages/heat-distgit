@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a930d6b_eb2b5192",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 2
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 113
+      },
+      "writtenOn": "2017-09-25T08:09:03Z",
+      "side": 1,
+      "message": "Maybe we could move the installed files from %{buildroot}%{_prefix}/etc instead of copying them here, then removing them?",
+      "range": {
+        "startLine": 201,
+        "startChar": 0,
+        "endLine": 203,
+        "endChar": 74
+      },
+      "revId": "60b3180a902099ebf88d42e3446dd3725697484f",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
