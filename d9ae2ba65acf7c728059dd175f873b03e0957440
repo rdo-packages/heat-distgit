@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a930d6b_2ea007f4",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 4
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 85
+      },
+      "writtenOn": "2017-09-25T09:31:45Z",
+      "side": 1,
+      "message": "why not just mv those files instead of install + rm ?",
+      "revId": "d9ae2ba65acf7c728059dd175f873b03e0957440",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
