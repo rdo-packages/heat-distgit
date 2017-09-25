@@ -211,6 +211,9 @@ mv %{buildroot}%{python2_sitelib}/%{service}/locale %{buildroot}%{_datadir}/loca
 # Find language files
 %find_lang %{service} --all-name
 
+# Remove duplicate config files under /usr/etc/heat
+rm -rf %{buildroot}%{_prefix}/etc
+
 %description
 Heat is a service to orchestrate composite cloud applications using a
 declarative template format through an OpenStack-native REST API.
