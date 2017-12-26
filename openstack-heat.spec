@@ -200,7 +200,6 @@ install -p -D -m 640 etc/%{service}/%{service}.conf.sample %{buildroot}/%{_sysco
 install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf
 crudini --set %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf revision %{service}_revision %{version}
 mv %{buildroot}%{_prefix}/etc/%{service}/api-paste.ini %{buildroot}/%{_datadir}/%{service}/api-paste-dist.ini
-mv %{buildroot}%{_prefix}/etc/%{service}/policy.json %{buildroot}/%{_sysconfdir}/%{service}
 mv %{buildroot}%{_prefix}/etc/%{service}/environment.d %{buildroot}/%{_sysconfdir}/%{service}
 mv %{buildroot}%{_prefix}/etc/%{service}/templates %{buildroot}/%{_sysconfdir}/%{service}
 # Remove duplicate config files under /usr/etc/heat
@@ -309,7 +308,6 @@ Components common to all OpenStack Heat services
 %dir %attr(0755,%{service},root) %{_sysconfdir}/%{service}
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-%{service}
 %config(noreplace) %attr(-, root, %{service}) %{_sysconfdir}/%{service}/%{service}.conf
-%config(noreplace) %attr(-, root, %{service}) %{_sysconfdir}/%{service}/policy.json
 %config(noreplace) %attr(-,root,%{service}) %{_sysconfdir}/%{service}/environment.d/*
 %config(noreplace) %attr(-,root,%{service}) %{_sysconfdir}/%{service}/templates/*
 %if 0%{?with_doc}
