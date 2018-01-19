@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da9b358b_5549accf",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 2
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 85
+      },
+      "writtenOn": "2018-01-19T23:29:13Z",
+      "side": 1,
+      "message": "Can this be removed ?",
+      "revId": "e53f49b5feeec88766bfa19397e3007743d94d72",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
