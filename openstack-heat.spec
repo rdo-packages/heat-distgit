@@ -500,3 +500,4 @@ running the Heat service in general.
 
 
 %changelog
+# REMOVEME: error caused by commit http://git.openstack.org/cgit/openstack/heat/commit/?id=8749a019c30198d0f78e1efc9d567423736d457d
