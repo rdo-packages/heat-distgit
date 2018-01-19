@@ -167,9 +167,6 @@ PYTHONPATH=. oslo-config-generator --config-file=config-generator.conf
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
 sed -i -e '/^#!/,1 d' %{buildroot}/%{python_sitelib}/%{service}/db/sqlalchemy/migrate_repo/manage.py
 
-# Create fake egg-info for the tempest plugin
-%py2_entrypoint %{service} %{service}
-
 mkdir -p %{buildroot}/%{_localstatedir}/log/%{service}/
 mkdir -p %{buildroot}/%{_localstatedir}/run/%{service}/
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-%{service}
@@ -320,7 +317,6 @@ Components common to all OpenStack Heat services
 %license LICENSE
 %{python2_sitelib}/%{service}/tests
 %{python2_sitelib}/%{service}_integrationtests
-%{python2_sitelib}/%{service}_tests.egg-info
 
 %pre common
 # 187:187 for heat - rhbz#845078
