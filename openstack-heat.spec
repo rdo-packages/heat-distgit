@@ -77,7 +77,7 @@ BuildRequires: python-keystoneclient
 # Required to compile translation files
 BuildRequires: python-babel
 
-BuildRequires: systemd-units
+BuildRequires: systemd
 
 %if 0%{?with_doc}
 BuildRequires: python-cinderclient
