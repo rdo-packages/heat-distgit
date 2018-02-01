@@ -25,7 +25,6 @@ Source1:        %{service}.logrotate
 Source2:        openstack-%{service}-api.service
 Source3:        openstack-%{service}-api-cfn.service
 Source4:        openstack-%{service}-engine.service
-Source5:        openstack-%{service}-api-cloudwatch.service
 Source6:        openstack-%{service}-all.service
 
 Source20:       %{service}-dist.conf
@@ -112,7 +111,6 @@ Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires: %{name}-engine = %{epoch}:%{version}-%{release}
 Requires: %{name}-api = %{epoch}:%{version}-%{release}
 Requires: %{name}-api-cfn = %{epoch}:%{version}-%{release}
-Requires: %{name}-api-cloudwatch = %{epoch}:%{version}-%{release}
 
 %package -n python-%{service}-tests
 Summary:        Heat tests
@@ -175,7 +173,6 @@ install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-%{service}-api.service
 install -p -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/openstack-%{service}-api-cfn.service
 install -p -D -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/openstack-%{service}-engine.service
-install -p -D -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/openstack-%{service}-api-cloudwatch.service
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-%{service}-all.service
 
 mkdir -p %{buildroot}/%{_sharedstatedir}/%{service}/
@@ -422,46 +419,12 @@ AWS CloudFormation and processes API requests by sending them to the
 %endif
 
 %post api-cfn
-%systemd_post openstack-%{service}-api-cloudwatch.service
-
-%preun api-cfn
-%systemd_preun openstack-%{service}-api-cloudwatch.service
-
-%postun api-cfn
-%systemd_postun_with_restart openstack-%{service}-api-cloudwatch.service
-
-
-%package api-cloudwatch
-Summary: Heat CloudWatch API
-
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-
-%{?systemd_requires}
-
-%description api-cloudwatch
-%{common_desc}
-
-AWS CloudWatch-compatible API to the Heat Engine
-
-%files api-cloudwatch
-%doc README.rst LICENSE
-%if 0%{?with_doc}
-%doc doc/build/html/man/%{service}-api-cloudwatch.html
-%endif
-%{_bindir}/%{service}-api-cloudwatch
-%{_bindir}/%{service}-wsgi-api-cloudwatch
-%{_unitdir}/openstack-%{service}-api-cloudwatch.service
-%if 0%{?with_doc}
-%{_mandir}/man1/%{service}-api-cloudwatch.1.gz
-%endif
-
-%post api-cloudwatch
 %systemd_post openstack-%{service}-api-cfn.service
 
-%preun api-cloudwatch
+%preun api-cfn
 %systemd_preun openstack-%{service}-api-cfn.service
 
-%postun api-cloudwatch
+%postun api-cfn
 %systemd_postun_with_restart openstack-%{service}-api-cfn.service
 
 
@@ -476,9 +439,8 @@ Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %{common_desc}
 
 The %{service}-all process bundles together any (or all) of %{service}-engine, %{service}-api,
-%{service}-cfn-api, and %{service}-cloudwatch-api into a single process. This can be used
-to bootstrap a minimal TripleO deployment, but is not the recommended way of
-running the Heat service in general.
+and %{service}-cfn-api into a single process. This can be used to bootstrap a minimal
+TripleO deployment, but is not the recommended way of running the Heat service in general.
 
 %files monolith
 %doc README.rst LICENSE
