@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9aa53dc9_cb48788a",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 2
+      },
+      "lineNbr": 363,
+      "author": {
+        "id": 85
+      },
+      "writtenOn": "2018-02-05T18:05:50Z",
+      "side": 1,
+      "message": "Does image building work with Provides?",
+      "revId": "86578c618dd65fad55f7ea8b3591a6c9db81dbea",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
