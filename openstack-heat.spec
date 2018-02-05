@@ -359,6 +359,7 @@ templates and provide events back to the API consumer.
 
 %package api
 Summary: The Heat API
+Provides: %{name}-api-cloudwatch
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
