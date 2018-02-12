@@ -33,78 +33,78 @@ BuildArch: noarch
 BuildRequires: git
 BuildRequires: openstack-macros
 BuildRequires: python2-devel
-BuildRequires: python-stevedore >= 1.20.0
-BuildRequires: python-oslo-cache
-BuildRequires: python-oslo-context
-BuildRequires: python-oslo-middleware
-BuildRequires: python-oslo-policy
-BuildRequires: python-oslo-messaging
-BuildRequires: python-setuptools
-BuildRequires: python-openstackdocstheme
-BuildRequires: python-oslo-i18n
-BuildRequires: python-oslo-db
-BuildRequires: python-oslo-utils
-BuildRequires: python-oslo-log
-BuildRequires: python-oslo-versionedobjects
-BuildRequires: python-eventlet
-BuildRequires: python-kombu
+BuildRequires: python2-stevedore >= 1.20.0
+BuildRequires: python2-oslo-cache
+BuildRequires: python2-oslo-context
+BuildRequires: python2-oslo-middleware
+BuildRequires: python2-oslo-policy
+BuildRequires: python2-oslo-messaging
+BuildRequires: python2-setuptools
+BuildRequires: python2-openstackdocstheme
+BuildRequires: python2-oslo-i18n
+BuildRequires: python2-oslo-db
+BuildRequires: python2-oslo-utils
+BuildRequires: python2-oslo-log
+BuildRequires: python2-oslo-versionedobjects
+BuildRequires: python2-eventlet
+BuildRequires: python2-kombu
 BuildRequires: python-lxml
-BuildRequires: python-netaddr
+BuildRequires: python2-netaddr
 BuildRequires: python-migrate
-BuildRequires: python-osprofiler
-BuildRequires: python-six
+BuildRequires: python2-osprofiler
+BuildRequires: python2-six
 BuildRequires: PyYAML
-BuildRequires: python-sphinx
+BuildRequires: python2-sphinx
 BuildRequires: m2crypto
-BuildRequires: python-paramiko
-BuildRequires: python-yaql
+BuildRequires: python2-paramiko
+BuildRequires: python2-yaql
 # These are required to build due to the requirements check added
 BuildRequires: python-paste-deploy
-BuildRequires: python-routes
-BuildRequires: python-sqlalchemy
+BuildRequires: python2-routes
+BuildRequires: python2-sqlalchemy
 BuildRequires: python-webob
-BuildRequires: python-pbr
+BuildRequires: python2-pbr
 BuildRequires: python-d2to1
-BuildRequires: python-cryptography
+BuildRequires: python2-cryptography
 # These are required to build the config file
-BuildRequires: python-oslo-config
+BuildRequires: python2-oslo-config
 BuildRequires: python-redis
 BuildRequires: crudini
-BuildRequires: python-crypto
-BuildRequires: python-keystoneauth1
-BuildRequires: python-keystoneclient
+BuildRequires: python2-crypto
+BuildRequires: python2-keystoneauth1
+BuildRequires: python2-keystoneclient
 # Required to compile translation files
-BuildRequires: python-babel
+BuildRequires: python2-babel
 
 BuildRequires: systemd
 
 %if 0%{?with_doc}
-BuildRequires: python-cinderclient
-BuildRequires: python-novaclient
-BuildRequires: python-saharaclient
-BuildRequires: python-neutronclient
-BuildRequires: python-swiftclient
-BuildRequires: python-heatclient
-BuildRequires: python-ceilometerclient
-BuildRequires: python-glanceclient
-BuildRequires: python-troveclient
-BuildRequires: python-aodhclient
-BuildRequires: python-barbicanclient
-BuildRequires: python-designateclient
-BuildRequires: python-magnumclient
-BuildRequires: python-monascaclient
-BuildRequires: python-manilaclient
-BuildRequires: python-zaqarclient
-BuildRequires: python-croniter
-BuildRequires: python-gabbi
-BuildRequires: python-testscenarios
-BuildRequires: python-tempest
-BuildRequires: python-gabbi
+BuildRequires: python2-cinderclient
+BuildRequires: python2-novaclient
+BuildRequires: python2-saharaclient
+BuildRequires: python2-neutronclient
+BuildRequires: python2-swiftclient
+BuildRequires: python2-heatclient
+BuildRequires: python2-ceilometerclient
+BuildRequires: python2-glanceclient
+BuildRequires: python2-troveclient
+BuildRequires: python2-aodhclient
+BuildRequires: python2-barbicanclient
+BuildRequires: python2-designateclient
+BuildRequires: python2-magnumclient
+BuildRequires: python2-monascaclient
+BuildRequires: python2-manilaclient
+BuildRequires: python2-zaqarclient
+BuildRequires: python2-croniter
+BuildRequires: python2-gabbi
+BuildRequires: python2-testscenarios
+BuildRequires: python2-tempest
+BuildRequires: python2-gabbi
 # NOTE(ykarel) zunclient are not packaged yet.
 %if 0%{rhosp} == 0
-BuildRequires: python-senlinclient
+BuildRequires: python2-senlinclient
 %endif
-#BuildRequires: python-zunclient
+#BuildRequires: python2-zunclient
 %endif
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
@@ -116,26 +116,26 @@ Requires: %{name}-api-cfn = %{epoch}:%{version}-%{release}
 Summary:        Heat tests
 Requires:       %{name}-common = %{epoch}:%{version}-%{release}
 
-Requires: python-mox3
-Requires: python-oslotest
-Requires: python-testresources
-Requires: python-oslotest
-Requires: python-oslo-log
-Requires: python-oslo-utils
-Requires: python-heatclient
-Requires: python-cinderclient
-Requires: python-zaqarclient
-Requires: python-keystoneclient
-Requires: python-swiftclient
-Requires: python-paramiko
-Requires: python-kombu
-Requires: python-oslo-config
-Requires: python-oslo-concurrency
-Requires: python-requests
-Requires: python-eventlet
+Requires: python2-mox3
+Requires: python2-oslotest
+Requires: python2-testresources
+Requires: python2-oslotest
+Requires: python2-oslo-log
+Requires: python2-oslo-utils
+Requires: python2-heatclient
+Requires: python2-cinderclient
+Requires: python2-zaqarclient
+Requires: python2-keystoneclient
+Requires: python2-swiftclient
+Requires: python2-paramiko
+Requires: python2-kombu
+Requires: python2-oslo-config
+Requires: python2-oslo-concurrency
+Requires: python2-requests
+Requires: python2-eventlet
 Requires: PyYAML
-Requires: python-six
-Requires: python-gabbi
+Requires: python2-six
+Requires: python2-gabbi
 
 %description -n python-%{service}-tests
 %{common_desc}
@@ -215,71 +215,73 @@ mv %{buildroot}%{python2_sitelib}/%{service}/locale %{buildroot}%{_datadir}/loca
 Summary: Heat common
 Group: System Environment/Base
 
-Requires: python-pbr
-Requires: python-croniter
-Requires: python-eventlet
-Requires: python-stevedore >= 1.20.0
+Requires: python2-pbr
+Requires: python2-croniter
+Requires: python2-eventlet
+Requires: python2-stevedore >= 1.20.0
 Requires: python-lxml
-Requires: python-netaddr
-Requires: python-osprofiler
+Requires: python2-netaddr
+Requires: python2-osprofiler
 Requires: python-paste-deploy
-Requires: python-requests
-Requires: python-routes
-Requires: python-sqlalchemy
+Requires: python2-requests
+Requires: python2-routes
+Requires: python2-sqlalchemy
 Requires: python-migrate
 Requires: python-webob
-Requires: python-six >= 1.9.0
+Requires: python2-six >= 1.10.0
 Requires: PyYAML
-Requires: python-paramiko
-Requires: python-babel >= 2.3.4
-Requires: python-cryptography >= 1.6
-Requires: python-yaql >= 1.1.0
+Requires: python2-paramiko
+Requires: python2-babel >= 2.3.4
+Requires: python2-cryptography >= 1.9
+Requires: python2-yaql >= 1.1.3
 
-Requires: python-oslo-cache >= 1.5.0
-Requires: python-oslo-concurrency >= 3.8.0
-Requires: python-oslo-config >= 2:4.0.0
-Requires: python-oslo-context >= 2.14.0
-Requires: python-oslo-utils >= 3.20.0
-Requires: python-oslo-db >= 4.24.0
-Requires: python-oslo-i18n >= 2.1.0
-Requires: python-oslo-middleware >= 3.27.0
-Requires: python-oslo-messaging >= 5.24.2
-Requires: python-oslo-policy >= 1.23.0
-Requires: python-oslo-reports >= 0.6.0
-Requires: python-oslo-serialization  >= 1.10.0
-Requires: python-oslo-service >= 1.10.0
-Requires: python-oslo-log >= 3.22.0
-Requires: python-oslo-versionedobjects >= 1.17.0
+Requires: python2-oslo-cache >= 1.26.0
+Requires: python2-oslo-concurrency >= 3.25.0
+Requires: python2-oslo-config >= 2:5.1.0
+Requires: python2-oslo-context >= 2.19.2
+Requires: python2-oslo-utils >= 3.33.0
+Requires: python2-oslo-db >= 4.27.0
+Requires: python2-oslo-i18n >= 3.15.3
+Requires: python2-oslo-middleware >= 3.31.0
+Requires: python2-oslo-messaging >= 5.29.0
+Requires: python2-oslo-policy >= 1.30.0
+Requires: python2-oslo-reports >= 1.18.0
+Requires: python2-oslo-serialization >= 2.18.0
+Requires: python2-oslo-service >= 1.24.0
+Requires: python2-oslo-log >= 3.36.0
+Requires: python2-oslo-versionedobjects >= 1.31.2
 
-Requires: python-ceilometerclient >= 2.5.0
-Requires: python-cinderclient >= 3.1.0
-Requires: python-glanceclient >= 1:2.8.0
-Requires: python-heatclient >= 1.6.1
-Requires: python-keystoneclient >= 1:3.8.0
-Requires: python-keystonemiddleware >= 4.12.0
-Requires: python-neutronclient >= 6.3.0
-Requires: python-novaclient >= 1:9.0.0
-Requires: python-saharaclient >= 1.1.0
-Requires: python-swiftclient >= 3.2.0
-Requires: python-troveclient >= 2.2.0
+Requires: python2-ceilometerclient >= 2.5.0
+Requires: python2-cinderclient >= 3.3.0
+Requires: python2-glanceclient >= 1:2.8.0
+Requires: python2-heatclient >= 1.10.0
+Requires: python2-keystoneclient >= 1:3.8.0
+Requires: python2-keystonemiddleware >= 4.17.0
+Requires: python2-neutronclient >= 6.3.0
+Requires: python2-novaclient >= 9.1.0
+Requires: python2-saharaclient >= 1.4.0
+Requires: python2-swiftclient >= 3.2.0
+Requires: python2-troveclient >= 2.2.0
 
-Requires: python-debtcollector >= 1.2.0
-Requires: python-keystoneauth1 >= 3.1.0
-Requires: python-crypto >= 2.6
-Requires: python-barbicanclient >= 4.0.0
-Requires: python-designateclient >= 1.5.0
-Requires: python-manilaclient >= 1.12.0
-Requires: python-mistralclient >= 3.1.0
-Requires: python-openstackclient >= 3.3.0
-Requires: python-zaqarclient >= 1.0.0
-Requires: python-aodhclient >= 0.7.0
-Requires: python-magnumclient >= 2.0.0
+Requires: python2-debtcollector >= 1.2.0
+Requires: python2-keystoneauth1 >= 3.3.0
+Requires: python2-crypto >= 2.6
+Requires: python2-barbicanclient >= 4.0.0
+Requires: python2-designateclient >= 2.7.0
+Requires: python2-manilaclient >= 1.16.0
+Requires: python2-mistralclient >= 3.1.0
+Requires: python2-openstackclient >= 3.12.0
+Requires: python2-zaqarclient >= 1.0.0
+Requires: python2-aodhclient >= 0.9.0
+Requires: python2-magnumclient >= 2.1.0
+Requires: python2-octaviaclient >= 1.4.0
 %if 0%{rhosp} == 0
-Requires: python-senlinclient >= 1.1.0
+Requires: python2-senlinclient >= 1.1.0
+Requires: python2-monascaclient >= 1.10.0
 %endif
-Requires: python-openstacksdk >= 0.9.17
+Requires: python2-openstacksdk >= 0.9.19
 Requires: pytz
-Requires: python-tenacity >= 3.2.1
+Requires: python2-tenacity >= 3.2.1
 
 Requires(pre): shadow-utils
 
