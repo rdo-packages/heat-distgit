@@ -359,8 +359,6 @@ templates and provide events back to the API consumer.
 
 %package api
 Summary: The Heat API
-# FIXME(ykarel) Remove once use of api-cloudwatch is removed from everywhere.
-Provides: %{name}-api-cloudwatch = %{epoch}:%{version}-%{release}
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
