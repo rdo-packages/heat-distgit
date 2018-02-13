@@ -220,6 +220,8 @@ mv %{buildroot}%{python2_sitelib}/%{service}/locale %{buildroot}%{_datadir}/loca
 Summary: Heat common
 Group: System Environment/Base
 
+Obsoletes: %{name}-api-cloudwatch < %{epoch}:10.0.0
+
 Requires: python2-pbr
 Requires: python2-croniter
 Requires: python2-eventlet
@@ -367,8 +369,6 @@ templates and provide events back to the API consumer.
 
 %package api
 Summary: The Heat API
-# FIXME(ykarel) Remove once use of api-cloudwatch is removed from everywhere.
-Provides: %{name}-api-cloudwatch = %{epoch}:%{version}-%{release}
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
