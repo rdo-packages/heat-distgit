@@ -34,6 +34,9 @@ Source6:        openstack-%{service}-all.service
 
 Source20:       %{service}-dist.conf
 
+#FIXME(ykarel) Remove patch once https://review.openstack.org/#/c/546179/ merges
+Patch0001:      0001-Handle-non-stored-stack-in-resource-group.patch
+
 BuildArch: noarch
 BuildRequires: git
 BuildRequires: openstack-macros
