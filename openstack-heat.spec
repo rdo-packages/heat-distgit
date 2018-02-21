@@ -466,3 +466,4 @@ TripleO deployment, but is not the recommended way of running the Heat service i
 
 
 %changelog
+# REMOVEME: error caused by commit http://git.openstack.org/cgit/openstack/heat/commit/?id=53748994c85a381b90320766ac422bd90cb6c805
