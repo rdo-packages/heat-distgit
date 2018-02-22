@@ -16,6 +16,24 @@
       "revId": "f64b6ca32c21709f22fbe1ad594096ac19045778",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aaa499b_02ccee87",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 3
+      },
+      "lineNbr": 365,
+      "author": {
+        "id": 128
+      },
+      "writtenOn": "2018-02-22T17:57:55Z",
+      "side": 1,
+      "message": "could api-cloudwatch be installed in a server where -api was not installed?, if so, then probably it\u0027s better to move it to -common as you suggest.",
+      "parentUuid": "7aaa499b_6226126a",
+      "revId": "f64b6ca32c21709f22fbe1ad594096ac19045778",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
     }
   ]
 }
