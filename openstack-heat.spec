@@ -8,7 +8,7 @@ Summary:	OpenStack Orchestration (heat)
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:		1
 Version:	9.0.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	ASL 2.0
 URL:		http://www.openstack.org
 Source0:	https://tarballs.openstack.org/heat/heat-%{upstream_version}.tar.gz
@@ -25,6 +25,8 @@ Source5:	openstack-heat-api-cloudwatch.service
 Source6:	openstack-heat-all.service
 
 Source20:	heat-dist.conf
+
+Patch0001: 0001-Add-endpoint_type-config-option.patch
 
 BuildArch: noarch
 BuildRequires: git
@@ -517,6 +519,9 @@ running the Heat service in general.
 
 
 %changelog
+* Thu Mar 29 2018 Chandan Kumar <chkumar@redhat.com> 1:9.0.3-2
+- Add endpoint_type config option
+
 * Mon Feb 12 2018 RDO <dev@lists.rdoproject.org> 1:9.0.3-1
 - Update to 9.0.3
 
