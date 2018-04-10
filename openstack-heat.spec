@@ -70,7 +70,6 @@ BuildRequires: python2-cryptography
 BuildRequires: python2-oslo-config
 BuildRequires: python-redis
 BuildRequires: crudini
-BuildRequires: python2-crypto
 BuildRequires: python2-keystoneauth1
 BuildRequires: python2-keystoneclient
 # Required to compile translation files
@@ -268,7 +267,6 @@ Requires: python2-troveclient >= 2.2.0
 
 Requires: python2-debtcollector >= 1.2.0
 Requires: python2-keystoneauth1 >= 3.3.0
-Requires: python2-crypto >= 2.6
 Requires: python2-barbicanclient >= 4.0.0
 Requires: python2-designateclient >= 2.7.0
 Requires: python2-manilaclient >= 1.16.0
