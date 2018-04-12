@@ -540,3 +540,4 @@ running the Heat service in general.
 * Tue Aug 22 2017 Alfredo Moralejo <amoralej@redhat.com> 1:9.0.0-0.1.0rc1
 - Update to 9.0.0.0rc1
 
+# REMOVEME: error caused by commit http://git.openstack.org/cgit/openstack/heat/commit/?id=f04a2b22c5193364d3b4eb0424e59062f084e7f7
