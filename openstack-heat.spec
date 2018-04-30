@@ -7,7 +7,7 @@ Summary:	OpenStack Orchestration (heat)
 # Liberty semver reset
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:		1
-Version:	9.0.3
+Version:	9.0.4
 Release:	1%{?dist}
 License:	ASL 2.0
 URL:		http://www.openstack.org
@@ -517,6 +517,9 @@ running the Heat service in general.
 
 
 %changelog
+* Mon Apr 30 2018 RDO <dev@lists.rdoproject.org> 1:9.0.4-1
+- Update to 9.0.4
+
 * Mon Feb 12 2018 RDO <dev@lists.rdoproject.org> 1:9.0.3-1
 - Update to 9.0.3
 
