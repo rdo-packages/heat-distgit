@@ -55,6 +55,7 @@ BuildRequires: python2-osprofiler
 BuildRequires: python2-six
 BuildRequires: PyYAML
 BuildRequires: python2-sphinx
+BuildRequires: python2-sphinxcontrib-apidoc
 BuildRequires: m2crypto
 BuildRequires: python2-paramiko
 BuildRequires: python2-yaql
