@@ -55,6 +55,7 @@ BuildRequires: python2-osprofiler
 BuildRequires: python2-six
 BuildRequires: PyYAML
 BuildRequires: python2-sphinx
+BuildRequires: python2-sphinxcontrib-apidoc
 BuildRequires: m2crypto
 BuildRequires: python2-paramiko
 BuildRequires: python2-yaql
@@ -178,8 +179,8 @@ mkdir -p %{buildroot}/%{_sharedstatedir}/%{service}/
 mkdir -p %{buildroot}/%{_sysconfdir}/%{service}/
 
 %if 0%{?with_doc}
-%{__python2} setup.py build_sphinx -b html
-%{__python2} setup.py build_sphinx -b man
+sphinx-build -b html doc/source doc/build/html
+sphinx-build -b man doc/source doc/build/man
 mkdir -p %{buildroot}%{_mandir}/man1
 install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
 %endif
