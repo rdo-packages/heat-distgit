@@ -50,6 +50,7 @@ BuildRequires: python2-eventlet
 BuildRequires: python2-kombu
 BuildRequires: python-lxml
 BuildRequires: python2-netaddr
+BuildRequires: python2-neutron-lib
 BuildRequires: python-migrate
 BuildRequires: python2-osprofiler
 BuildRequires: python2-six
@@ -136,6 +137,7 @@ Requires: python2-eventlet
 Requires: PyYAML
 Requires: python2-six
 Requires: python2-gabbi
+Requires: python2-neutron-lib
 
 %description -n python-%{service}-tests
 %{common_desc}
@@ -223,6 +225,7 @@ Requires: python2-eventlet
 Requires: python2-stevedore >= 1.20.0
 Requires: python-lxml
 Requires: python2-netaddr
+Requires: python2-neutron-lib
 Requires: python2-osprofiler
 Requires: python-paste-deploy
 Requires: python2-requests
