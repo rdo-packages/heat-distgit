@@ -300,11 +300,11 @@ Components common to all OpenStack Heat services
 %exclude %{python2_sitelib}/%{service}/tests
 %attr(-, root, %{service}) %{_datadir}/%{service}/%{service}-dist.conf
 %attr(-, root, %{service}) %{_datadir}/%{service}/api-paste-dist.ini
-%dir %attr(0750,%{service},root) %{_localstatedir}/log/%{service}
-%dir %attr(0750,%{service},root) %{_localstatedir}/run/%{service}
-%dir %attr(0750,%{service},root) %{_sharedstatedir}/%{service}
-%dir %attr(0755,%{service},root) %{_sysconfdir}/%{service}
-%config(noreplace) %{_sysconfdir}/logrotate.d/openstack-%{service}
+install -d -m 755 %{buildroot}%{_sharedstatedir}/%{service}
+install -d -m 755 %{buildroot}%{_localstatedir}/log/%{service}
+install -d -m 755 %{buildroot}%{_localstatedir}/run/%{service}
+install -d -m 755 %{buildroot}%{_sysconfigdir}/%{service}
+%config(noreplace) %{_sysconfdir}/logrotate.d/*
 %config(noreplace) %attr(-, root, %{service}) %{_sysconfdir}/%{service}/%{service}.conf
 %config(noreplace) %attr(-,root,%{service}) %{_sysconfdir}/%{service}/environment.d/*
 %config(noreplace) %attr(-,root,%{service}) %{_sysconfdir}/%{service}/templates/*
@@ -442,9 +442,10 @@ Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description monolith
 %{common_desc}
 
-The %{service}-all process bundles together any (or all) of %{service}-engine, %{service}-api,
-and %{service}-cfn-api into a single process. This can be used to bootstrap a minimal
-TripleO deployment, but is not the recommended way of running the Heat service in general.
+The %{service}-all process bundles together any (or all) of %{service}-engine,
+%{service}-api, and %{service}-cfn-api into a single process. This can be used
+to bootstrap a minimal TripleO deployment, but is not the recommended way of
+running the Heat service in general.
 
 %files monolith
 %doc README.rst LICENSE
