@@ -7,6 +7,11 @@
 Heat is a service to orchestrate composite cloud applications using a \
 declarative template format through an OpenStack-native REST API.
 
+# Python3 support in OpenStack starts with version 3.5,
+# which is only in Fedora 24+
+%if 0%{?fedora} >= 24
+%global with_python3 1
+%endif
 
 Name:           openstack-%{service}
 Summary:        OpenStack Orchestration (%{service})
@@ -32,6 +37,92 @@ Source20:       %{service}-dist.conf
 BuildArch: noarch
 BuildRequires: git
 BuildRequires: openstack-macros
+BuildRequires: crudini
+BuildRequires: systemd
+
+%description
+%{common_desc}
+
+%if 0%{?with_python3}
+# begin python3 requirements
+BuildRequires: python3-devel
+BuildRequires: python3-stevedore >= 1.20.0
+BuildRequires: python3-oslo-cache
+BuildRequires: python3-oslo-context
+BuildRequires: python3-oslo-middleware
+BuildRequires: python3-oslo-policy
+BuildRequires: python3-oslo-messaging
+BuildRequires: python3-setuptools
+BuildRequires: python3-openstackdocstheme
+BuildRequires: python3-oslo-i18n
+BuildRequires: python3-oslo-db
+BuildRequires: python3-oslo-utils
+BuildRequires: python3-oslo-log
+BuildRequires: python3-oslo-versionedobjects
+BuildRequires: python3-eventlet
+BuildRequires: python3-kombu
+BuildRequires: python-lxml
+BuildRequires: python3-netaddr
+BuildRequires: python3-neutron-lib
+BuildRequires: python-migrate
+BuildRequires: python3-osprofiler
+BuildRequires: python3-six
+BuildRequires: PyYAML
+BuildRequires: python3-sphinx
+BuildRequires: python3-sphinxcontrib-apidoc
+BuildRequires: m2crypto
+BuildRequires: python3-paramiko
+BuildRequires: python3-yaql
+# These are required to build due to the requirements check added
+BuildRequires: python-paste-deploy
+BuildRequires: python3-routes
+BuildRequires: python3-sqlalchemy
+BuildRequires: python-webob
+BuildRequires: python3-pbr
+BuildRequires: python-d2to1
+BuildRequires: python3-cryptography
+# These are required to build the config file
+BuildRequires: python3-oslo-config
+BuildRequires: python-redis
+BuildRequires: python3-keystoneauth1
+BuildRequires: python3-keystoneclient
+# Required to compile translation files
+BuildRequires: python3-babel
+
+
+%if 0%{?with_doc}
+BuildRequires: python3-cinderclient
+BuildRequires: python3-novaclient
+BuildRequires: python3-saharaclient
+BuildRequires: python3-neutronclient
+BuildRequires: python3-swiftclient
+BuildRequires: python3-heatclient
+BuildRequires: python3-ceilometerclient
+BuildRequires: python3-glanceclient
+BuildRequires: python3-troveclient
+BuildRequires: python3-aodhclient
+BuildRequires: python3-barbicanclient
+BuildRequires: python3-designateclient
+BuildRequires: python3-magnumclient
+BuildRequires: python3-monascaclient
+BuildRequires: python3-manilaclient
+BuildRequires: python3-zaqarclient
+BuildRequires: python3-croniter
+BuildRequires: python3-gabbi
+BuildRequires: python3-testscenarios
+BuildRequires: python3-tempest
+BuildRequires: python3-gabbi
+# NOTE(ykarel) zunclient are not packaged yet.
+%if 0%{rhosp} == 0
+BuildRequires: python3-senlinclient
+%endif
+#BuildRequires: python3-zunclient
+%endif
+# end python3 requirements
+
+%else
+
+# begin python2 requirements
 BuildRequires: python2-devel
 BuildRequires: python2-stevedore >= 1.20.0
 BuildRequires: python2-oslo-cache
@@ -71,13 +162,11 @@ BuildRequires: python2-cryptography
 # These are required to build the config file
 BuildRequires: python2-oslo-config
 BuildRequires: python-redis
-BuildRequires: crudini
 BuildRequires: python2-keystoneauth1
 BuildRequires: python2-keystoneclient
 # Required to compile translation files
 BuildRequires: python2-babel
 
-BuildRequires: systemd
 
 %if 0%{?with_doc}
 BuildRequires: python2-cinderclient
@@ -107,16 +196,56 @@ BuildRequires: python2-senlinclient
 %endif
 #BuildRequires: python2-zunclient
 %endif
+# end python2 requirements
+%endif
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires: %{name}-engine = %{epoch}:%{version}-%{release}
 Requires: %{name}-api = %{epoch}:%{version}-%{release}
 Requires: %{name}-api-cfn = %{epoch}:%{version}-%{release}
 
-%package -n python-%{service}-tests
+
+%if 0%{?with_python3}
+%package -n python3-%{service}-tests
 Summary:        Heat tests
 Requires:       %{name}-common = %{epoch}:%{version}-%{release}
+%{?python_provide:%python_provide python3-%{service}-tests}
 
+# begin python3 requirements
+Requires: python3-mox3
+Requires: python3-oslotest
+Requires: python3-testresources
+Requires: python3-oslotest
+Requires: python3-oslo-log
+Requires: python3-oslo-utils
+Requires: python3-heatclient
+Requires: python3-cinderclient
+Requires: python3-zaqarclient
+Requires: python3-keystoneclient
+Requires: python3-swiftclient
+Requires: python3-paramiko
+Requires: python3-kombu
+Requires: python3-oslo-config
+Requires: python3-oslo-concurrency
+Requires: python3-requests
+Requires: python3-eventlet
+Requires: PyYAML
+Requires: python3-six
+Requires: python3-gabbi
+# end python3 requirements
+
+%description -n python3-%{service}-tests
+%{common_desc}
+This package contains the Heat test files.
+
+%else
+
+%package -n python2-%{service}-tests
+Summary:        Heat tests
+Requires:       %{name}-common = %{epoch}:%{version}-%{release}
+%{?python_provide:%python_provide python2-%{service}-tests}
+
+# begin python2 requirements
 Requires: python2-mox3
 Requires: python2-oslotest
 Requires: python2-testresources
@@ -137,10 +266,14 @@ Requires: python2-eventlet
 Requires: PyYAML
 Requires: python2-six
 Requires: python2-gabbi
+# end python2 requirements
 
-%description -n python-%{service}-tests
+%description -n python2-%{service}-tests
 %{common_desc}
 This package contains the Heat test files.
+
+%endif
+
 
 %prep
 %autosetup -n %{service}-%{upstream_version} -S git
@@ -153,18 +286,28 @@ This package contains the Heat test files.
 find contrib -name tests -type d | xargs rm -r
 
 %build
-%{__python} setup.py build
-
+%if 0%{?with_python3}
+%{py3_build}
+# Generate i18n files
+%{__python3} setup.py compile_catalog -d build/lib/%{service}/locale
+%else
+%{py2_build}
 # Generate i18n files
 %{__python2} setup.py compile_catalog -d build/lib/%{service}/locale
+%endif
 
 # Generate sample config and add the current directory to PYTHONPATH so
 # oslo-config-generator doesn't skip heat's entry points.
 PYTHONPATH=. oslo-config-generator --config-file=config-generator.conf
 
 %install
-%{__python} setup.py install -O1 --skip-build --root=%{buildroot}
-sed -i -e '/^#!/,1 d' %{buildroot}/%{python_sitelib}/%{service}/db/sqlalchemy/migrate_repo/manage.py
+%if 0%{?with_python3}
+%{py3_install}
+sed -i -e '/^#!/,1 d' %{buildroot}/%{python3_sitelib}/%{service}/db/sqlalchemy/migrate_repo/manage.py
+%else
+%{py2_install}
+sed -i -e '/^#!/,1 d' %{buildroot}/%{python2_sitelib}/%{service}/db/sqlalchemy/migrate_repo/manage.py
+%endif
 
 mkdir -p %{buildroot}/%{_localstatedir}/log/%{service}/
 mkdir -p %{buildroot}/%{_localstatedir}/run/%{service}/
@@ -200,17 +343,22 @@ mv %{buildroot}%{_prefix}/etc/%{service}/templates %{buildroot}/%{_sysconfdir}/%
 # Remove duplicate config files under /usr/etc/heat
 rmdir %{buildroot}%{_prefix}/etc/%{service}
 
+
 # Install i18n .mo files (.po and .pot are not required)
 install -d -m 755 %{buildroot}%{_datadir}
+%if 0%{?with_python3}
+rm -f %{buildroot}%{python3_sitelib}/%{service}/locale/*/LC_*/%{service}*po
+rm -f %{buildroot}%{python3_sitelib}/%{service}/locale/*pot
+mv %{buildroot}%{python3_sitelib}/%{service}/locale %{buildroot}%{_datadir}/locale
+%else
 rm -f %{buildroot}%{python2_sitelib}/%{service}/locale/*/LC_*/%{service}*po
 rm -f %{buildroot}%{python2_sitelib}/%{service}/locale/*pot
 mv %{buildroot}%{python2_sitelib}/%{service}/locale %{buildroot}%{_datadir}/locale
+%endif
 
 # Find language files
 %find_lang %{service} --all-name
 
-%description
-%{common_desc}
 
 %package common
 Summary: Heat common
@@ -218,6 +366,83 @@ Group: System Environment/Base
 
 Obsoletes: %{name}-api-cloudwatch < %{epoch}:10.0.0
 
+Requires(pre): shadow-utils
+
+%if 0%{?with_python3}
+# begin python3 requirements
+Requires: python3-pbr
+Requires: python3-croniter
+Requires: python3-eventlet
+Requires: python3-stevedore >= 1.20.0
+Requires: python-lxml
+Requires: python3-netaddr
+Requires: python3-neutron-lib
+Requires: python3-osprofiler
+Requires: python-paste-deploy
+Requires: python3-requests
+Requires: python3-routes
+Requires: python3-sqlalchemy
+Requires: python-migrate
+Requires: python-webob
+Requires: python3-six >= 1.10.0
+Requires: PyYAML
+Requires: python3-paramiko
+Requires: python3-babel >= 2.3.4
+# FIXME: system version is stuck to 1.7.2 for cryptography
+Requires: python3-cryptography >= 1.7.2
+Requires: python3-yaql >= 1.1.3
+
+Requires: python3-oslo-cache >= 1.26.0
+Requires: python3-oslo-concurrency >= 3.25.0
+Requires: python3-oslo-config >= 2:5.1.0
+Requires: python3-oslo-context >= 2.19.2
+Requires: python3-oslo-utils >= 3.33.0
+Requires: python3-oslo-db >= 4.27.0
+Requires: python3-oslo-i18n >= 3.15.3
+Requires: python3-oslo-middleware >= 3.31.0
+Requires: python3-oslo-messaging >= 5.29.0
+Requires: python3-oslo-policy >= 1.30.0
+Requires: python3-oslo-reports >= 1.18.0
+Requires: python3-oslo-serialization >= 2.18.0
+Requires: python3-oslo-service >= 1.24.0
+Requires: python3-oslo-log >= 3.36.0
+Requires: python3-oslo-versionedobjects >= 1.31.2
+
+Requires: python3-ceilometerclient >= 2.5.0
+Requires: python3-cinderclient >= 3.3.0
+Requires: python3-glanceclient >= 1:2.8.0
+Requires: python3-heatclient >= 1.10.0
+Requires: python3-keystoneclient >= 1:3.8.0
+Requires: python3-keystonemiddleware >= 4.17.0
+Requires: python3-neutronclient >= 6.3.0
+Requires: python3-novaclient >= 9.1.0
+Requires: python3-saharaclient >= 1.4.0
+Requires: python3-swiftclient >= 3.2.0
+Requires: python3-troveclient >= 2.2.0
+
+Requires: python3-debtcollector >= 1.2.0
+Requires: python3-keystoneauth1 >= 3.3.0
+Requires: python3-barbicanclient >= 4.0.0
+Requires: python3-designateclient >= 2.7.0
+Requires: python3-manilaclient >= 1.16.0
+Requires: python3-mistralclient >= 3.1.0
+Requires: python3-openstackclient >= 3.12.0
+Requires: python3-zaqarclient >= 1.0.0
+Requires: python3-aodhclient >= 0.9.0
+Requires: python3-magnumclient >= 2.1.0
+Requires: python3-octaviaclient >= 1.4.0
+%if 0%{rhosp} == 0
+Requires: python3-senlinclient >= 1.1.0
+Requires: python3-monascaclient >= 1.10.0
+%endif
+Requires: python3-openstacksdk >= 0.9.19
+Requires: pytz
+Requires: python3-tenacity >= 3.2.1
+# end python3 requirements
+
+%else
+
+# start python2 requirements
 Requires: python2-pbr
 Requires: python2-croniter
 Requires: python2-eventlet
@@ -286,8 +511,8 @@ Requires: python2-monascaclient >= 1.10.0
 Requires: python2-openstacksdk >= 0.9.19
 Requires: pytz
 Requires: python2-tenacity >= 3.2.1
-
-Requires(pre): shadow-utils
+# end python2 requirements
+%endif
 
 %description common
 Components common to all OpenStack Heat services
@@ -297,9 +522,16 @@ Components common to all OpenStack Heat services
 %{_bindir}/%{service}-manage
 %{_bindir}/%{service}-keystone-setup
 %{_bindir}/%{service}-keystone-setup-domain
+
+%if 0%{?with_python3}
 %{python2_sitelib}/%{service}
 %{python2_sitelib}/%{service}-%{upstream_version}-*.egg-info
 %exclude %{python2_sitelib}/%{service}/tests
+%else
+%{python3_sitelib}/%{service}
+%{python3_sitelib}/%{service}-%{upstream_version}-*.egg-info
+%exclude %{python3_sitelib}/%{service}/tests
+%endif
 %attr(-, root, %{service}) %{_datadir}/%{service}/%{service}-dist.conf
 %attr(-, root, %{service}) %{_datadir}/%{service}/api-paste-dist.ini
 %dir %attr(0750,%{service},root) %{_localstatedir}/log/%{service}
