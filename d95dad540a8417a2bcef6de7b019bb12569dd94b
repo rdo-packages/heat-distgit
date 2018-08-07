@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9abe1de1_a5d1e5fd",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 9
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 303
+      },
+      "writtenOn": "2018-08-07T20:29:59Z",
+      "side": 0,
+      "message": "this is dead upstream \n\nhttps://github.com/openstack/python-ceilometerclient",
+      "revId": "d95dad540a8417a2bcef6de7b019bb12569dd94b",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
