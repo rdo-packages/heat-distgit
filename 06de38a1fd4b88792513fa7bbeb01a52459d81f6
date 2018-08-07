@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9abe1de1_c5ba996e",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 85
+      },
+      "writtenOn": "2018-08-07T22:41:00Z",
+      "side": 1,
+      "message": "at this point, Fedora 24 is EOL prehistory so you can assume current lowest Fedora is 28.\nAlso to cover future RHEL, pattern in Fedora specs is now:\n%if 0%{?fedora} || 0%{?rhel} \u003e\u003d 8",
+      "revId": "06de38a1fd4b88792513fa7bbeb01a52459d81f6",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
