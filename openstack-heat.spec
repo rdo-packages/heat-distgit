@@ -1,3 +1,16 @@
+# Macros for py2/py3 compatibility
+%if 0%{?fedora} || 0%{?rhel} > 7
+%global pydefault 3
+%else
+%global pydefault 2
+%endif
+
+%global pydefault_bin python%{pydefault}
+%global pydefault_sitelib %python%{pydefault}_sitelib
+%global pydefault_install %py%{pydefault}_install
+%global pydefault_build %py%{pydefault}_build
+# End of macros for py2/py3 compatibility
+
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 %global rhosp 0
@@ -32,76 +45,86 @@ Source20:       %{service}-dist.conf
 BuildArch: noarch
 BuildRequires: git
 BuildRequires: openstack-macros
-BuildRequires: python2-devel
-BuildRequires: python2-stevedore >= 1.20.0
-BuildRequires: python2-oslo-cache
-BuildRequires: python2-oslo-context
-BuildRequires: python2-oslo-middleware
-BuildRequires: python2-oslo-policy
-BuildRequires: python2-oslo-messaging
-BuildRequires: python2-setuptools
-BuildRequires: python2-openstackdocstheme
-BuildRequires: python2-oslo-i18n
-BuildRequires: python2-oslo-db
-BuildRequires: python2-oslo-utils
-BuildRequires: python2-oslo-log
-BuildRequires: python2-oslo-versionedobjects
-BuildRequires: python2-eventlet
-BuildRequires: python2-kombu
-BuildRequires: python-lxml
-BuildRequires: python2-netaddr
-BuildRequires: python2-neutron-lib
-BuildRequires: python-migrate
-BuildRequires: python2-osprofiler
-BuildRequires: python2-six
-BuildRequires: PyYAML
-BuildRequires: python2-sphinx
-BuildRequires: python2-sphinxcontrib-apidoc
-BuildRequires: m2crypto
-BuildRequires: python2-paramiko
-BuildRequires: python2-yaql
+BuildRequires: python%{pydefault}-devel
+BuildRequires: python%{pydefault}-stevedore >= 1.20.0
+BuildRequires: python%{pydefault}-oslo-cache
+BuildRequires: python%{pydefault}-oslo-context
+BuildRequires: python%{pydefault}-oslo-middleware
+BuildRequires: python%{pydefault}-oslo-policy
+BuildRequires: python%{pydefault}-oslo-messaging
+BuildRequires: python%{pydefault}-setuptools
+BuildRequires: python%{pydefault}-openstackdocstheme
+BuildRequires: python%{pydefault}-oslo-i18n
+BuildRequires: python%{pydefault}-oslo-db
+BuildRequires: python%{pydefault}-oslo-utils
+BuildRequires: python%{pydefault}-oslo-log
+BuildRequires: python%{pydefault}-oslo-versionedobjects
+BuildRequires: python%{pydefault}-eventlet
+BuildRequires: python%{pydefault}-kombu
+BuildRequires: python%{pydefault}-netaddr
+BuildRequires: python%{pydefault}-neutron-lib
+BuildRequires: python%{pydefault}-osprofiler
+BuildRequires: python%{pydefault}-six
+BuildRequires: python%{pydefault}-sphinx
+BuildRequires: python%{pydefault}-sphinxcontrib-apidoc
+BuildRequires: python%{pydefault}-paramiko
+BuildRequires: python%{pydefault}-yaql
 # These are required to build due to the requirements check added
-BuildRequires: python-paste-deploy
-BuildRequires: python2-routes
-BuildRequires: python2-sqlalchemy
-BuildRequires: python-webob
-BuildRequires: python2-pbr
-BuildRequires: python-d2to1
-BuildRequires: python2-cryptography
+BuildRequires: python%{pydefault}-routes
+BuildRequires: python%{pydefault}-sqlalchemy
+BuildRequires: python%{pydefault}-pbr
+BuildRequires: python%{pydefault}-cryptography
 # These are required to build the config file
-BuildRequires: python2-oslo-config
-BuildRequires: python-redis
+BuildRequires: python%{pydefault}-oslo-config
 BuildRequires: crudini
-BuildRequires: python2-keystoneauth1
-BuildRequires: python2-keystoneclient
+BuildRequires: python%{pydefault}-keystoneauth1
+BuildRequires: python%{pydefault}-keystoneclient
 # Required to compile translation files
-BuildRequires: python2-babel
+BuildRequires: python%{pydefault}-babel
+
+%if %{pydefault} == 2
+BuildRequires: PyYAML
+BuildRequires: python-d2to1
+BuildRequires: python-lxml
+BuildRequires: python-migrate
+BuildRequires: python-paste-deploy
+BuildRequires: python-redis
+BuildRequires: python-webob
+%else
+BuildRequires: python%{pydefault}-PyYAML
+BuildRequires: python%{pydefault}-d2to1
+BuildRequires: python%{pydefault}-lxml
+BuildRequires: python%{pydefault}-migrate
+BuildRequires: python%{pydefault}-paste-deploy
+BuildRequires: python%{pydefault}-redis
+BuildRequires: python%{pydefault}-webob
+%endif
 
 BuildRequires: systemd
 
 %if 0%{?with_doc}
-BuildRequires: python2-cinderclient
-BuildRequires: python2-novaclient
-BuildRequires: python2-saharaclient
-BuildRequires: python2-neutronclient
-BuildRequires: python2-swiftclient
-BuildRequires: python2-heatclient
-BuildRequires: python2-glanceclient
-BuildRequires: python2-troveclient
-BuildRequires: python2-aodhclient
-BuildRequires: python2-barbicanclient
-BuildRequires: python2-designateclient
-BuildRequires: python2-magnumclient
-BuildRequires: python2-monascaclient
-BuildRequires: python2-manilaclient
-BuildRequires: python2-zaqarclient
-BuildRequires: python2-croniter
-BuildRequires: python2-gabbi
-BuildRequires: python2-testscenarios
-BuildRequires: python2-tempest
-BuildRequires: python2-gabbi
+BuildRequires: python%{pydefault}-cinderclient
+BuildRequires: python%{pydefault}-novaclient
+BuildRequires: python%{pydefault}-saharaclient
+BuildRequires: python%{pydefault}-neutronclient
+BuildRequires: python%{pydefault}-swiftclient
+BuildRequires: python%{pydefault}-heatclient
+BuildRequires: python%{pydefault}-glanceclient
+BuildRequires: python%{pydefault}-troveclient
+BuildRequires: python%{pydefault}-aodhclient
+BuildRequires: python%{pydefault}-barbicanclient
+BuildRequires: python%{pydefault}-designateclient
+BuildRequires: python%{pydefault}-magnumclient
+BuildRequires: python%{pydefault}-monascaclient
+BuildRequires: python%{pydefault}-manilaclient
+BuildRequires: python%{pydefault}-zaqarclient
+BuildRequires: python%{pydefault}-croniter
+BuildRequires: python%{pydefault}-gabbi
+BuildRequires: python%{pydefault}-testscenarios
+BuildRequires: python%{pydefault}-tempest
+BuildRequires: python%{pydefault}-gabbi
 # NOTE(ykarel) zunclient are not packaged yet.
-#BuildRequires: python2-zunclient
+#BuildRequires: python%{pydefault}-zunclient
 %endif
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
@@ -109,32 +132,38 @@ Requires: %{name}-engine = %{epoch}:%{version}-%{release}
 Requires: %{name}-api = %{epoch}:%{version}-%{release}
 Requires: %{name}-api-cfn = %{epoch}:%{version}-%{release}
 
-%package -n python-%{service}-tests
+%package -n python%{pydefault}-%{service}-tests
+%{?python_provide:%python_provide python%{pydefault}-%{service}-tests}
 Summary:        Heat tests
 Requires:       %{name}-common = %{epoch}:%{version}-%{release}
 
-Requires: python2-mox3
-Requires: python2-oslotest
-Requires: python2-testresources
-Requires: python2-oslotest
-Requires: python2-oslo-log
-Requires: python2-oslo-utils
-Requires: python2-heatclient
-Requires: python2-cinderclient
-Requires: python2-zaqarclient
-Requires: python2-keystoneclient
-Requires: python2-swiftclient
-Requires: python2-paramiko
-Requires: python2-kombu
-Requires: python2-oslo-config
-Requires: python2-oslo-concurrency
-Requires: python2-requests
-Requires: python2-eventlet
-Requires: PyYAML
-Requires: python2-six
-Requires: python2-gabbi
+Requires: python%{pydefault}-mox3
+Requires: python%{pydefault}-oslotest
+Requires: python%{pydefault}-testresources
+Requires: python%{pydefault}-oslotest
+Requires: python%{pydefault}-oslo-log
+Requires: python%{pydefault}-oslo-utils
+Requires: python%{pydefault}-heatclient
+Requires: python%{pydefault}-cinderclient
+Requires: python%{pydefault}-zaqarclient
+Requires: python%{pydefault}-keystoneclient
+Requires: python%{pydefault}-swiftclient
+Requires: python%{pydefault}-paramiko
+Requires: python%{pydefault}-kombu
+Requires: python%{pydefault}-oslo-config
+Requires: python%{pydefault}-oslo-concurrency
+Requires: python%{pydefault}-requests
+Requires: python%{pydefault}-eventlet
+Requires: python%{pydefault}-six
+Requires: python%{pydefault}-gabbi
 
-%description -n python-%{service}-tests
+%if %{pydefault} == 2
+Requires: PyYAML
+%else
+Requires: python%{pydefault}-PyYAML
+%endif
+
+%description -n python%{pydefault}-%{service}-tests
 %{common_desc}
 This package contains the Heat test files.
 
@@ -149,18 +178,18 @@ This package contains the Heat test files.
 find contrib -name tests -type d | xargs rm -r
 
 %build
-%{__python} setup.py build
+%{pydefault_build}
 
 # Generate i18n files
-%{__python2} setup.py compile_catalog -d build/lib/%{service}/locale
+%{pydefault_bin} setup.py compile_catalog -d build/lib/%{service}/locale
 
 # Generate sample config and add the current directory to PYTHONPATH so
 # oslo-config-generator doesn't skip heat's entry points.
-PYTHONPATH=. oslo-config-generator --config-file=config-generator.conf
+PYTHONPATH=. oslo-config-generator-%{pydefault} --config-file=config-generator.conf
 
 %install
-%{__python} setup.py install -O1 --skip-build --root=%{buildroot}
-sed -i -e '/^#!/,1 d' %{buildroot}/%{python_sitelib}/%{service}/db/sqlalchemy/migrate_repo/manage.py
+%{pydefault_install}
+sed -i -e '/^#!/,1 d' %{buildroot}/%{pydefault_sitelib}/%{service}/db/sqlalchemy/migrate_repo/manage.py
 
 mkdir -p %{buildroot}/%{_localstatedir}/log/%{service}/
 mkdir -p %{buildroot}/%{_localstatedir}/run/%{service}/
@@ -198,9 +227,9 @@ rmdir %{buildroot}%{_prefix}/etc/%{service}
 
 # Install i18n .mo files (.po and .pot are not required)
 install -d -m 755 %{buildroot}%{_datadir}
-rm -f %{buildroot}%{python2_sitelib}/%{service}/locale/*/LC_*/%{service}*po
-rm -f %{buildroot}%{python2_sitelib}/%{service}/locale/*pot
-mv %{buildroot}%{python2_sitelib}/%{service}/locale %{buildroot}%{_datadir}/locale
+rm -f %{buildroot}%{pydefault_sitelib}/%{service}/locale/*/LC_*/%{service}*po
+rm -f %{buildroot}%{pydefault_sitelib}/%{service}/locale/*pot
+mv %{buildroot}%{pydefault_sitelib}/%{service}/locale %{buildroot}%{_datadir}/locale
 
 # Find language files
 %find_lang %{service} --all-name
@@ -214,71 +243,81 @@ Group: System Environment/Base
 
 Obsoletes: %{name}-api-cloudwatch < %{epoch}:10.0.0
 
-Requires: python2-pbr
-Requires: python2-croniter
-Requires: python2-eventlet
-Requires: python2-stevedore >= 1.20.0
-Requires: python-lxml
-Requires: python2-netaddr
-Requires: python2-neutron-lib
-Requires: python2-osprofiler
-Requires: python-paste-deploy
-Requires: python2-requests
-Requires: python2-routes
-Requires: python2-sqlalchemy
-Requires: python-migrate
-Requires: python-webob
-Requires: python2-six >= 1.10.0
-Requires: PyYAML
-Requires: python2-paramiko
-Requires: python2-babel >= 2.3.4
+Requires: python%{pydefault}-pbr
+Requires: python%{pydefault}-croniter
+Requires: python%{pydefault}-eventlet
+Requires: python%{pydefault}-stevedore >= 1.20.0
+Requires: python%{pydefault}-netaddr
+Requires: python%{pydefault}-neutron-lib
+Requires: python%{pydefault}-osprofiler
+Requires: python%{pydefault}-requests
+Requires: python%{pydefault}-routes
+Requires: python%{pydefault}-sqlalchemy
+Requires: python%{pydefault}-six >= 1.10.0
+Requires: python%{pydefault}-paramiko
+Requires: python%{pydefault}-babel >= 2.3.4
 # FIXME: system version is stuck to 1.7.2 for cryptography
-Requires: python2-cryptography >= 2.1
-Requires: python2-yaql >= 1.1.3
+Requires: python%{pydefault}-cryptography >= 2.1
+Requires: python%{pydefault}-yaql >= 1.1.3
 
-Requires: python2-oslo-cache >= 1.26.0
-Requires: python2-oslo-concurrency >= 3.26.0
-Requires: python2-oslo-config >= 2:5.2.0
-Requires: python2-oslo-context >= 2.19.2
-Requires: python2-oslo-utils >= 3.33.0
-Requires: python2-oslo-db >= 4.27.0
-Requires: python2-oslo-i18n >= 3.15.3
-Requires: python2-oslo-middleware >= 3.31.0
-Requires: python2-oslo-messaging >= 5.29.0
-Requires: python2-oslo-policy >= 1.30.0
-Requires: python2-oslo-reports >= 1.18.0
-Requires: python2-oslo-serialization >= 2.18.0
-Requires: python2-oslo-service >= 1.24.0
-Requires: python2-oslo-log >= 3.36.0
-Requires: python2-oslo-versionedobjects >= 1.31.2
+Requires: python%{pydefault}-oslo-cache >= 1.26.0
+Requires: python%{pydefault}-oslo-concurrency >= 3.26.0
+Requires: python%{pydefault}-oslo-config >= 2:5.2.0
+Requires: python%{pydefault}-oslo-context >= 2.19.2
+Requires: python%{pydefault}-oslo-utils >= 3.33.0
+Requires: python%{pydefault}-oslo-db >= 4.27.0
+Requires: python%{pydefault}-oslo-i18n >= 3.15.3
+Requires: python%{pydefault}-oslo-middleware >= 3.31.0
+Requires: python%{pydefault}-oslo-messaging >= 5.29.0
+Requires: python%{pydefault}-oslo-policy >= 1.30.0
+Requires: python%{pydefault}-oslo-reports >= 1.18.0
+Requires: python%{pydefault}-oslo-serialization >= 2.18.0
+Requires: python%{pydefault}-oslo-service >= 1.24.0
+Requires: python%{pydefault}-oslo-log >= 3.36.0
+Requires: python%{pydefault}-oslo-versionedobjects >= 1.31.2
 
-Requires: python2-cinderclient >= 3.3.0
-Requires: python2-glanceclient >= 1:2.8.0
-Requires: python2-heatclient >= 1.10.0
-Requires: python2-keystoneclient >= 1:3.8.0
-Requires: python2-keystonemiddleware >= 4.17.0
-Requires: python2-neutronclient >= 6.7.0
-Requires: python2-novaclient >= 9.1.0
-Requires: python2-saharaclient >= 1.4.0
-Requires: python2-swiftclient >= 3.2.0
-Requires: python2-troveclient >= 2.2.0
+Requires: python%{pydefault}-cinderclient >= 3.3.0
+Requires: python%{pydefault}-glanceclient >= 1:2.8.0
+Requires: python%{pydefault}-heatclient >= 1.10.0
+Requires: python%{pydefault}-keystoneclient >= 1:3.8.0
+Requires: python%{pydefault}-keystonemiddleware >= 4.17.0
+Requires: python%{pydefault}-neutronclient >= 6.7.0
+Requires: python%{pydefault}-novaclient >= 9.1.0
+Requires: python%{pydefault}-saharaclient >= 1.4.0
+Requires: python%{pydefault}-swiftclient >= 3.2.0
+Requires: python%{pydefault}-troveclient >= 2.2.0
 
-Requires: python2-keystoneauth1 >= 3.4.0
-Requires: python2-barbicanclient >= 4.5.2
-Requires: python2-designateclient >= 2.7.0
-Requires: python2-manilaclient >= 1.16.0
-Requires: python2-mistralclient >= 3.1.0
-Requires: python2-openstackclient >= 3.12.0
-Requires: python2-zaqarclient >= 1.0.0
-Requires: python2-aodhclient >= 0.9.0
-Requires: python2-magnumclient >= 2.1.0
-Requires: python2-octaviaclient >= 1.4.0
+Requires: python%{pydefault}-keystoneauth1 >= 3.4.0
+Requires: python%{pydefault}-barbicanclient >= 4.5.2
+Requires: python%{pydefault}-designateclient >= 2.7.0
+Requires: python%{pydefault}-manilaclient >= 1.16.0
+Requires: python%{pydefault}-mistralclient >= 3.1.0
+Requires: python%{pydefault}-openstackclient >= 3.12.0
+Requires: python%{pydefault}-zaqarclient >= 1.0.0
+Requires: python%{pydefault}-aodhclient >= 0.9.0
+Requires: python%{pydefault}-magnumclient >= 2.1.0
+Requires: python%{pydefault}-octaviaclient >= 1.4.0
 %if 0%{rhosp} == 0
-Requires: python2-monascaclient >= 1.12.0
+Requires: python%{pydefault}-monascaclient >= 1.12.0
 %endif
-Requires: python2-openstacksdk >= 0.11.2
+Requires: python%{pydefault}-openstacksdk >= 0.11.2
+Requires: python%{pydefault}-tenacity >= 4.4.0
+
+%if %{pydefault} == 2
+Requires: PyYAML
+Requires: python-lxml
+Requires: python-migrate
+Requires: python-paste-deploy
+Requires: python-webob
 Requires: pytz
-Requires: python2-tenacity >= 4.4.0
+%else
+Requires: python%{pydefault}-PyYAML
+Requires: python%{pydefault}-lxml
+Requires: python%{pydefault}-migrate
+Requires: python%{pydefault}-paste-deploy
+Requires: python%{pydefault}-webob
+Requires: python%{pydefault}-pytz
+%endif
 
 Requires(pre): shadow-utils
 
@@ -290,9 +329,9 @@ Components common to all OpenStack Heat services
 %{_bindir}/%{service}-manage
 %{_bindir}/%{service}-keystone-setup
 %{_bindir}/%{service}-keystone-setup-domain
-%{python2_sitelib}/%{service}
-%{python2_sitelib}/%{service}-%{upstream_version}-*.egg-info
-%exclude %{python2_sitelib}/%{service}/tests
+%{pydefault_sitelib}/%{service}
+%{pydefault_sitelib}/%{service}-%{upstream_version}-*.egg-info
+%exclude %{pydefault_sitelib}/%{service}/tests
 %attr(-, root, %{service}) %{_datadir}/%{service}/%{service}-dist.conf
 %attr(-, root, %{service}) %{_datadir}/%{service}/api-paste-dist.ini
 %dir %attr(0750,%{service},root) %{_localstatedir}/log/%{service}
@@ -309,10 +348,10 @@ Components common to all OpenStack Heat services
 %{_mandir}/man1/%{service}-manage.1.gz
 %endif
 
-%files -n python-%{service}-tests
+%files -n python%{pydefault}-%{service}-tests
 %license LICENSE
-%{python2_sitelib}/%{service}/tests
-%{python2_sitelib}/%{service}_integrationtests
+%{pydefault_sitelib}/%{service}/tests
+%{pydefault_sitelib}/%{service}_integrationtests
 
 %pre common
 # 187:187 for heat - rhbz#845078
