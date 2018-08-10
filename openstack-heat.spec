@@ -101,9 +101,6 @@ BuildRequires: python2-testscenarios
 BuildRequires: python2-tempest
 BuildRequires: python2-gabbi
 # NOTE(ykarel) zunclient are not packaged yet.
-%if 0%{rhosp} == 0
-BuildRequires: python2-senlinclient
-%endif
 #BuildRequires: python2-zunclient
 %endif
 
@@ -236,12 +233,12 @@ Requires: PyYAML
 Requires: python2-paramiko
 Requires: python2-babel >= 2.3.4
 # FIXME: system version is stuck to 1.7.2 for cryptography
-Requires: python2-cryptography >= 1.7.2
+Requires: python2-cryptography >= 2.1
 Requires: python2-yaql >= 1.1.3
 
 Requires: python2-oslo-cache >= 1.26.0
-Requires: python2-oslo-concurrency >= 3.25.0
-Requires: python2-oslo-config >= 2:5.1.0
+Requires: python2-oslo-concurrency >= 3.26.0
+Requires: python2-oslo-config >= 2:5.2.0
 Requires: python2-oslo-context >= 2.19.2
 Requires: python2-oslo-utils >= 3.33.0
 Requires: python2-oslo-db >= 4.27.0
@@ -260,15 +257,14 @@ Requires: python2-glanceclient >= 1:2.8.0
 Requires: python2-heatclient >= 1.10.0
 Requires: python2-keystoneclient >= 1:3.8.0
 Requires: python2-keystonemiddleware >= 4.17.0
-Requires: python2-neutronclient >= 6.3.0
+Requires: python2-neutronclient >= 6.7.0
 Requires: python2-novaclient >= 9.1.0
 Requires: python2-saharaclient >= 1.4.0
 Requires: python2-swiftclient >= 3.2.0
 Requires: python2-troveclient >= 2.2.0
 
-Requires: python2-debtcollector >= 1.2.0
-Requires: python2-keystoneauth1 >= 3.3.0
-Requires: python2-barbicanclient >= 4.0.0
+Requires: python2-keystoneauth1 >= 3.4.0
+Requires: python2-barbicanclient >= 4.5.2
 Requires: python2-designateclient >= 2.7.0
 Requires: python2-manilaclient >= 1.16.0
 Requires: python2-mistralclient >= 3.1.0
@@ -278,12 +274,11 @@ Requires: python2-aodhclient >= 0.9.0
 Requires: python2-magnumclient >= 2.1.0
 Requires: python2-octaviaclient >= 1.4.0
 %if 0%{rhosp} == 0
-Requires: python2-senlinclient >= 1.1.0
-Requires: python2-monascaclient >= 1.10.0
+Requires: python2-monascaclient >= 1.12.0
 %endif
-Requires: python2-openstacksdk >= 0.9.19
+Requires: python2-openstacksdk >= 0.11.2
 Requires: pytz
-Requires: python2-tenacity >= 3.2.1
+Requires: python2-tenacity >= 4.4.0
 
 Requires(pre): shadow-utils
 
