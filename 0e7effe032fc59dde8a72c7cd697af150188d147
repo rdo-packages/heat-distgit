@@ -1,0 +1,9 @@
+Code-Review+2: zaneb <zbitter@redhat.com>
+Code-Review+2: Javier Peña <jpena@redhat.com>
+Workflow+1: Javier Peña <jpena@redhat.com>
+Verified+2: Zuul CI <zuul@review.rdoproject.org>
+Submitted-by: Zuul CI <zuul@review.rdoproject.org>
+Submitted-at: Thu, 06 Sep 2018 15:09:38 +0000
+Reviewed-on: https://review.rdoproject.org/r/15871
+Project: openstack/heat-distgit
+Branch: refs/heads/queens-rdo
