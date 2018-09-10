@@ -40,7 +40,6 @@ BuildRequires: python2-oslo-middleware
 BuildRequires: python2-oslo-policy
 BuildRequires: python2-oslo-messaging
 BuildRequires: python2-setuptools
-BuildRequires: python2-openstackdocstheme
 BuildRequires: python2-oslo-i18n
 BuildRequires: python2-oslo-db
 BuildRequires: python2-oslo-utils
@@ -55,8 +54,6 @@ BuildRequires: python-migrate
 BuildRequires: python2-osprofiler
 BuildRequires: python2-six
 BuildRequires: PyYAML
-BuildRequires: python2-sphinx
-BuildRequires: python2-sphinxcontrib-apidoc
 BuildRequires: m2crypto
 BuildRequires: python2-paramiko
 BuildRequires: python2-yaql
@@ -80,6 +77,9 @@ BuildRequires: python2-babel
 BuildRequires: systemd
 
 %if 0%{?with_doc}
+BuildRequires: python2-openstackdocstheme
+BuildRequires: python2-sphinx
+BuildRequires: python2-sphinxcontrib-apidoc
 BuildRequires: python2-cinderclient
 BuildRequires: python2-novaclient
 BuildRequires: python2-saharaclient
