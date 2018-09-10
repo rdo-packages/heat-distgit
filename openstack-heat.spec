@@ -55,8 +55,6 @@ BuildRequires: python-migrate
 BuildRequires: python2-osprofiler
 BuildRequires: python2-six
 BuildRequires: PyYAML
-BuildRequires: python2-sphinx
-BuildRequires: python2-sphinxcontrib-apidoc
 BuildRequires: m2crypto
 BuildRequires: python2-paramiko
 BuildRequires: python2-yaql
@@ -80,6 +78,8 @@ BuildRequires: python2-babel
 BuildRequires: systemd
 
 %if 0%{?with_doc}
+BuildRequires: python2-sphinx
+BuildRequires: python2-sphinxcontrib-apidoc
 BuildRequires: python2-cinderclient
 BuildRequires: python2-novaclient
 BuildRequires: python2-saharaclient
