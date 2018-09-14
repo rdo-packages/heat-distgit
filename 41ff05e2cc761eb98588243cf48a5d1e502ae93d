@@ -16,6 +16,24 @@
       "revId": "41ff05e2cc761eb98588243cf48a5d1e502ae93d",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9abe1de1_543bb4d1",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 18
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 85
+      },
+      "writtenOn": "2018-09-14T17:21:18Z",
+      "side": 1,
+      "message": "Which macros package?",
+      "parentUuid": "9abe1de1_99caa5a0",
+      "revId": "41ff05e2cc761eb98588243cf48a5d1e502ae93d",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
     }
   ]
 }
