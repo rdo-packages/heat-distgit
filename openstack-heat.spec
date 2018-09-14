@@ -468,3 +468,4 @@ TripleO deployment, but is not the recommended way of running the Heat service i
 * Thu Aug 16 2018 RDO <dev@lists.rdoproject.org> 1:11.0.0-0.1.0rc1
 - Update to 11.0.0.0rc1
 
+# REMOVEME: error caused by commit http://git.openstack.org/cgit/openstack/heat/commit/?id=c24d50f05875c30d225bd9da99270b2ef07013b0
