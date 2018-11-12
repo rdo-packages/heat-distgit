@@ -168,7 +168,7 @@ Requires: python%{pydefault}-PyYAML
 This package contains the Heat test files.
 
 %prep
-%autosetup -n %{service}-%{upstream_version} -S git
+%autosetup -n openstack-%{service}-%{upstream_version} -S git
 
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
@@ -327,10 +327,11 @@ Components common to all OpenStack Heat services
 %files common -f %{service}.lang
 %doc LICENSE
 %{_bindir}/%{service}-manage
+%{_bindir}/%{service}-status
 %{_bindir}/%{service}-keystone-setup
 %{_bindir}/%{service}-keystone-setup-domain
 %{pydefault_sitelib}/%{service}
-%{pydefault_sitelib}/%{service}-%{upstream_version}-*.egg-info
+%{pydefault_sitelib}/openstack_%{service}-%{upstream_version}-*.egg-info
 %exclude %{pydefault_sitelib}/%{service}/tests
 %attr(-, root, %{service}) %{_datadir}/%{service}/%{service}-dist.conf
 %attr(-, root, %{service}) %{_datadir}/%{service}/api-paste-dist.ini
@@ -346,6 +347,7 @@ Components common to all OpenStack Heat services
 %{_mandir}/man1/%{service}-keystone-setup.1.gz
 %{_mandir}/man1/%{service}-keystone-setup-domain.1.gz
 %{_mandir}/man1/%{service}-manage.1.gz
+%{_mandir}/man1/%{service}-status.1.gz
 %endif
 
 %files -n python%{pydefault}-%{service}-tests
