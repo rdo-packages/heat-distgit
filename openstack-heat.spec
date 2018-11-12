@@ -168,7 +168,7 @@ Requires: python%{pydefault}-PyYAML
 This package contains the Heat test files.
 
 %prep
-%autosetup -n %{service}-%{upstream_version} -S git
+%autosetup -n openstack-%{service}-%{upstream_version} -S git
 
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
