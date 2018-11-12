@@ -55,6 +55,7 @@ BuildRequires: python%{pydefault}-oslo-messaging
 BuildRequires: python%{pydefault}-setuptools
 BuildRequires: python%{pydefault}-oslo-i18n
 BuildRequires: python%{pydefault}-oslo-db
+BuildRequires: python%{pydefault}-oslo-upgradecheck
 BuildRequires: python%{pydefault}-oslo-utils
 BuildRequires: python%{pydefault}-oslo-log
 BuildRequires: python%{pydefault}-oslo-versionedobjects
@@ -168,7 +169,7 @@ Requires: python%{pydefault}-PyYAML
 This package contains the Heat test files.
 
 %prep
-%autosetup -n %{service}-%{upstream_version} -S git
+%autosetup -n openstack-%{service}-%{upstream_version} -S git
 
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
@@ -264,6 +265,7 @@ Requires: python%{pydefault}-oslo-cache >= 1.26.0
 Requires: python%{pydefault}-oslo-concurrency >= 3.26.0
 Requires: python%{pydefault}-oslo-config >= 2:5.2.0
 Requires: python%{pydefault}-oslo-context >= 2.19.2
+Requires: python%{pydefault}-oslo-upgradecheck >= 0.1.0
 Requires: python%{pydefault}-oslo-utils >= 3.33.0
 Requires: python%{pydefault}-oslo-db >= 4.27.0
 Requires: python%{pydefault}-oslo-i18n >= 3.15.3
@@ -327,10 +329,11 @@ Components common to all OpenStack Heat services
 %files common -f %{service}.lang
 %doc LICENSE
 %{_bindir}/%{service}-manage
+%{_bindir}/%{service}-status
 %{_bindir}/%{service}-keystone-setup
 %{_bindir}/%{service}-keystone-setup-domain
 %{pydefault_sitelib}/%{service}
-%{pydefault_sitelib}/%{service}-%{upstream_version}-*.egg-info
+%{pydefault_sitelib}/openstack_%{service}-%{upstream_version}-*.egg-info
 %exclude %{pydefault_sitelib}/%{service}/tests
 %attr(-, root, %{service}) %{_datadir}/%{service}/%{service}-dist.conf
 %attr(-, root, %{service}) %{_datadir}/%{service}/api-paste-dist.ini
@@ -346,6 +349,7 @@ Components common to all OpenStack Heat services
 %{_mandir}/man1/%{service}-keystone-setup.1.gz
 %{_mandir}/man1/%{service}-keystone-setup-domain.1.gz
 %{_mandir}/man1/%{service}-manage.1.gz
+%{_mandir}/man1/%{service}-status.1.gz
 %endif
 
 %files -n python%{pydefault}-%{service}-tests
