@@ -370,7 +370,11 @@ Summary: The Heat engine
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
+%if 0%{?rhel} && 0%{?rhel} < 8
 %{?systemd_requires}
+%else
+%{?systemd_ordering} # does not exist on EL7
+%endif
 
 %description engine
 %{common_desc}
@@ -404,7 +408,11 @@ Summary: The Heat API
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
+%if 0%{?rhel} && 0%{?rhel} < 8
 %{?systemd_requires}
+%else
+%{?systemd_ordering} # does not exist on EL7
+%endif
 
 %description api
 %{common_desc}
@@ -439,7 +447,11 @@ Summary: Heat CloudFormation API
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
+%if 0%{?rhel} && 0%{?rhel} < 8
 %{?systemd_requires}
+%else
+%{?systemd_ordering} # does not exist on EL7
+%endif
 
 %description api-cfn
 %{common_desc}
@@ -475,7 +487,11 @@ Summary: The combined Heat engine/API
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
+%if 0%{?rhel} && 0%{?rhel} < 8
 %{?systemd_requires}
+%else
+%{?systemd_ordering} # does not exist on EL7
+%endif
 
 %description monolith
 %{common_desc}
