@@ -370,7 +370,7 @@ Summary: The Heat engine
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-%{?systemd_requires}
+%{?systemd_ordering}
 
 %description engine
 %{common_desc}
@@ -404,7 +404,7 @@ Summary: The Heat API
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-%{?systemd_requires}
+%{?systemd_ordering}
 
 %description api
 %{common_desc}
@@ -439,7 +439,7 @@ Summary: Heat CloudFormation API
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-%{?systemd_requires}
+%{?systemd_ordering}
 
 %description api-cfn
 %{common_desc}
@@ -475,7 +475,7 @@ Summary: The combined Heat engine/API
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-%{?systemd_requires}
+%{?systemd_ordering}
 
 %description monolith
 %{common_desc}
