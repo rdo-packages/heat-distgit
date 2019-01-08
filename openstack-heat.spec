@@ -1,14 +1,14 @@
 # Macros for py2/py3 compatibility
 %if 0%{?fedora} || 0%{?rhel} > 7
-%global pydefault 3
+%global pyver 3
 %else
-%global pydefault 2
+%global pyver 2
 %endif
 
-%global pydefault_bin python%{pydefault}
-%global pydefault_sitelib %python%{pydefault}_sitelib
-%global pydefault_install %py%{pydefault}_install
-%global pydefault_build %py%{pydefault}_build
+%global pyver_bin python%{pyver}
+%global pyver_sitelib %python%{pyver}_sitelib
+%global pyver_install %py%{pyver}_install
+%global pyver_build %py%{pyver}_build
 # End of macros for py2/py3 compatibility
 
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
@@ -45,42 +45,42 @@ Source20:       %{service}-dist.conf
 BuildArch: noarch
 BuildRequires: git
 BuildRequires: openstack-macros
-BuildRequires: python%{pydefault}-devel
-BuildRequires: python%{pydefault}-stevedore >= 1.20.0
-BuildRequires: python%{pydefault}-oslo-cache
-BuildRequires: python%{pydefault}-oslo-context
-BuildRequires: python%{pydefault}-oslo-middleware
-BuildRequires: python%{pydefault}-oslo-policy
-BuildRequires: python%{pydefault}-oslo-messaging
-BuildRequires: python%{pydefault}-setuptools
-BuildRequires: python%{pydefault}-oslo-i18n
-BuildRequires: python%{pydefault}-oslo-db
-BuildRequires: python%{pydefault}-oslo-upgradecheck
-BuildRequires: python%{pydefault}-oslo-utils
-BuildRequires: python%{pydefault}-oslo-log
-BuildRequires: python%{pydefault}-oslo-versionedobjects
-BuildRequires: python%{pydefault}-eventlet
-BuildRequires: python%{pydefault}-kombu
-BuildRequires: python%{pydefault}-netaddr
-BuildRequires: python%{pydefault}-neutron-lib
-BuildRequires: python%{pydefault}-osprofiler
-BuildRequires: python%{pydefault}-six
-BuildRequires: python%{pydefault}-paramiko
-BuildRequires: python%{pydefault}-yaql
+BuildRequires: python%{pyver}-devel
+BuildRequires: python%{pyver}-stevedore >= 1.20.0
+BuildRequires: python%{pyver}-oslo-cache
+BuildRequires: python%{pyver}-oslo-context
+BuildRequires: python%{pyver}-oslo-middleware
+BuildRequires: python%{pyver}-oslo-policy
+BuildRequires: python%{pyver}-oslo-messaging
+BuildRequires: python%{pyver}-setuptools
+BuildRequires: python%{pyver}-oslo-i18n
+BuildRequires: python%{pyver}-oslo-db
+BuildRequires: python%{pyver}-oslo-upgradecheck
+BuildRequires: python%{pyver}-oslo-utils
+BuildRequires: python%{pyver}-oslo-log
+BuildRequires: python%{pyver}-oslo-versionedobjects
+BuildRequires: python%{pyver}-eventlet
+BuildRequires: python%{pyver}-kombu
+BuildRequires: python%{pyver}-netaddr
+BuildRequires: python%{pyver}-neutron-lib
+BuildRequires: python%{pyver}-osprofiler
+BuildRequires: python%{pyver}-six
+BuildRequires: python%{pyver}-paramiko
+BuildRequires: python%{pyver}-yaql
 # These are required to build due to the requirements check added
-BuildRequires: python%{pydefault}-routes
-BuildRequires: python%{pydefault}-sqlalchemy
-BuildRequires: python%{pydefault}-pbr
-BuildRequires: python%{pydefault}-cryptography
+BuildRequires: python%{pyver}-routes
+BuildRequires: python%{pyver}-sqlalchemy
+BuildRequires: python%{pyver}-pbr
+BuildRequires: python%{pyver}-cryptography
 # These are required to build the config file
-BuildRequires: python%{pydefault}-oslo-config
+BuildRequires: python%{pyver}-oslo-config
 BuildRequires: crudini
-BuildRequires: python%{pydefault}-keystoneauth1
-BuildRequires: python%{pydefault}-keystoneclient
+BuildRequires: python%{pyver}-keystoneauth1
+BuildRequires: python%{pyver}-keystoneclient
 # Required to compile translation files
-BuildRequires: python%{pydefault}-babel
+BuildRequires: python%{pyver}-babel
 
-%if %{pydefault} == 2
+%if %{pyver} == 2
 BuildRequires: PyYAML
 BuildRequires: python-d2to1
 BuildRequires: python-lxml
@@ -89,43 +89,43 @@ BuildRequires: python-paste-deploy
 BuildRequires: python-redis
 BuildRequires: python-webob
 %else
-BuildRequires: python%{pydefault}-PyYAML
-BuildRequires: python%{pydefault}-d2to1
-BuildRequires: python%{pydefault}-lxml
-BuildRequires: python%{pydefault}-migrate
-BuildRequires: python%{pydefault}-paste-deploy
-BuildRequires: python%{pydefault}-redis
-BuildRequires: python%{pydefault}-webob
+BuildRequires: python%{pyver}-PyYAML
+BuildRequires: python%{pyver}-d2to1
+BuildRequires: python%{pyver}-lxml
+BuildRequires: python%{pyver}-migrate
+BuildRequires: python%{pyver}-paste-deploy
+BuildRequires: python%{pyver}-redis
+BuildRequires: python%{pyver}-webob
 %endif
 
 BuildRequires: systemd
 
 %if 0%{?with_doc}
-BuildRequires: python%{pydefault}-openstackdocstheme
-BuildRequires: python%{pydefault}-sphinx
-BuildRequires: python%{pydefault}-sphinxcontrib-apidoc
-BuildRequires: python%{pydefault}-cinderclient
-BuildRequires: python%{pydefault}-novaclient
-BuildRequires: python%{pydefault}-saharaclient
-BuildRequires: python%{pydefault}-neutronclient
-BuildRequires: python%{pydefault}-swiftclient
-BuildRequires: python%{pydefault}-heatclient
-BuildRequires: python%{pydefault}-glanceclient
-BuildRequires: python%{pydefault}-troveclient
-BuildRequires: python%{pydefault}-aodhclient
-BuildRequires: python%{pydefault}-barbicanclient
-BuildRequires: python%{pydefault}-designateclient
-BuildRequires: python%{pydefault}-magnumclient
-BuildRequires: python%{pydefault}-monascaclient
-BuildRequires: python%{pydefault}-manilaclient
-BuildRequires: python%{pydefault}-zaqarclient
-BuildRequires: python%{pydefault}-croniter
-BuildRequires: python%{pydefault}-gabbi
-BuildRequires: python%{pydefault}-testscenarios
-BuildRequires: python%{pydefault}-tempest
-BuildRequires: python%{pydefault}-gabbi
+BuildRequires: python%{pyver}-openstackdocstheme
+BuildRequires: python%{pyver}-sphinx
+BuildRequires: python%{pyver}-sphinxcontrib-apidoc
+BuildRequires: python%{pyver}-cinderclient
+BuildRequires: python%{pyver}-novaclient
+BuildRequires: python%{pyver}-saharaclient
+BuildRequires: python%{pyver}-neutronclient
+BuildRequires: python%{pyver}-swiftclient
+BuildRequires: python%{pyver}-heatclient
+BuildRequires: python%{pyver}-glanceclient
+BuildRequires: python%{pyver}-troveclient
+BuildRequires: python%{pyver}-aodhclient
+BuildRequires: python%{pyver}-barbicanclient
+BuildRequires: python%{pyver}-designateclient
+BuildRequires: python%{pyver}-magnumclient
+BuildRequires: python%{pyver}-monascaclient
+BuildRequires: python%{pyver}-manilaclient
+BuildRequires: python%{pyver}-zaqarclient
+BuildRequires: python%{pyver}-croniter
+BuildRequires: python%{pyver}-gabbi
+BuildRequires: python%{pyver}-testscenarios
+BuildRequires: python%{pyver}-tempest
+BuildRequires: python%{pyver}-gabbi
 # NOTE(ykarel) zunclient are not packaged yet.
-#BuildRequires: python%{pydefault}-zunclient
+#BuildRequires: python%{pyver}-zunclient
 %endif
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
@@ -133,38 +133,38 @@ Requires: %{name}-engine = %{epoch}:%{version}-%{release}
 Requires: %{name}-api = %{epoch}:%{version}-%{release}
 Requires: %{name}-api-cfn = %{epoch}:%{version}-%{release}
 
-%package -n python%{pydefault}-%{service}-tests
-%{?python_provide:%python_provide python%{pydefault}-%{service}-tests}
+%package -n python%{pyver}-%{service}-tests
+%{?python_provide:%python_provide python%{pyver}-%{service}-tests}
 Summary:        Heat tests
 Requires:       %{name}-common = %{epoch}:%{version}-%{release}
 
-Requires: python%{pydefault}-mox3
-Requires: python%{pydefault}-oslotest
-Requires: python%{pydefault}-testresources
-Requires: python%{pydefault}-oslotest
-Requires: python%{pydefault}-oslo-log
-Requires: python%{pydefault}-oslo-utils
-Requires: python%{pydefault}-heatclient
-Requires: python%{pydefault}-cinderclient
-Requires: python%{pydefault}-zaqarclient
-Requires: python%{pydefault}-keystoneclient
-Requires: python%{pydefault}-swiftclient
-Requires: python%{pydefault}-paramiko
-Requires: python%{pydefault}-kombu
-Requires: python%{pydefault}-oslo-config
-Requires: python%{pydefault}-oslo-concurrency
-Requires: python%{pydefault}-requests
-Requires: python%{pydefault}-eventlet
-Requires: python%{pydefault}-six
-Requires: python%{pydefault}-gabbi
+Requires: python%{pyver}-mox3
+Requires: python%{pyver}-oslotest
+Requires: python%{pyver}-testresources
+Requires: python%{pyver}-oslotest
+Requires: python%{pyver}-oslo-log
+Requires: python%{pyver}-oslo-utils
+Requires: python%{pyver}-heatclient
+Requires: python%{pyver}-cinderclient
+Requires: python%{pyver}-zaqarclient
+Requires: python%{pyver}-keystoneclient
+Requires: python%{pyver}-swiftclient
+Requires: python%{pyver}-paramiko
+Requires: python%{pyver}-kombu
+Requires: python%{pyver}-oslo-config
+Requires: python%{pyver}-oslo-concurrency
+Requires: python%{pyver}-requests
+Requires: python%{pyver}-eventlet
+Requires: python%{pyver}-six
+Requires: python%{pyver}-gabbi
 
-%if %{pydefault} == 2
+%if %{pyver} == 2
 Requires: PyYAML
 %else
-Requires: python%{pydefault}-PyYAML
+Requires: python%{pyver}-PyYAML
 %endif
 
-%description -n python%{pydefault}-%{service}-tests
+%description -n python%{pyver}-%{service}-tests
 %{common_desc}
 This package contains the Heat test files.
 
@@ -179,18 +179,18 @@ This package contains the Heat test files.
 find contrib -name tests -type d | xargs rm -r
 
 %build
-%{pydefault_build}
+%{pyver_build}
 
 # Generate i18n files
-%{pydefault_bin} setup.py compile_catalog -d build/lib/%{service}/locale
+%{pyver_bin} setup.py compile_catalog -d build/lib/%{service}/locale
 
 # Generate sample config and add the current directory to PYTHONPATH so
 # oslo-config-generator doesn't skip heat's entry points.
-PYTHONPATH=. oslo-config-generator-%{pydefault} --config-file=config-generator.conf
+PYTHONPATH=. oslo-config-generator-%{pyver} --config-file=config-generator.conf
 
 %install
-%{pydefault_install}
-sed -i -e '/^#!/,1 d' %{buildroot}/%{pydefault_sitelib}/%{service}/db/sqlalchemy/migrate_repo/manage.py
+%{pyver_install}
+sed -i -e '/^#!/,1 d' %{buildroot}/%{pyver_sitelib}/%{service}/db/sqlalchemy/migrate_repo/manage.py
 
 mkdir -p %{buildroot}/%{_localstatedir}/log/%{service}/
 mkdir -p %{buildroot}/%{_localstatedir}/run/%{service}/
@@ -206,8 +206,8 @@ mkdir -p %{buildroot}/%{_sharedstatedir}/%{service}/
 mkdir -p %{buildroot}/%{_sysconfdir}/%{service}/
 
 %if 0%{?with_doc}
-sphinx-build-%{pydefault} -b html doc/source doc/build/html
-sphinx-build-%{pydefault} -b man doc/source doc/build/man
+sphinx-build-%{pyver} -b html doc/source doc/build/html
+sphinx-build-%{pyver} -b man doc/source doc/build/man
 mkdir -p %{buildroot}%{_mandir}/man1
 install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
 %endif
@@ -228,9 +228,9 @@ rmdir %{buildroot}%{_prefix}/etc/%{service}
 
 # Install i18n .mo files (.po and .pot are not required)
 install -d -m 755 %{buildroot}%{_datadir}
-rm -f %{buildroot}%{pydefault_sitelib}/%{service}/locale/*/LC_*/%{service}*po
-rm -f %{buildroot}%{pydefault_sitelib}/%{service}/locale/*pot
-mv %{buildroot}%{pydefault_sitelib}/%{service}/locale %{buildroot}%{_datadir}/locale
+rm -f %{buildroot}%{pyver_sitelib}/%{service}/locale/*/LC_*/%{service}*po
+rm -f %{buildroot}%{pyver_sitelib}/%{service}/locale/*pot
+mv %{buildroot}%{pyver_sitelib}/%{service}/locale %{buildroot}%{_datadir}/locale
 
 # Find language files
 %find_lang %{service} --all-name
@@ -244,68 +244,68 @@ Group: System Environment/Base
 
 Obsoletes: %{name}-api-cloudwatch < %{epoch}:10.0.0
 
-Requires: python%{pydefault}-pbr
-Requires: python%{pydefault}-croniter
-Requires: python%{pydefault}-eventlet
-Requires: python%{pydefault}-stevedore >= 1.20.0
-Requires: python%{pydefault}-netaddr
-Requires: python%{pydefault}-neutron-lib
-Requires: python%{pydefault}-osprofiler
-Requires: python%{pydefault}-requests
-Requires: python%{pydefault}-routes
-Requires: python%{pydefault}-sqlalchemy
-Requires: python%{pydefault}-six >= 1.10.0
-Requires: python%{pydefault}-paramiko
-Requires: python%{pydefault}-babel >= 2.3.4
+Requires: python%{pyver}-pbr
+Requires: python%{pyver}-croniter
+Requires: python%{pyver}-eventlet
+Requires: python%{pyver}-stevedore >= 1.20.0
+Requires: python%{pyver}-netaddr
+Requires: python%{pyver}-neutron-lib
+Requires: python%{pyver}-osprofiler
+Requires: python%{pyver}-requests
+Requires: python%{pyver}-routes
+Requires: python%{pyver}-sqlalchemy
+Requires: python%{pyver}-six >= 1.10.0
+Requires: python%{pyver}-paramiko
+Requires: python%{pyver}-babel >= 2.3.4
 # FIXME: system version is stuck to 1.7.2 for cryptography
-Requires: python%{pydefault}-cryptography >= 2.1
-Requires: python%{pydefault}-yaql >= 1.1.3
+Requires: python%{pyver}-cryptography >= 2.1
+Requires: python%{pyver}-yaql >= 1.1.3
 
-Requires: python%{pydefault}-oslo-cache >= 1.26.0
-Requires: python%{pydefault}-oslo-concurrency >= 3.26.0
-Requires: python%{pydefault}-oslo-config >= 2:5.2.0
-Requires: python%{pydefault}-oslo-context >= 2.19.2
-Requires: python%{pydefault}-oslo-upgradecheck >= 0.1.0
-Requires: python%{pydefault}-oslo-utils >= 3.33.0
-Requires: python%{pydefault}-oslo-db >= 4.27.0
-Requires: python%{pydefault}-oslo-i18n >= 3.15.3
-Requires: python%{pydefault}-oslo-middleware >= 3.31.0
-Requires: python%{pydefault}-oslo-messaging >= 5.29.0
-Requires: python%{pydefault}-oslo-policy >= 1.30.0
-Requires: python%{pydefault}-oslo-reports >= 1.18.0
-Requires: python%{pydefault}-oslo-serialization >= 2.18.0
-Requires: python%{pydefault}-oslo-service >= 1.24.0
-Requires: python%{pydefault}-oslo-log >= 3.36.0
-Requires: python%{pydefault}-oslo-versionedobjects >= 1.31.2
+Requires: python%{pyver}-oslo-cache >= 1.26.0
+Requires: python%{pyver}-oslo-concurrency >= 3.26.0
+Requires: python%{pyver}-oslo-config >= 2:5.2.0
+Requires: python%{pyver}-oslo-context >= 2.19.2
+Requires: python%{pyver}-oslo-upgradecheck >= 0.1.0
+Requires: python%{pyver}-oslo-utils >= 3.33.0
+Requires: python%{pyver}-oslo-db >= 4.27.0
+Requires: python%{pyver}-oslo-i18n >= 3.15.3
+Requires: python%{pyver}-oslo-middleware >= 3.31.0
+Requires: python%{pyver}-oslo-messaging >= 5.29.0
+Requires: python%{pyver}-oslo-policy >= 1.30.0
+Requires: python%{pyver}-oslo-reports >= 1.18.0
+Requires: python%{pyver}-oslo-serialization >= 2.18.0
+Requires: python%{pyver}-oslo-service >= 1.24.0
+Requires: python%{pyver}-oslo-log >= 3.36.0
+Requires: python%{pyver}-oslo-versionedobjects >= 1.31.2
 
-Requires: python%{pydefault}-cinderclient >= 3.3.0
-Requires: python%{pydefault}-glanceclient >= 1:2.8.0
-Requires: python%{pydefault}-heatclient >= 1.10.0
-Requires: python%{pydefault}-keystoneclient >= 1:3.8.0
-Requires: python%{pydefault}-keystonemiddleware >= 4.17.0
-Requires: python%{pydefault}-neutronclient >= 6.7.0
-Requires: python%{pydefault}-novaclient >= 9.1.0
-Requires: python%{pydefault}-saharaclient >= 1.4.0
-Requires: python%{pydefault}-swiftclient >= 3.2.0
-Requires: python%{pydefault}-troveclient >= 2.2.0
+Requires: python%{pyver}-cinderclient >= 3.3.0
+Requires: python%{pyver}-glanceclient >= 1:2.8.0
+Requires: python%{pyver}-heatclient >= 1.10.0
+Requires: python%{pyver}-keystoneclient >= 1:3.8.0
+Requires: python%{pyver}-keystonemiddleware >= 4.17.0
+Requires: python%{pyver}-neutronclient >= 6.7.0
+Requires: python%{pyver}-novaclient >= 9.1.0
+Requires: python%{pyver}-saharaclient >= 1.4.0
+Requires: python%{pyver}-swiftclient >= 3.2.0
+Requires: python%{pyver}-troveclient >= 2.2.0
 
-Requires: python%{pydefault}-keystoneauth1 >= 3.4.0
-Requires: python%{pydefault}-barbicanclient >= 4.5.2
-Requires: python%{pydefault}-designateclient >= 2.7.0
-Requires: python%{pydefault}-manilaclient >= 1.16.0
-Requires: python%{pydefault}-mistralclient >= 3.1.0
-Requires: python%{pydefault}-openstackclient >= 3.12.0
-Requires: python%{pydefault}-zaqarclient >= 1.0.0
-Requires: python%{pydefault}-aodhclient >= 0.9.0
-Requires: python%{pydefault}-magnumclient >= 2.1.0
-Requires: python%{pydefault}-octaviaclient >= 1.4.0
+Requires: python%{pyver}-keystoneauth1 >= 3.4.0
+Requires: python%{pyver}-barbicanclient >= 4.5.2
+Requires: python%{pyver}-designateclient >= 2.7.0
+Requires: python%{pyver}-manilaclient >= 1.16.0
+Requires: python%{pyver}-mistralclient >= 3.1.0
+Requires: python%{pyver}-openstackclient >= 3.12.0
+Requires: python%{pyver}-zaqarclient >= 1.0.0
+Requires: python%{pyver}-aodhclient >= 0.9.0
+Requires: python%{pyver}-magnumclient >= 2.1.0
+Requires: python%{pyver}-octaviaclient >= 1.4.0
 %if 0%{rhosp} == 0
-Requires: python%{pydefault}-monascaclient >= 1.12.0
+Requires: python%{pyver}-monascaclient >= 1.12.0
 %endif
-Requires: python%{pydefault}-openstacksdk >= 0.11.2
-Requires: python%{pydefault}-tenacity >= 4.4.0
+Requires: python%{pyver}-openstacksdk >= 0.11.2
+Requires: python%{pyver}-tenacity >= 4.4.0
 
-%if %{pydefault} == 2
+%if %{pyver} == 2
 Requires: PyYAML
 Requires: python-lxml
 Requires: python-migrate
@@ -313,12 +313,12 @@ Requires: python-paste-deploy
 Requires: python-webob
 Requires: pytz
 %else
-Requires: python%{pydefault}-PyYAML
-Requires: python%{pydefault}-lxml
-Requires: python%{pydefault}-migrate
-Requires: python%{pydefault}-paste-deploy
-Requires: python%{pydefault}-webob
-Requires: python%{pydefault}-pytz
+Requires: python%{pyver}-PyYAML
+Requires: python%{pyver}-lxml
+Requires: python%{pyver}-migrate
+Requires: python%{pyver}-paste-deploy
+Requires: python%{pyver}-webob
+Requires: python%{pyver}-pytz
 %endif
 
 Requires(pre): shadow-utils
@@ -332,9 +332,9 @@ Components common to all OpenStack Heat services
 %{_bindir}/%{service}-status
 %{_bindir}/%{service}-keystone-setup
 %{_bindir}/%{service}-keystone-setup-domain
-%{pydefault_sitelib}/%{service}
-%{pydefault_sitelib}/openstack_%{service}-%{upstream_version}-*.egg-info
-%exclude %{pydefault_sitelib}/%{service}/tests
+%{pyver_sitelib}/%{service}
+%{pyver_sitelib}/openstack_%{service}-%{upstream_version}-*.egg-info
+%exclude %{pyver_sitelib}/%{service}/tests
 %attr(-, root, %{service}) %{_datadir}/%{service}/%{service}-dist.conf
 %attr(-, root, %{service}) %{_datadir}/%{service}/api-paste-dist.ini
 %dir %attr(0750,%{service},root) %{_localstatedir}/log/%{service}
@@ -352,10 +352,10 @@ Components common to all OpenStack Heat services
 %{_mandir}/man1/%{service}-status.1.gz
 %endif
 
-%files -n python%{pydefault}-%{service}-tests
+%files -n python%{pyver}-%{service}-tests
 %license LICENSE
-%{pydefault_sitelib}/%{service}/tests
-%{pydefault_sitelib}/%{service}_integrationtests
+%{pyver_sitelib}/%{service}/tests
+%{pyver_sitelib}/%{service}_integrationtests
 
 %pre common
 # 187:187 for heat - rhbz#845078
