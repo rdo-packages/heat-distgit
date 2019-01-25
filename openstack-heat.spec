@@ -74,7 +74,6 @@ BuildRequires: python%{pyver}-pbr
 BuildRequires: python%{pyver}-cryptography
 # These are required to build the config file
 BuildRequires: python%{pyver}-oslo-config
-BuildRequires: crudini
 BuildRequires: python%{pyver}-keystoneauth1
 BuildRequires: python%{pyver}-keystoneclient
 # Required to compile translation files
@@ -219,7 +218,8 @@ rm -f %{buildroot}/usr/bin/cinder-keystone-setup
 
 install -p -D -m 640 etc/%{service}/%{service}.conf.sample %{buildroot}/%{_sysconfdir}/%{service}/%{service}.conf
 install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf
-crudini --set %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf revision %{service}_revision %{version}
+echo '[revision]' >> %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf
+echo '%{service}_revision=%{version}' >> %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf
 mv %{buildroot}%{_prefix}/etc/%{service}/api-paste.ini %{buildroot}/%{_datadir}/%{service}/api-paste-dist.ini
 mv %{buildroot}%{_prefix}/etc/%{service}/environment.d %{buildroot}/%{_sysconfdir}/%{service}
 mv %{buildroot}%{_prefix}/etc/%{service}/templates %{buildroot}/%{_sysconfdir}/%{service}
