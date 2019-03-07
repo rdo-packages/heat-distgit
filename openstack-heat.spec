@@ -76,6 +76,7 @@ BuildRequires: python%{pyver}-cryptography
 BuildRequires: python%{pyver}-oslo-config
 BuildRequires: python%{pyver}-keystoneauth1
 BuildRequires: python%{pyver}-keystoneclient
+BuildRequires: python%{pyver}-tenacity >= 4.4.0
 # Required to compile translation files
 BuildRequires: python%{pyver}-babel
 
