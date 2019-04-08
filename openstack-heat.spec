@@ -141,7 +141,7 @@ Requires: python2-gabbi
 This package contains the Heat test files.
 
 %prep
-%autosetup -n %{service}-%{upstream_version} -S git
+%autosetup -n openstack-%{service}-%{upstream_version} -S git
 
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
@@ -293,7 +293,7 @@ Components common to all OpenStack Heat services
 %{_bindir}/%{service}-keystone-setup
 %{_bindir}/%{service}-keystone-setup-domain
 %{python2_sitelib}/%{service}
-%{python2_sitelib}/%{service}-%{upstream_version}-*.egg-info
+%{python2_sitelib}/openstack_%{service}-%{upstream_version}-*.egg-info
 %exclude %{python2_sitelib}/%{service}/tests
 %attr(-, root, %{service}) %{_datadir}/%{service}/%{service}-dist.conf
 %attr(-, root, %{service}) %{_datadir}/%{service}/api-paste-dist.ini
