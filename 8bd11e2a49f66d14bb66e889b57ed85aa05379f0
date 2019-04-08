@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dfa2bbcf_6d7e031a",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 2
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 113
+      },
+      "writtenOn": "2019-04-08T16:44:32Z",
+      "side": 1,
+      "message": "this should be openstack-%{service}-%{upstream_version}...",
+      "range": {
+        "startLine": 296,
+        "startChar": 52,
+        "endLine": 296,
+        "endChar": 60
+      },
+      "revId": "8bd11e2a49f66d14bb66e889b57ed85aa05379f0",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
