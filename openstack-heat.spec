@@ -296,9 +296,9 @@ Requires: python%{pyver}-designateclient >= 2.7.0
 Requires: python%{pyver}-manilaclient >= 1.16.0
 Requires: python%{pyver}-mistralclient >= 3.1.0
 Requires: python%{pyver}-openstackclient >= 3.12.0
-Requires: python%{pyver}-zaqarclient >= 1.0.0
+Requires: python%{pyver}-zaqarclient >= 1.3.0
 Requires: python%{pyver}-aodhclient >= 0.9.0
-Requires: python%{pyver}-magnumclient >= 2.1.0
+Requires: python%{pyver}-magnumclient >= 2.3.0
 Requires: python%{pyver}-octaviaclient >= 1.4.0
 %if 0%{rhosp} == 0
 Requires: python%{pyver}-monascaclient >= 1.12.0
