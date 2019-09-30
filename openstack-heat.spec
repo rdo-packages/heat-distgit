@@ -1,3 +1,4 @@
+%global milestone .0rc1
 # Macros for py2/py3 compatibility
 %if 0%{?fedora} || 0%{?rhel} > 7
 %global pyver 3
@@ -26,11 +27,15 @@ Summary:        OpenStack Orchestration (%{service})
 # Liberty semver reset
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:          1
-Version:        XXX
-Release:        XXX
+Version:        13.0.0
+Release:        0.1%{?milestone}%{?dist}
 License:        ASL 2.0
 URL:            http://www.openstack.org
-Source0:        https://tarballs.openstack.org/%{service}/%{service}-%{upstream_version}.tar.gz
+Source0:        https://tarballs.openstack.org/%{service}/%{name}-%{upstream_version}.tar.gz
+#
+# patches_base=13.0.0.0rc1
+#
+
 Obsoletes:      %{service} < 7-9
 Provides:       %{service}
 
@@ -518,3 +523,6 @@ running the Heat service in general.
 
 
 %changelog
+* Mon Sep 30 2019 RDO <dev@lists.rdoproject.org> 1:13.0.0-0.1.0rc1
+- Update to 13.0.0.0rc1
+
