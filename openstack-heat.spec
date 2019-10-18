@@ -84,7 +84,6 @@ BuildRequires: python%{pyver}-babel
 
 %if %{pyver} == 2
 BuildRequires: PyYAML
-BuildRequires: python-d2to1
 BuildRequires: python-lxml
 BuildRequires: python-migrate
 BuildRequires: python-paste-deploy
@@ -92,7 +91,6 @@ BuildRequires: python-redis
 BuildRequires: python-webob
 %else
 BuildRequires: python%{pyver}-PyYAML
-BuildRequires: python%{pyver}-d2to1
 BuildRequires: python%{pyver}-lxml
 BuildRequires: python%{pyver}-migrate
 BuildRequires: python%{pyver}-paste-deploy
