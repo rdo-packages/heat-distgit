@@ -14,7 +14,7 @@ Summary:        OpenStack Orchestration (%{service})
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:          1
 Version:        11.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://www.openstack.org
 Source0:        https://tarballs.openstack.org/%{service}/%{service}-%{upstream_version}.tar.gz
@@ -141,7 +141,7 @@ Requires: python2-gabbi
 This package contains the Heat test files.
 
 %prep
-%autosetup -n openstack-%{service}-%{upstream_version} -S git
+%autosetup -n %{service}-%{upstream_version} -S git
 
 # Remove the requirements file so that pbr hooks don't add it
 # to distutils requires_dist config
@@ -293,7 +293,7 @@ Components common to all OpenStack Heat services
 %{_bindir}/%{service}-keystone-setup
 %{_bindir}/%{service}-keystone-setup-domain
 %{python2_sitelib}/%{service}
-%{python2_sitelib}/openstack_%{service}-%{upstream_version}-*.egg-info
+%{python2_sitelib}/%{service}-%{upstream_version}-*.egg-info
 %exclude %{python2_sitelib}/%{service}/tests
 %attr(-, root, %{service}) %{_datadir}/%{service}/%{service}-dist.conf
 %attr(-, root, %{service}) %{_datadir}/%{service}/api-paste-dist.ini
@@ -459,6 +459,12 @@ TripleO deployment, but is not the recommended way of running the Heat service i
 
 
 %changelog
+* Wed Oct 23 2019 Lance Albertson <lance@osuosl.org> 1:11.0.0-2
+- Use copytruncate when rotating logs
+- Remove signing_dir from conf
+- Change sdist name to openstack-heat
+- Fix autosetup by removing openstack prefix
+
 * Thu Aug 30 2018 RDO <dev@lists.rdoproject.org> 1:11.0.0-1
 - Update to 11.0.0
 
