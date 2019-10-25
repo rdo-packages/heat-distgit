@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9b7bbd62_ba554563",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 5
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 128
+      },
+      "writtenOn": "2019-10-25T17:29:33Z",
+      "side": 1,
+      "message": "This should be:\n\nhttps://tarballs.openstack.org/%{service}/openstack-%{service}-%{upstream_version}.tar.gz",
+      "revId": "834d67a3358fe3372931b4f3f7516a0bdf4e013b",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
