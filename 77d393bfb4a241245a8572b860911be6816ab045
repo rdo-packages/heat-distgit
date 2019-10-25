@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5713a3f8_bfac0c9f",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 6
+      },
+      "lineNbr": 467,
+      "author": {
+        "id": 128
+      },
+      "writtenOn": "2019-10-25T17:58:08Z",
+      "side": 1,
+      "message": "Being picky, this line is not longer true.",
+      "range": {
+        "startLine": 467,
+        "startChar": 0,
+        "endLine": 467,
+        "endChar": 44
+      },
+      "revId": "77d393bfb4a241245a8572b860911be6816ab045",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
