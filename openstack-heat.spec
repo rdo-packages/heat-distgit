@@ -201,7 +201,7 @@ install -p -D -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/openstack-%{service}-eng
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-%{service}-all.service
 
 mkdir -p %{buildroot}/%{_sharedstatedir}/%{service}/
-mkdir -p %{buildroot}/%{_sysconfdir}/%{service}/
+mkdir -p %{buildroot}/%{_sysconfdir}/%{service}/%{service}.conf.d
 
 %if 0%{?with_doc}
 sphinx-build-%{pyver} -b html doc/source doc/build/html
@@ -219,7 +219,7 @@ install -p -D -m 640 etc/%{service}/%{service}.conf.sample %{buildroot}/%{_sysco
 install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf
 echo '[revision]' >> %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf
 echo '%{service}_revision=%{version}' >> %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf
-mv %{buildroot}%{_prefix}/etc/%{service}/api-paste.ini %{buildroot}/%{_datadir}/%{service}/api-paste-dist.ini
+mv %{buildroot}%{_prefix}/etc/%{service}/api-paste.ini %{buildroot}/%{_sysconfdir}/%{service}/%{service}.conf.d/api-paste.ini
 mv %{buildroot}%{_prefix}/etc/%{service}/environment.d %{buildroot}/%{_sysconfdir}/%{service}
 mv %{buildroot}%{_prefix}/etc/%{service}/templates %{buildroot}/%{_sysconfdir}/%{service}
 # Remove duplicate config files under /usr/etc/heat
@@ -335,7 +335,7 @@ Components common to all OpenStack Heat services
 %{pyver_sitelib}/openstack_%{service}-%{upstream_version}-*.egg-info
 %exclude %{pyver_sitelib}/%{service}/tests
 %attr(-, root, %{service}) %{_datadir}/%{service}/%{service}-dist.conf
-%attr(-, root, %{service}) %{_datadir}/%{service}/api-paste-dist.ini
+%attr(-, root, %{service}) %{_sysconfdir/%{service}/%{service}.conf.d/api-paste.ini
 %dir %attr(0755,%{service},root) %{_localstatedir}/log/%{service}
 %dir %attr(0755,%{service},root) %{_localstatedir}/run/%{service}
 %dir %attr(0755,%{service},root) %{_sharedstatedir}/%{service}
