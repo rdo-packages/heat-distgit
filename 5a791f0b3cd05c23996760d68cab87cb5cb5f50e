@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f3704060_0d24e104",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 3
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 403
+      },
+      "writtenOn": "2020-01-31T16:45:06Z",
+      "side": 1,
+      "message": "typo %{_sysconfdir}/%{service}/%{service}.conf.d/api-paste.ini",
+      "range": {
+        "startLine": 338,
+        "startChar": 27,
+        "endLine": 338,
+        "endChar": 83
+      },
+      "revId": "5a791f0b3cd05c23996760d68cab87cb5cb5f50e",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
