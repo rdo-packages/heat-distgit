@@ -16,6 +16,24 @@
       "revId": "854107976a0f74693caac77c452d7d33f541c3d4",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4b540e01_61e5fd69",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 2
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 411
+      },
+      "writtenOn": "2020-01-31T10:32:44Z",
+      "side": 1,
+      "message": "thanks!",
+      "parentUuid": "db384592_7843ead3",
+      "revId": "854107976a0f74693caac77c452d7d33f541c3d4",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
     }
   ]
 }
