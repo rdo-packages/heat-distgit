@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "40997f9e_d12f6dbf",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 4
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 620
+      },
+      "writtenOn": "2020-02-03T14:22:39Z",
+      "side": 1,
+      "message": "CI job (rpmlint) seems to complain about this file which seems not recognized as a config file.\n\nMaybe we should to put something like:\n\n```\n%config(noreplace) %attr(-, root, %{service}) %{_sysconfdir}/%{service}/%{service}.conf.d/api-paste.ini\n```\n\nThe previous fix should be placed near lines 343 to 346.\n\nI\u0027m not a rpm packaging expert so maybe I\u0027m wrong.\n\nI leave my +1 for now because I\u0027m not sure of my fix and maybe these current changes are enough.",
+      "range": {
+        "startLine": 338,
+        "startChar": 0,
+        "endLine": 338,
+        "endChar": 84
+      },
+      "revId": "6ddc96d0f8559d57e2cbbab51d8cb6bf4dbe5f6a",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
