@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d40ce600_db265a42",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 128
+      },
+      "writtenOn": "2020-04-29T16:58:32Z",
+      "side": 1,
+      "message": "tarball name was changed to openstack-heat, this should be %{name}",
+      "range": {
+        "startLine": 22,
+        "startChar": 58,
+        "endLine": 22,
+        "endChar": 68
+      },
+      "revId": "dfb05a53dc0dc8d3f7c9cbd516badbe370a656ba",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": false
+    }
+  ]
+}
