@@ -18,7 +18,7 @@ Version:        XXX
 Release:        XXX
 License:        ASL 2.0
 URL:            http://www.openstack.org
-Source0:        https://tarballs.openstack.org/%{service}/%{service}-%{upstream_version}.tar.gz
+Source0:        https://tarballs.openstack.org/%{service}/%{name}-%{upstream_version}.tar.gz
 Obsoletes:      %{service} < 7-9
 Provides:       %{service}
 
