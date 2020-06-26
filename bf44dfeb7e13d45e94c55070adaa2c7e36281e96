@@ -1,0 +1,10 @@
+Code-Review+2: Javier Peña <jpena@redhat.com>
+Code-Review+1: Rabi Mishra <ramishra@redhat.com>
+Code-Review+2: Alfredo Moralejo <amoralej@redhat.com>
+Workflow+1: Alfredo Moralejo <amoralej@redhat.com>
+Verified+2: Zuul CI <zuul@review.rdoproject.org>
+Submitted-by: Zuul CI <zuul@review.rdoproject.org>
+Submitted-at: Fri, 26 Jun 2020 11:51:24 +0000
+Reviewed-on: https://review.rdoproject.org/r/26454
+Project: openstack/heat-distgit
+Branch: refs/heads/rpm-master
