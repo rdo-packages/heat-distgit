@@ -132,7 +132,6 @@ Requires: python3-oslo-config
 Requires: python3-oslo-concurrency
 Requires: python3-requests
 Requires: python3-eventlet
-Requires: python3-six
 Requires: python3-gabbi
 
 Requires: python3-PyYAML
@@ -221,14 +220,13 @@ Obsoletes: %{name}-api-cloudwatch < %{epoch}:10.0.0
 Requires: python3-pbr
 Requires: python3-croniter
 Requires: python3-eventlet
-Requires: python3-stevedore >= 1.20.0
+Requires: python3-stevedore >= 3.1.0
 Requires: python3-netaddr
 Requires: python3-neutron-lib
 Requires: python3-osprofiler
 Requires: python3-requests
 Requires: python3-routes
 Requires: python3-sqlalchemy
-Requires: python3-six >= 1.10.0
 Requires: python3-paramiko
 Requires: python3-babel >= 2.3.4
 # FIXME: system version is stuck to 1.7.2 for cryptography
@@ -241,7 +239,7 @@ Requires: python3-oslo-config >= 2:5.2.0
 Requires: python3-oslo-context >= 2.19.2
 Requires: python3-oslo-upgradecheck >= 0.1.0
 Requires: python3-oslo-utils >= 3.37.0
-Requires: python3-oslo-db >= 4.27.0
+Requires: python3-oslo-db >= 6.0.0
 Requires: python3-oslo-i18n >= 3.15.3
 Requires: python3-oslo-middleware >= 3.31.0
 Requires: python3-oslo-messaging >= 5.29.0
@@ -277,7 +275,7 @@ Requires: python3-octaviaclient >= 1.8.0
 Requires: python3-monascaclient >= 1.12.0
 %endif
 Requires: python3-openstacksdk >= 0.11.2
-Requires: python3-tenacity >= 4.4.0
+Requires: python3-tenacity >= 6.1.0
 
 Requires: python3-PyYAML
 Requires: python3-lxml
