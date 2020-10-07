@@ -26,7 +26,7 @@ Summary:        OpenStack Orchestration (%{service})
 # Liberty semver reset
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:          1
-Version:        12.1.0
+Version:        12.2.0
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://www.openstack.org
@@ -520,6 +520,9 @@ running the Heat service in general.
 
 
 %changelog
+* Wed Oct 07 2020 RDO <dev@lists.rdoproject.org> 1:12.2.0-1
+- Update to 12.2.0
+
 * Thu May 28 2020 RDO <dev@lists.rdoproject.org> 1:12.1.0-1
 - Update to 12.1.0
 
