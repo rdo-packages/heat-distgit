@@ -26,8 +26,8 @@ Summary:        OpenStack Orchestration (%{service})
 # Liberty semver reset
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:          1
-Version:        13.0.2
-Release:        2%{?dist}
+Version:        13.1.0
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://www.openstack.org
 Source0:        https://tarballs.openstack.org/%{service}/%{name}-%{upstream_version}.tar.gz
@@ -518,6 +518,9 @@ running the Heat service in general.
 
 
 %changelog
+* Wed Oct 07 2020 RDO <dev@lists.rdoproject.org> 1:13.1.0-1
+- Update to 13.1.0
+
 * Fri Jun 26 2020 Tobias Urdin <tobias.urdin@binero.com> 1:13.0.2-2
 - Set KillMode=process for openstack-heat-engine service
 
