@@ -80,7 +80,7 @@ BuildRequires: python3-tenacity >= 4.4.0
 # Required to compile translation files
 BuildRequires: python3-babel
 
-BuildRequires: python3-PyYAML
+BuildRequires: python3-yaml
 BuildRequires: python3-lxml
 BuildRequires: python3-migrate
 BuildRequires: python3-paste-deploy
@@ -131,8 +131,8 @@ Requires: python3-mox3
 Requires: python3-oslotest
 Requires: python3-testresources
 Requires: python3-oslotest
-Requires: python3-oslo-log
-Requires: python3-oslo-utils
+Requires: python3-oslo-log >= 4.3.0
+Requires: python3-oslo-utils >= 3.40.0
 Requires: python3-heatclient
 Requires: python3-cinderclient
 Requires: python3-zaqarclient
@@ -140,13 +140,13 @@ Requires: python3-keystoneclient
 Requires: python3-swiftclient
 Requires: python3-paramiko
 Requires: python3-kombu
-Requires: python3-oslo-config
+Requires: python3-oslo-config >= 6.0.0
 Requires: python3-oslo-concurrency
-Requires: python3-requests
-Requires: python3-eventlet
+Requires: python3-requests >= 2.14.2
+Requires: python3-eventlet >= 0.18.2
 Requires: python3-gabbi
 
-Requires: python3-PyYAML
+Requires: python3-yaml >= 5.1
 
 %description -n python3-%{service}-tests
 %{common_desc}
@@ -233,37 +233,37 @@ Group: System Environment/Base
 
 Obsoletes: %{name}-api-cloudwatch < %{epoch}:10.0.0
 
-Requires: python3-pbr
-Requires: python3-croniter
-Requires: python3-eventlet
+Requires: python3-pbr >= 3.1.1
+Requires: python3-croniter >= 0.3.35
+Requires: python3-eventlet >= 0.18.2
 Requires: python3-stevedore >= 3.1.0
-Requires: python3-netaddr
-Requires: python3-neutron-lib
-Requires: python3-osprofiler
-Requires: python3-requests
-Requires: python3-routes
-Requires: python3-sqlalchemy
+Requires: python3-netaddr >= 0.7.18
+Requires: python3-neutron-lib >= 1.14.0
+Requires: python3-osprofiler >= 1.4.0
+Requires: python3-requests >= 2.14.2
+Requires: python3-routes >= 2.3.1
+Requires: python3-sqlalchemy >= 1.0.10
 Requires: python3-paramiko
 Requires: python3-babel >= 2.3.4
 # FIXME: system version is stuck to 1.7.2 for cryptography
-Requires: python3-cryptography >= 2.1
+Requires: python3-cryptography >= 2.5
 Requires: python3-yaql >= 1.1.3
 
 Requires: python3-oslo-cache >= 1.26.0
 Requires: python3-oslo-concurrency >= 3.26.0
-Requires: python3-oslo-config >= 2:5.2.0
-Requires: python3-oslo-context >= 2.19.2
+Requires: python3-oslo-config >= 2:6.0.0
+Requires: python3-oslo-context >= 2.22.0
 Requires: python3-oslo-upgradecheck >= 0.1.0
-Requires: python3-oslo-utils >= 3.37.0
+Requires: python3-oslo-utils >= 3.40.0
 Requires: python3-oslo-db >= 6.0.0
-Requires: python3-oslo-i18n >= 3.15.3
+Requires: python3-oslo-i18n >= 3.20.0
 Requires: python3-oslo-middleware >= 3.31.0
 Requires: python3-oslo-messaging >= 5.29.0
-Requires: python3-oslo-policy >= 1.30.0
+Requires: python3-oslo-policy >= 3.7.0
 Requires: python3-oslo-reports >= 1.18.0
-Requires: python3-oslo-serialization >= 2.18.0
+Requires: python3-oslo-serialization >= 2.25.0
 Requires: python3-oslo-service >= 1.24.0
-Requires: python3-oslo-log >= 3.36.0
+Requires: python3-oslo-log >= 4.3.0
 Requires: python3-oslo-versionedobjects >= 1.31.2
 Requires: python3-debtcollector >= 1.19.0
 
@@ -271,7 +271,7 @@ Requires: python3-cinderclient >= 3.3.0
 Requires: python3-glanceclient >= 1:2.8.0
 Requires: python3-heatclient >= 1.10.0
 Requires: python3-keystoneclient >= 1:3.8.0
-Requires: python3-keystonemiddleware >= 4.17.0
+Requires: python3-keystonemiddleware >= 5.1.0
 Requires: python3-neutronclient >= 6.14.0
 Requires: python3-novaclient >= 9.1.0
 Requires: python3-saharaclient >= 1.4.0
@@ -295,12 +295,12 @@ Requires: python3-monascaclient >= 1.12.0
 Requires: python3-openstacksdk >= 0.11.2
 Requires: python3-tenacity >= 6.1.0
 
-Requires: python3-PyYAML
-Requires: python3-lxml
-Requires: python3-migrate
-Requires: python3-paste-deploy
-Requires: python3-webob
-Requires: python3-pytz
+Requires: python3-yaml >= 5.1
+Requires: python3-lxml >= 4.2.3
+Requires: python3-migrate >= 0.13.0
+Requires: python3-paste-deploy >= 1.5.0
+Requires: python3-webob >= 1.7.1
+Requires: python3-pytz >= 2013.6
 
 Requires(pre): shadow-utils
 
