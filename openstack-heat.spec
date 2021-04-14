@@ -1,4 +1,3 @@
-%global milestone .0rc1
 %{!?sources_gpg: %{!?dlrn:%global sources_gpg 1} }
 %global sources_gpg_sign 0x5d2d1e4fb8d38e6af76c50d53d4fec30cf5ce3da
 
@@ -18,12 +17,10 @@ Summary:        OpenStack Orchestration (%{service})
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:          1
 Version:        16.0.0
-Release:        0.1%{?milestone}%{?dist}
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://www.openstack.org
 Source0:        https://tarballs.openstack.org/%{service}/%{name}-%{upstream_version}.tar.gz
-#
-# patches_base=16.0.0.0rc1
 #
 
 Obsoletes:      %{service} < 7-9
@@ -503,6 +500,9 @@ running the Heat service in general.
 
 
 %changelog
+* Wed Apr 14 2021 RDO <dev@lists.rdoproject.org> 1:16.0.0-1
+- Update to 16.0.0
+
 * Fri Mar 26 2021 RDO <dev@lists.rdoproject.org> 1:16.0.0-0.1.0rc1
 - Update to 16.0.0.0rc1
 
