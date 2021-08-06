@@ -209,7 +209,7 @@ install -p -D -m 640 etc/%{service}/%{service}.conf.sample %{buildroot}/%{_sysco
 install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf
 echo '[revision]' >> %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf
 echo '%{service}_revision=%{version}' >> %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf
-mv %{buildroot}%{_prefix}/etc/%{service}/api-paste.ini %{buildroot}/%{_datadir}/%{service}/api-paste-dist.ini
+mv %{buildroot}%{_prefix}/etc/%{service}/api-paste.ini %{buildroot}/%{_sysconfdir}/%{service}
 mv %{buildroot}%{_prefix}/etc/%{service}/environment.d %{buildroot}/%{_sysconfdir}/%{service}
 mv %{buildroot}%{_prefix}/etc/%{service}/templates %{buildroot}/%{_sysconfdir}/%{service}
 # Remove duplicate config files under /usr/etc/heat
@@ -317,12 +317,12 @@ Components common to all OpenStack Heat services
 %{python3_sitelib}/openstack_%{service}-%{upstream_version}-*.egg-info
 %exclude %{python3_sitelib}/%{service}/tests
 %attr(-, root, %{service}) %{_datadir}/%{service}/%{service}-dist.conf
-%attr(-, root, %{service}) %{_datadir}/%{service}/api-paste-dist.ini
 %dir %attr(0755,%{service},root) %{_localstatedir}/log/%{service}
 %dir %attr(0755,%{service},root) %{_localstatedir}/run/%{service}
 %dir %attr(0755,%{service},root) %{_sharedstatedir}/%{service}
 %dir %attr(0755,%{service},root) %{_sysconfdir}/%{service}
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-%{service}
+%config(noreplace) %attr(-, root, %{service}) %{_sysconfdir}/%{service}/api-paste.ini
 %config(noreplace) %attr(-, root, %{service}) %{_sysconfdir}/%{service}/%{service}.conf
 %config(noreplace) %attr(-,root,%{service}) %{_sysconfdir}/%{service}/environment.d/*
 %config(noreplace) %attr(-,root,%{service}) %{_sysconfdir}/%{service}/templates/*
