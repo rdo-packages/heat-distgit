@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "779c9543_81c86476",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 1
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 403
+      },
+      "writtenOn": "2021-08-11T07:07:26Z",
+      "side": 1,
+      "message": "missed %attr(-, root, %{service})",
+      "revId": "8d13fa28d25a33e017f25f79329326eeb3802d9f",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": true
+    }
+  ]
+}
