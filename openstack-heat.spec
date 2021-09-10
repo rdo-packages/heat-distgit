@@ -132,7 +132,7 @@ Requires: python3-oslotest
 Requires: python3-testresources
 Requires: python3-oslotest
 Requires: python3-oslo-log >= 4.3.0
-Requires: python3-oslo-utils >= 3.40.0
+Requires: python3-oslo-utils >= 4.5.0
 Requires: python3-heatclient
 Requires: python3-cinderclient
 Requires: python3-zaqarclient
@@ -140,12 +140,12 @@ Requires: python3-keystoneclient
 Requires: python3-swiftclient
 Requires: python3-paramiko
 Requires: python3-kombu
-Requires: python3-oslo-config >= 6.0.0
+Requires: python3-oslo-config >= 6.8.0
 Requires: python3-oslo-concurrency
-Requires: python3-requests >= 2.14.2
+Requires: python3-requests >= 2.23.0
 Requires: python3-eventlet >= 0.18.2
 Requires: python3-gabbi
-
+Requires: python3-ddt >= 1.2.1
 Requires: python3-yaml >= 5.1
 
 %description -n python3-%{service}-tests
@@ -234,13 +234,13 @@ Group: System Environment/Base
 Obsoletes: %{name}-api-cloudwatch < %{epoch}:10.0.0
 
 Requires: python3-pbr >= 3.1.1
-Requires: python3-croniter >= 0.3.35
+Requires: python3-croniter >= 0.3.4
 Requires: python3-eventlet >= 0.18.2
 Requires: python3-stevedore >= 3.1.0
 Requires: python3-netaddr >= 0.7.18
 Requires: python3-neutron-lib >= 1.14.0
 Requires: python3-osprofiler >= 1.4.0
-Requires: python3-requests >= 2.14.2
+Requires: python3-requests >= 2.23.0
 Requires: python3-routes >= 2.3.1
 Requires: python3-sqlalchemy >= 1.0.10
 Requires: python3-paramiko
@@ -251,10 +251,10 @@ Requires: python3-yaql >= 1.1.3
 
 Requires: python3-oslo-cache >= 1.26.0
 Requires: python3-oslo-concurrency >= 3.26.0
-Requires: python3-oslo-config >= 2:6.0.0
+Requires: python3-oslo-config >= 2:6.8.0
 Requires: python3-oslo-context >= 2.22.0
-Requires: python3-oslo-upgradecheck >= 0.1.0
-Requires: python3-oslo-utils >= 3.40.0
+Requires: python3-oslo-upgradecheck >= 1.3.0
+Requires: python3-oslo-utils >= 4.5.0
 Requires: python3-oslo-db >= 6.0.0
 Requires: python3-oslo-i18n >= 3.20.0
 Requires: python3-oslo-middleware >= 3.31.0
