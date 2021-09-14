@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b491a4be_864cc40a",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 1
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 403
+      },
+      "writtenOn": "2021-09-14T13:30:47Z",
+      "side": 1,
+      "message": "2:6.8.0",
+      "range": {
+        "startLine": 143,
+        "startChar": 33,
+        "endLine": 143,
+        "endChar": 38
+      },
+      "revId": "7f4f9e5d20608e5393d8bdff8eebab9a14847b03",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "161d8ee3_64ac3724",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 1
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 403
+      },
+      "writtenOn": "2021-09-14T13:30:47Z",
+      "side": 1,
+      "message": "2:6.8.0",
+      "range": {
+        "startLine": 254,
+        "startChar": 35,
+        "endLine": 254,
+        "endChar": 40
+      },
+      "revId": "7f4f9e5d20608e5393d8bdff8eebab9a14847b03",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c696fee_7701ffb4",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 1
+      },
+      "lineNbr": 304,
+      "author": {
+        "id": 403
+      },
+      "writtenOn": "2021-09-14T13:30:47Z",
+      "side": 1,
+      "message": "also ddt is needed for test, upstream seems wrongly added to requirements.txt, can move to tests sub package",
+      "range": {
+        "startLine": 304,
+        "startChar": 0,
+        "endLine": 304,
+        "endChar": 30
+      },
+      "revId": "7f4f9e5d20608e5393d8bdff8eebab9a14847b03",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7",
+      "unresolved": true
+    }
+  ]
+}
