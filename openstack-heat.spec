@@ -1,5 +1,5 @@
 %{!?sources_gpg: %{!?dlrn:%global sources_gpg 1} }
-%global sources_gpg_sign 0x4c29ff0e437f3351fd82bdf47c5a3bc787dc7035
+%global sources_gpg_sign 0x01527a34f0d0080f8a5db8d6eb6c5df21b4b6363
 
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
@@ -16,7 +16,7 @@ Summary:        OpenStack Orchestration (%{service})
 # Liberty semver reset
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:          1
-Version:        17.0.0
+Version:        17.0.1
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://www.openstack.org
@@ -500,6 +500,9 @@ running the Heat service in general.
 
 
 %changelog
+* Thu Feb 17 2022 RDO <dev@lists.rdoproject.org> 1:17.0.1-1
+- Update to 17.0.1
+
 * Wed Oct 06 2021 RDO <dev@lists.rdoproject.org> 1:17.0.0-1
 - Update to 17.0.0
 
