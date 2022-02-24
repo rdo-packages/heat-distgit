@@ -499,3 +499,4 @@ running the Heat service in general.
 * Wed Apr 29 2020 RDO <dev@lists.rdoproject.org> 1:14.0.0-0.1.0rc1
 - Update to 14.0.0.0rc1
 
+# REMOVEME: error caused by commit https://opendev.org/openstack/heat/commit/5fb64c0058de9af67f572cc0c6aabf98d58162a0
