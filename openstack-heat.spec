@@ -292,7 +292,7 @@ Requires: python3-ironicclient >= 2.8.0
 %if 0%{rhosp} == 0
 Requires: python3-monascaclient >= 1.12.0
 %endif
-Requires: python3-openstacksdk >= 0.11.2
+Requires: python3-openstacksdk >= 0.28.0
 Requires: python3-tenacity >= 6.1.0
 
 Requires: python3-yaml >= 5.1
