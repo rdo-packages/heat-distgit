@@ -1,5 +1,6 @@
+%global milestone .0rc1
 %{!?sources_gpg: %{!?dlrn:%global sources_gpg 1} }
-%global sources_gpg_sign 0x2426b928085a020d8a90d0d879ab7008d0896c8a
+%global sources_gpg_sign 0x01527a34f0d0080f8a5db8d6eb6c5df21b4b6363
 
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
@@ -16,11 +17,15 @@ Summary:        OpenStack Orchestration (%{service})
 # Liberty semver reset
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:          1
-Version:        XXX
-Release:        XXX
+Version:        18.0.0
+Release:        0.1%{?milestone}%{?dist}
 License:        ASL 2.0
 URL:            http://www.openstack.org
 Source0:        https://tarballs.openstack.org/%{service}/%{name}-%{upstream_version}.tar.gz
+#
+# patches_base=18.0.0.0rc1
+#
+
 Obsoletes:      %{service} < 7-9
 Provides:       %{service}
 
@@ -498,3 +503,6 @@ running the Heat service in general.
 
 
 %changelog
+* Thu Mar 24 2022 RDO <dev@lists.rdoproject.org> 1:18.0.0-0.1.0rc1
+- Update to 18.0.0.0rc1
+
