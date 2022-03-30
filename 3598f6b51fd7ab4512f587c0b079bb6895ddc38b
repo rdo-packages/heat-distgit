@@ -16,6 +16,23 @@
       "message": "No matching package to install: \u0027python3-tempest\u0027",
       "revId": "3598f6b51fd7ab4512f587c0b079bb6895ddc38b",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "47497fc0_a1abd3e5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 757
+      },
+      "writtenOn": "2022-03-30T07:52:35Z",
+      "side": 1,
+      "message": "recheck",
+      "revId": "3598f6b51fd7ab4512f587c0b079bb6895ddc38b",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
     }
   ]
 }
