@@ -274,23 +274,23 @@ Requires: python3-keystoneclient >= 1:3.8.0
 Requires: python3-keystonemiddleware >= 5.1.0
 Requires: python3-neutronclient >= 6.14.0
 Requires: python3-novaclient >= 9.1.0
-Requires: python3-saharaclient >= 1.4.0
 Requires: python3-swiftclient >= 3.2.0
-Requires: python3-troveclient >= 2.2.0
 
 Requires: python3-keystoneauth1 >= 3.18.0
 Requires: python3-barbicanclient >= 4.5.2
 Requires: python3-designateclient >= 2.7.0
 Requires: python3-manilaclient >= 1.16.0
-Requires: python3-mistralclient >= 3.1.0
 Requires: python3-openstackclient >= 3.12.0
-Requires: python3-zaqarclient >= 1.3.0
 Requires: python3-aodhclient >= 0.9.0
-Requires: python3-magnumclient >= 2.3.0
 Requires: python3-octaviaclient >= 1.8.0
 Requires: python3-ironicclient >= 2.8.0
 %if 0%{rhosp} == 0
+Requires: python3-magnumclient >= 2.3.0
+Requires: python3-mistralclient >= 3.1.0
 Requires: python3-monascaclient >= 1.12.0
+Requires: python3-saharaclient >= 1.4.0
+Requires: python3-troveclient >= 2.2.0
+Requires: python3-zaqarclient >= 1.3.0
 %endif
 Requires: python3-openstacksdk >= 0.28.0
 Requires: python3-tenacity >= 6.1.0
