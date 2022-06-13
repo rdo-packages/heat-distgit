@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "eeecda1e_1a8d36be",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 682
+      },
+      "writtenOn": "2022-06-13T12:13:14Z",
+      "side": 1,
+      "message": "It seems heat does not handle missing zaqarclient now... I\u0027ve update the patch not to cover zaqarclient atm.",
+      "parentUuid": "e5488ea7_c255dc6d",
+      "revId": "4e237ebe090d54966c0037af1ce886b8aa2f7962",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0d2cf79b_9d4db2fe",
         "filename": "openstack-heat.spec",
         "patchSetId": 1
