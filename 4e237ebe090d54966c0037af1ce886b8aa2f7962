@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "32da4ae2_9abf1126",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 415
+      },
+      "writtenOn": "2022-06-13T12:00:50Z",
+      "side": 1,
+      "message": "We need to update the downstream documentation too. Resource plugin won\u0027t be loaded when services don\u0027t exist/any exception instantiating clients. We need to check for signaling (usage of zaqar) too.\n\n[1] https://github.com/openstack/heat/blob/master/heat/engine/resource.py#L187-L188",
+      "revId": "4e237ebe090d54966c0037af1ce886b8aa2f7962",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0d2cf79b_9d4db2fe",
@@ -14,6 +31,30 @@
       "writtenOn": "2022-06-13T11:48:24Z",
       "side": 1,
       "message": "I\u0027m still trying to understand why only zaqar client is listed (for example mistral client is used in the test codes as well), but I think we can remove this .",
+      "range": {
+        "startLine": 138,
+        "startChar": 0,
+        "endLine": 138,
+        "endChar": 29
+      },
+      "revId": "4e237ebe090d54966c0037af1ce886b8aa2f7962",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "283cb64c_557ff90b",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 415
+      },
+      "writtenOn": "2022-06-13T12:00:50Z",
+      "side": 1,
+      "message": "zaqar/swift are used for signaling.",
+      "parentUuid": "0d2cf79b_9d4db2fe",
       "range": {
         "startLine": 138,
         "startChar": 0,
