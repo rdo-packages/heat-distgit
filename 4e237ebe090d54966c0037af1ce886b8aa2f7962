@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e5488ea7_c255dc6d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 682
+      },
+      "writtenOn": "2022-06-13T12:03:45Z",
+      "side": 1,
+      "message": "Thanks. Will check that before we decide whether we can remove zaqarclient.",
+      "parentUuid": "32da4ae2_9abf1126",
+      "revId": "4e237ebe090d54966c0037af1ce886b8aa2f7962",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0d2cf79b_9d4db2fe",
         "filename": "openstack-heat.spec",
         "patchSetId": 1
@@ -55,6 +73,30 @@
       "side": 1,
       "message": "zaqar/swift are used for signaling.",
       "parentUuid": "0d2cf79b_9d4db2fe",
+      "range": {
+        "startLine": 138,
+        "startChar": 0,
+        "endLine": 138,
+        "endChar": 29
+      },
+      "revId": "4e237ebe090d54966c0037af1ce886b8aa2f7962",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a9c736db_0e0591ae",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 682
+      },
+      "writtenOn": "2022-06-13T12:03:45Z",
+      "side": 1,
+      "message": "Ah, ok. that would make sense. However I see the list is still missing some client packages (eg. mistral, designate) imported by the test codes. I guess we can just remove this unmaintained list and pull these clients as dependencies of the common package, as I proposed in the 2nd patch set.",
+      "parentUuid": "283cb64c_557ff90b",
       "range": {
         "startLine": 138,
         "startChar": 0,
