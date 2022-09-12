@@ -145,7 +145,7 @@ Requires: python3-oslo-concurrency
 Requires: python3-requests >= 2.23.0
 Requires: python3-eventlet >= 0.18.2
 Requires: python3-gabbi
-Requires: python3-ddt >= 1.2.1
+Requires: python3-ddt >= 1.4.1
 Requires: python3-yaml >= 5.1
 
 %description -n python3-%{service}-tests
@@ -272,7 +272,7 @@ Requires: python3-glanceclient >= 1:2.8.0
 Requires: python3-heatclient >= 1.10.0
 Requires: python3-keystoneclient >= 1:3.8.0
 Requires: python3-keystonemiddleware >= 5.1.0
-Requires: python3-neutronclient >= 6.14.0
+Requires: python3-neutronclient >= 7.7.0
 Requires: python3-novaclient >= 9.1.0
 Requires: python3-saharaclient >= 1.4.0
 Requires: python3-swiftclient >= 3.2.0
@@ -296,7 +296,7 @@ Requires: python3-openstacksdk >= 0.28.0
 Requires: python3-tenacity >= 6.1.0
 
 Requires: python3-yaml >= 5.1
-Requires: python3-lxml >= 4.2.3
+Requires: python3-lxml >= 4.5.0
 Requires: python3-migrate >= 0.13.0
 Requires: python3-paste-deploy >= 1.5.0
 Requires: python3-webob >= 1.7.1
