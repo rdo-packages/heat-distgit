@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c204fa40_9b9df09a",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 2
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 635
+      },
+      "writtenOn": "2022-09-12T11:32:00Z",
+      "side": 1,
+      "message": "1.4.1",
+      "range": {
+        "startLine": 147,
+        "startChar": 25,
+        "endLine": 147,
+        "endChar": 30
+      },
+      "revId": "1bf88be7b74e3f587e7b9da0b46373fc531dbe3b",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aef62681_eca10e69",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 2
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 635
+      },
+      "writtenOn": "2022-09-12T11:32:00Z",
+      "side": 1,
+      "message": "4.5.0",
+      "range": {
+        "startLine": 298,
+        "startChar": 26,
+        "endLine": 298,
+        "endChar": 31
+      },
+      "revId": "1bf88be7b74e3f587e7b9da0b46373fc531dbe3b",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    }
+  ]
+}
