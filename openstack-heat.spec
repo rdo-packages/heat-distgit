@@ -71,7 +71,7 @@ BuildRequires: python3-paramiko
 BuildRequires: python3-yaql
 # These are required to build due to the requirements check added
 BuildRequires: python3-routes
-BuildRequires: python3-sqlalchemy
+BuildRequires: python3-sqlalchemy < 1.4.0
 BuildRequires: python3-pbr
 BuildRequires: python3-cryptography
 # These are required to build the config file
@@ -245,6 +245,7 @@ Requires: python3-osprofiler >= 1.4.0
 Requires: python3-requests >= 2.14.2
 Requires: python3-routes >= 2.3.1
 Requires: python3-sqlalchemy >= 1.0.10
+Requires: python3-sqlalchemy < 1.4.0
 Requires: python3-paramiko
 Requires: python3-babel >= 2.3.4
 # FIXME: system version is stuck to 1.7.2 for cryptography
