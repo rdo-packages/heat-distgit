@@ -241,7 +241,7 @@ Requires: python3-neutron-lib >= 1.14.0
 Requires: python3-osprofiler >= 1.4.0
 Requires: python3-requests >= 2.23.0
 Requires: python3-routes >= 2.3.1
-Requires: python3-sqlalchemy >= 1.0.10
+Requires: python3-sqlalchemy >= 1.4.0
 Requires: python3-paramiko
 Requires: python3-babel >= 2.3.4
 # FIXME: system version is stuck to 1.7.2 for cryptography
@@ -257,7 +257,7 @@ Requires: python3-oslo-utils >= 4.5.0
 Requires: python3-oslo-db >= 6.0.0
 Requires: python3-oslo-i18n >= 3.20.0
 Requires: python3-oslo-middleware >= 3.31.0
-Requires: python3-oslo-messaging >= 5.29.0
+Requires: python3-oslo-messaging >= 14.1.0
 Requires: python3-oslo-policy >= 3.7.0
 Requires: python3-oslo-reports >= 1.18.0
 Requires: python3-oslo-serialization >= 2.25.0
