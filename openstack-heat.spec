@@ -82,7 +82,6 @@ BuildRequires: python3-babel
 
 BuildRequires: python3-yaml
 BuildRequires: python3-lxml
-BuildRequires: python3-migrate
 BuildRequires: python3-paste-deploy
 BuildRequires: python3-redis
 BuildRequires: python3-webob
@@ -177,8 +176,6 @@ PYTHONPATH=. oslo-config-generator --config-file=config-generator.conf
 
 %install
 %{py3_install}
-sed -i -e '/^#!/,1 d' %{buildroot}/%{python3_sitelib}/%{service}/db/sqlalchemy/migrate_repo/manage.py
-
 mkdir -p %{buildroot}/%{_localstatedir}/log/%{service}/
 mkdir -p %{buildroot}/%{_localstatedir}/run/%{service}/
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-%{service}
@@ -296,7 +293,6 @@ Requires: python3-tenacity >= 6.1.0
 
 Requires: python3-yaml >= 5.1
 Requires: python3-lxml >= 4.5.0
-Requires: python3-migrate >= 0.13.0
 Requires: python3-paste-deploy >= 1.5.0
 Requires: python3-webob >= 1.7.1
 Requires: python3-pytz >= 2013.6
