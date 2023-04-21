@@ -34,6 +34,24 @@
       "parentUuid": "e1dbbfc1_b30333a1",
       "revId": "88ec2e52fc8a334001a5bb25e33671cc4f151882",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "08913965_2f1b2e9e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 682
+      },
+      "writtenOn": "2023-04-21T04:29:34Z",
+      "side": 1,
+      "message": "We can technically remove that log_dir definition, which disables log files and enables console logging. But RDO has been carrying this non-default, distro-specific default which enables log files, and I\u0027m more concerned with changing that now. Our installation guide does not mention users should configure log_dir to enable log files, then users can experience unexpected change during update.\n\nhttps://docs.openstack.org/heat/latest/install/install-rdo.html\n\n\nAlso if we get rid of that override of log_file then we have to remove it consistently from the other openstack service. Otherwise we use journal log for only heat and specific service log files for the other, by default. I\u0027m more hesitant to make that architecture change globally at this stage.",
+      "parentUuid": "e484f437_e98248cb",
+      "revId": "88ec2e52fc8a334001a5bb25e33671cc4f151882",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
     }
   ]
 }
