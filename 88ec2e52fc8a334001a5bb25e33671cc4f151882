@@ -52,6 +52,24 @@
       "parentUuid": "e484f437_e98248cb",
       "revId": "88ec2e52fc8a334001a5bb25e33671cc4f151882",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9a079698_6d216995",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 682
+      },
+      "writtenOn": "2023-04-21T04:31:58Z",
+      "side": 1,
+      "message": "Just fyi. In TripleO we relied on puppet-heat which hard-codes log_file to forcefully enables log files. That\u0027s why we were not affected when we removed dist.conf file.\n\nhttps://github.com/openstack/puppet-heat/blob/master/manifests/logging.pp#L110\n\nHowever this is truly dependent on deployment tooling and there can be some users using log files, without not customized configurations, because of the dist.conf file RDO has been provided. My concern is affecting such users.",
+      "parentUuid": "08913965_2f1b2e9e",
+      "revId": "88ec2e52fc8a334001a5bb25e33671cc4f151882",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
     }
   ]
 }
