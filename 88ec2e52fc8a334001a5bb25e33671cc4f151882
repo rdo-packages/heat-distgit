@@ -16,6 +16,24 @@
       "message": "@Rabi\n\nI now noticed we need this so that heat process uses log files in /var/log/heat by default, otherwise processes tries to use console output for logging. There might be some more options we can remove but we do need this file to keep the default logging behavior consistent.",
       "revId": "88ec2e52fc8a334001a5bb25e33671cc4f151882",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e484f437_e98248cb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 415
+      },
+      "writtenOn": "2023-04-21T04:03:25Z",
+      "side": 1,
+      "message": "I don\u0027t think log_dir is dist specific that would need this file. User has to provide it as there is no default.",
+      "parentUuid": "e1dbbfc1_b30333a1",
+      "revId": "88ec2e52fc8a334001a5bb25e33671cc4f151882",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
     }
   ]
 }
