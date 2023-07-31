@@ -2,6 +2,14 @@
 %global sources_gpg_sign 0x2426b928085a020d8a90d0d879ab7008d0896c8a
 
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
+# we are excluding some runtime reqs from automatic generator
+%global excluded_reqs packaging python-blazarclient python-zunclient
+# we are excluding some BRs from automatic generator
+%global excluded_brs doc8 bandit pre-commit hacking flake8-import-order os-api-ref
+# Exclude sphinx from BRs if docs are disabled
+%if ! 0%{?with_doc}
+%global excluded_brs %{excluded_brs} sphinx openstackdocstheme
+%endif
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 %global rhosp 0
 %global service heat
@@ -18,7 +26,7 @@ Summary:        OpenStack Orchestration (%{service})
 Epoch:          1
 Version:        XXX
 Release:        XXX
-License:        ASL 2.0
+License:        Apache-2.0
 URL:            http://www.openstack.org
 Source0:        https://tarballs.openstack.org/%{service}/%{name}-%{upstream_version}.tar.gz
 Obsoletes:      %{service} < 7-9
@@ -46,75 +54,8 @@ BuildRequires:  /usr/bin/gpgv2
 BuildRequires: git-core
 BuildRequires: openstack-macros
 BuildRequires: python3-devel
-BuildRequires: python3-stevedore >= 1.20.0
-BuildRequires: python3-oslo-cache
-BuildRequires: python3-oslo-context
-BuildRequires: python3-oslo-middleware
-BuildRequires: python3-oslo-policy
-BuildRequires: python3-oslo-messaging
-BuildRequires: python3-setuptools
-BuildRequires: python3-oslo-i18n
-BuildRequires: python3-oslo-db
-BuildRequires: python3-oslo-upgradecheck
-BuildRequires: python3-oslo-utils
-BuildRequires: python3-oslo-log
-BuildRequires: python3-oslo-versionedobjects
-BuildRequires: python3-eventlet
-BuildRequires: python3-kombu
-BuildRequires: python3-netaddr
-BuildRequires: python3-neutron-lib
-BuildRequires: python3-osprofiler
-BuildRequires: python3-six
-BuildRequires: python3-paramiko
-BuildRequires: python3-yaql
-# These are required to build due to the requirements check added
-BuildRequires: python3-routes
-BuildRequires: python3-sqlalchemy
-BuildRequires: python3-pbr
-BuildRequires: python3-cryptography
-# These are required to build the config file
-BuildRequires: python3-oslo-config
-BuildRequires: python3-keystoneauth1
-BuildRequires: python3-keystoneclient
-BuildRequires: python3-tenacity >= 4.4.0
-# Required to compile translation files
-BuildRequires: python3-babel
-
-BuildRequires: python3-yaml
-BuildRequires: python3-lxml
-BuildRequires: python3-paste-deploy
-BuildRequires: python3-redis
-BuildRequires: python3-webob
-
+BuildRequires: pyproject-rpm-macros
 BuildRequires: systemd
-
-%if 0%{?with_doc}
-BuildRequires: python3-openstackdocstheme
-BuildRequires: python3-sphinx
-BuildRequires: python3-sphinxcontrib-apidoc
-BuildRequires: python3-cinderclient
-BuildRequires: python3-novaclient
-BuildRequires: python3-saharaclient
-BuildRequires: python3-neutronclient
-BuildRequires: python3-swiftclient
-BuildRequires: python3-heatclient
-BuildRequires: python3-glanceclient
-BuildRequires: python3-troveclient
-BuildRequires: python3-aodhclient
-BuildRequires: python3-barbicanclient
-BuildRequires: python3-designateclient
-BuildRequires: python3-magnumclient
-BuildRequires: python3-monascaclient
-BuildRequires: python3-manilaclient
-BuildRequires: python3-zaqarclient
-BuildRequires: python3-croniter
-BuildRequires: python3-gabbi
-BuildRequires: python3-testscenarios
-BuildRequires: python3-tempest
-BuildRequires: python3-gabbi
-# NOTE(ykarel) zunclient are not packaged yet.
-#BuildRequires: python3-zunclient
-%endif
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires: %{name}-engine = %{epoch}:%{version}-%{release}
@@ -122,7 +63,6 @@ Requires: %{name}-api = %{epoch}:%{version}-%{release}
 Requires: %{name}-api-cfn = %{epoch}:%{version}-%{release}
 
 %package -n python3-%{service}-tests
-%{?python_provide:%python_provide python3-%{service}-tests}
 Summary:        Heat tests
 Requires:       %{name}-common = %{epoch}:%{version}-%{release}
 
@@ -157,25 +97,54 @@ This package contains the Heat test files.
 %endif
 %autosetup -n openstack-%{service}-%{upstream_version} -S git
 
-# Remove the requirements file so that pbr hooks don't add it
-# to distutils requires_dist config
-%py_req_cleanup
 
 # Remove tests in contrib
 find contrib -name tests -type d | xargs rm -r
 
-%build
-%{py3_build}
+sed -i /^[[:space:]]*-c{env:.*_CONSTRAINTS_FILE.*/d tox.ini
+sed -i "s/^deps = -c{env:.*_CONSTRAINTS_FILE.*/deps =/" tox.ini
+sed -i /^minversion.*/d tox.ini
+sed -i /^requires.*virtualenv.*/d tox.ini
 
-# Generate i18n files
-%{__python3} setup.py compile_catalog -d build/lib/%{service}/locale
+# Disable warnint-is-error in doc build: zun- and blazar- clients are not shipped
+sed -i '/sphinx-build/ s/-W//' tox.ini
+
+# Exclude some bad-known BRs
+for pkg in %{excluded_brs}; do
+  for reqfile in doc/requirements.txt test-requirements.txt; do
+    if [ -f $reqfile ]; then
+      sed -i /^${pkg}.*/d $reqfile
+    fi
+  done
+done
+
+# Automatic BR generation
+# Exclude some bad-known runtime reqs
+for pkg in %{excluded_reqs}; do
+  sed -i /^${pkg}.*/d requirements.txt
+done
+
+%generate_buildrequires
+%if 0%{?with_doc}
+  %pyproject_buildrequires -t -e %{default_toxenv},docs
+%else
+  %pyproject_buildrequires -t -e %{default_toxenv}
+%endif
+
+%build
+%pyproject_wheel
+
 
 # Generate sample config and add the current directory to PYTHONPATH so
 # oslo-config-generator doesn't skip heat's entry points.
 PYTHONPATH=. oslo-config-generator --config-file=config-generator.conf
 
 %install
-%{py3_install}
+%pyproject_install
+
+# Generate i18n files
+%{__python3} setup.py compile_catalog -d %{buildroot}%{python3_sitelib}/%{service}/locale
+
 mkdir -p %{buildroot}/%{_localstatedir}/log/%{service}/
 mkdir -p %{buildroot}/%{_localstatedir}/run/%{service}/
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-%{service}
@@ -190,8 +159,12 @@ mkdir -p %{buildroot}/%{_sharedstatedir}/%{service}/
 mkdir -p %{buildroot}/%{_sysconfdir}/%{service}/
 
 %if 0%{?with_doc}
-sphinx-build -b html doc/source doc/build/html
+%tox -e docs
 sphinx-build -b man doc/source doc/build/man
+
+# Fix hidden-file-or-dir warnings
+rm -fr doc/build/html/.{doctrees,buildinfo,htaccess}
+
 mkdir -p %{buildroot}%{_mandir}/man1
 install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
 %endif
@@ -229,74 +202,6 @@ Group: System Environment/Base
 
 Obsoletes: %{name}-api-cloudwatch < %{epoch}:10.0.0
 
-Requires: python3-pbr >= 3.1.1
-Requires: python3-croniter >= 0.3.4
-Requires: python3-eventlet >= 0.18.2
-Requires: python3-stevedore >= 3.1.0
-Requires: python3-netaddr >= 0.7.18
-Requires: python3-neutron-lib >= 1.14.0
-Requires: python3-osprofiler >= 1.4.0
-Requires: python3-requests >= 2.23.0
-Requires: python3-routes >= 2.3.1
-Requires: python3-sqlalchemy >= 1.4.0
-Requires: python3-paramiko
-Requires: python3-babel >= 2.3.4
-# FIXME: system version is stuck to 1.7.2 for cryptography
-Requires: python3-cryptography >= 2.5
-Requires: python3-yaql >= 1.1.3
-
-Requires: python3-oslo-cache >= 1.26.0
-Requires: python3-oslo-concurrency >= 3.26.0
-Requires: python3-oslo-config >= 2:6.8.0
-Requires: python3-oslo-context >= 2.22.0
-Requires: python3-oslo-upgradecheck >= 1.3.0
-Requires: python3-oslo-utils >= 4.5.0
-Requires: python3-oslo-db >= 6.0.0
-Requires: python3-oslo-i18n >= 3.20.0
-Requires: python3-oslo-middleware >= 3.31.0
-Requires: python3-oslo-messaging >= 14.1.0
-Requires: python3-oslo-policy >= 3.7.0
-Requires: python3-oslo-reports >= 1.18.0
-Requires: python3-oslo-serialization >= 2.25.0
-Requires: python3-oslo-service >= 1.24.0
-Requires: python3-oslo-log >= 4.3.0
-Requires: python3-oslo-versionedobjects >= 1.31.2
-Requires: python3-debtcollector >= 1.19.0
-
-Requires: python3-cinderclient >= 3.3.0
-Requires: python3-glanceclient >= 1:2.8.0
-Requires: python3-heatclient >= 1.10.0
-Requires: python3-keystoneclient >= 1:3.8.0
-Requires: python3-keystonemiddleware >= 5.1.0
-Requires: python3-neutronclient >= 7.7.0
-Requires: python3-novaclient >= 9.1.0
-Requires: python3-swiftclient >= 3.2.0
-
-Requires: python3-keystoneauth1 >= 3.18.0
-Requires: python3-barbicanclient >= 4.5.2
-Requires: python3-designateclient >= 2.7.0
-Requires: python3-manilaclient >= 1.16.0
-Requires: python3-openstackclient >= 3.12.0
-Requires: python3-zaqarclient >= 1.3.0
-Requires: python3-aodhclient >= 0.9.0
-Requires: python3-octaviaclient >= 1.8.0
-Requires: python3-ironicclient >= 2.8.0
-%if 0%{rhosp} == 0
-Requires: python3-magnumclient >= 2.3.0
-Requires: python3-mistralclient >= 3.1.0
-Requires: python3-monascaclient >= 1.12.0
-Requires: python3-saharaclient >= 1.4.0
-Requires: python3-troveclient >= 2.2.0
-%endif
-Requires: python3-openstacksdk >= 0.28.0
-Requires: python3-tenacity >= 6.1.0
-
-Requires: python3-yaml >= 5.1
-Requires: python3-lxml >= 4.5.0
-Requires: python3-paste-deploy >= 1.5.0
-Requires: python3-webob >= 1.7.1
-Requires: python3-pytz >= 2013.6
-
 Requires(pre): shadow-utils
 
 %description common
@@ -309,7 +214,7 @@ Components common to all OpenStack Heat services
 %{_bindir}/%{service}-keystone-setup
 %{_bindir}/%{service}-keystone-setup-domain
 %{python3_sitelib}/%{service}
-%{python3_sitelib}/openstack_%{service}-%{upstream_version}-*.egg-info
+%{python3_sitelib}/openstack_%{service}*.dist-info
 %exclude %{python3_sitelib}/%{service}/tests
 %attr(-, root, %{service}) %{_datadir}/%{service}/%{service}-dist.conf
 %dir %attr(0755,%{service},root) %{_localstatedir}/log/%{service}
@@ -346,11 +251,7 @@ Summary: The Heat engine
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-%if 0%{?rhel} && 0%{?rhel} < 8
-%{?systemd_requires}
-%else
-%{?systemd_ordering} # does not exist on EL7
-%endif
+%{?systemd_ordering}
 
 %description engine
 %{common_desc}
@@ -361,7 +262,7 @@ templates and provide events back to the API consumer.
 %files engine
 %doc README.rst LICENSE
 %if 0%{?with_doc}
-%doc doc/build/html/man/%{service}-engine.html
+%doc doc/build/html
 %endif
 %{_bindir}/%{service}-engine
 %{_unitdir}/openstack-%{service}-engine.service
@@ -399,7 +300,7 @@ requests by sending them to the %{service}-engine over RPC.
 %files api
 %doc README.rst LICENSE
 %if 0%{?with_doc}
-%doc doc/build/html/man/%{service}-api.html
+%doc doc/build/html
 %endif
 %{_bindir}/%{service}-api
 %{_bindir}/%{service}-wsgi-api
@@ -439,7 +340,7 @@ AWS CloudFormation and processes API requests by sending them to the
 %files api-cfn
 %doc README.rst LICENSE
 %if 0%{?with_doc}
-%doc doc/build/html/man/%{service}-api-cfn.html
+%doc doc/build/html
 %endif
 %{_bindir}/%{service}-api-cfn
 %{_bindir}/%{service}-wsgi-api-cfn
