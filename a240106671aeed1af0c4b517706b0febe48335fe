@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "df1a651b_65fe8fb4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 128
+      },
+      "writtenOn": "2023-08-01T14:00:57Z",
+      "side": 1,
+      "message": "we need to check where all those new deps are coming from:\n\nhttps://logserver.rdoproject.org/90/49490/5/check/DLRN-rpmbuild-centos9-compare-deps/5829ff6/job-output.txt",
+      "revId": "a240106671aeed1af0c4b517706b0febe48335fe",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "37f44824_56eabaab",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 5
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 128
+      },
+      "writtenOn": "2023-08-01T14:00:57Z",
+      "side": 1,
+      "message": "To generate config files properly you need to move this to %install and declare PYTHONPATH\u003d\"%{buildroot}/%{python3_sitelib}\" \n\nSee warnings at https://logserver.rdoproject.org/90/49490/5/check/DLRN-rpmbuild-centos9/f8cb94f/buildset/centos9/current/rpmbuild.log.gz",
+      "range": {
+        "startLine": 138,
+        "startChar": 0,
+        "endLine": 140,
+        "endChar": 70
+      },
+      "revId": "a240106671aeed1af0c4b517706b0febe48335fe",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    }
+  ]
+}
