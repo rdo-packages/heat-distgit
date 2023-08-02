@@ -22,6 +22,75 @@
       },
       "revId": "4aa49ec1a0aa7be2952d047737b556ed95254921",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "289a128d_6cbbbe7b",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 7
+      },
+      "lineNbr": 364,
+      "author": {
+        "id": 635
+      },
+      "writtenOn": "2023-08-02T12:45:55Z",
+      "side": 0,
+      "message": "we have to keep this particular file and not the whole html dir as it\u0027s for engine subpackage",
+      "range": {
+        "startLine": 364,
+        "startChar": 0,
+        "endLine": 364,
+        "endChar": 46
+      },
+      "revId": "4aa49ec1a0aa7be2952d047737b556ed95254921",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "03c2ecc6_8c4b6aaf",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 7
+      },
+      "lineNbr": 402,
+      "author": {
+        "id": 635
+      },
+      "writtenOn": "2023-08-02T12:45:55Z",
+      "side": 0,
+      "message": "we have to keep this particular file and not the whole html dir as it\u0027s for api subpackage",
+      "range": {
+        "startLine": 402,
+        "startChar": 0,
+        "endLine": 402,
+        "endChar": 43
+      },
+      "revId": "4aa49ec1a0aa7be2952d047737b556ed95254921",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd8461b5_8de25a96",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 7
+      },
+      "lineNbr": 442,
+      "author": {
+        "id": 635
+      },
+      "writtenOn": "2023-08-02T12:45:55Z",
+      "side": 0,
+      "message": "we have to keep this particular file and not the whole html dir as it\u0027s for api-cfn subpackage",
+      "range": {
+        "startLine": 442,
+        "startChar": 0,
+        "endLine": 442,
+        "endChar": 9
+      },
+      "revId": "4aa49ec1a0aa7be2952d047737b556ed95254921",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
     }
   ]
 }
