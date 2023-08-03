@@ -207,8 +207,6 @@ mv %{buildroot}%{python3_sitelib}/%{service}/locale %{buildroot}%{_datadir}/loca
 Summary: Heat common
 Group: System Environment/Base
 
-Obsoletes: %{name}-api-cloudwatch < %{epoch}:10.0.0
-
 Requires(pre): shadow-utils
 
 %description common
@@ -269,7 +267,7 @@ templates and provide events back to the API consumer.
 %files engine
 %doc README.rst LICENSE
 %if 0%{?with_doc}
-%doc doc/build/html
+%doc doc/build/html/man/%{service}-engine.html
 %endif
 %{_bindir}/%{service}-engine
 %{_unitdir}/openstack-%{service}-engine.service
@@ -292,11 +290,7 @@ Summary: The Heat API
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-%if 0%{?rhel} && 0%{?rhel} < 8
-%{?systemd_requires}
-%else
-%{?systemd_ordering} # does not exist on EL7
-%endif
+%{?systemd_ordering}
 
 %description api
 %{common_desc}
@@ -307,7 +301,7 @@ requests by sending them to the %{service}-engine over RPC.
 %files api
 %doc README.rst LICENSE
 %if 0%{?with_doc}
-%doc doc/build/html
+%doc doc/build/html/man/%{service}-api.html
 %endif
 %{_bindir}/%{service}-api
 %{_bindir}/%{service}-wsgi-api
@@ -331,11 +325,7 @@ Summary: Heat CloudFormation API
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-%if 0%{?rhel} && 0%{?rhel} < 8
-%{?systemd_requires}
-%else
-%{?systemd_ordering} # does not exist on EL7
-%endif
+%{?systemd_ordering}
 
 %description api-cfn
 %{common_desc}
@@ -347,7 +337,7 @@ AWS CloudFormation and processes API requests by sending them to the
 %files api-cfn
 %doc README.rst LICENSE
 %if 0%{?with_doc}
-%doc doc/build/html
+%doc doc/build/html/man/%{service}-api-cfn.html
 %endif
 %{_bindir}/%{service}-api-cfn
 %{_bindir}/%{service}-wsgi-api-cfn
@@ -371,11 +361,7 @@ Summary: The combined Heat engine/API
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 
-%if 0%{?rhel} && 0%{?rhel} < 8
-%{?systemd_requires}
-%else
-%{?systemd_ordering} # does not exist on EL7
-%endif
+%{?systemd_ordering}
 
 %description monolith
 %{common_desc}
