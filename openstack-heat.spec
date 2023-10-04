@@ -1,4 +1,3 @@
-%global milestone .0rc1
 %{!?sources_gpg: %{!?dlrn:%global sources_gpg 1} }
 %global sources_gpg_sign 0x815AFEC729392386480E076DCC0DFE2D21C023C9
 
@@ -32,12 +31,10 @@ Summary:        OpenStack Orchestration (%{service})
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:          1
 Version:        21.0.0
-Release:        0.1%{?milestone}%{?dist}
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            http://www.openstack.org
 Source0:        https://tarballs.openstack.org/%{service}/%{name}-%{upstream_version}.tar.gz
-#
-# patches_base=21.0.0.0rc1
 #
 
 Obsoletes:      %{service} < 7-9
@@ -392,6 +389,9 @@ running the Heat service in general.
 
 
 %changelog
+* Wed Oct 04 2023 RDO <dev@lists.rdoproject.org> 1:21.0.0-1
+- Update to 21.0.0
+
 * Thu Sep 21 2023 RDO <dev@lists.rdoproject.org> 1:21.0.0-0.1.0rc1
 - Update to 21.0.0.0rc1
 
