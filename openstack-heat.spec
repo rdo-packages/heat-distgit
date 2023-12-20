@@ -149,9 +149,6 @@ done
 # oslo-config-generator doesn't skip heat's entry points.
 PYTHONPATH="%{buildroot}/%{python3_sitelib}" oslo-config-generator --config-file=config-generator.conf
 
-# Generate i18n files
-%{__python3} setup.py compile_catalog -d %{buildroot}%{python3_sitelib}/%{service}/locale
-
 mkdir -p %{buildroot}/%{_localstatedir}/log/%{service}/
 mkdir -p %{buildroot}/%{_localstatedir}/run/%{service}/
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-%{service}
@@ -190,15 +187,6 @@ mv %{buildroot}%{_prefix}/etc/%{service}/environment.d %{buildroot}/%{_sysconfdi
 mv %{buildroot}%{_prefix}/etc/%{service}/templates %{buildroot}/%{_sysconfdir}/%{service}
 # Remove duplicate config files under /usr/etc/heat
 rmdir %{buildroot}%{_prefix}/etc/%{service}
-
-# Install i18n .mo files (.po and .pot are not required)
-install -d -m 755 %{buildroot}%{_datadir}
-rm -f %{buildroot}%{python3_sitelib}/%{service}/locale/*/LC_*/%{service}*po
-rm -f %{buildroot}%{python3_sitelib}/%{service}/locale/*pot
-mv %{buildroot}%{python3_sitelib}/%{service}/locale %{buildroot}%{_datadir}/locale
-
-# Find language files
-%find_lang %{service} --all-name
 
 %description
 %{common_desc}
