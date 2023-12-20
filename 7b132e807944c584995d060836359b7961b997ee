@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2efa52a5_7b7b0811",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 415
+      },
+      "writtenOn": "2023-12-20T15:58:39Z",
+      "side": 1,
+      "message": "https://review.rdoproject.org/r/c/openstack/heat-distgit/+/51138",
+      "revId": "7b132e807944c584995d060836359b7961b997ee",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    }
+  ]
+}
