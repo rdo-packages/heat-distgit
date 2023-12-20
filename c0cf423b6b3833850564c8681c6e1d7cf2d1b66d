@@ -18,6 +18,24 @@
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9c603316_1032bd39",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 2
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 682
+      },
+      "writtenOn": "2023-12-20T17:43:18Z",
+      "side": 0,
+      "message": "Hmm. ok I confirmed this should be removed in case we remove the comiple catalog. Looking at nova code it seems the command has -D to avoid the error, as is done in your alternative proposal.",
+      "parentUuid": "22cd4f54_acdbccbd",
+      "revId": "c0cf423b6b3833850564c8681c6e1d7cf2d1b66d",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "514479bb_50572f6a",
@@ -31,6 +49,24 @@
       "writtenOn": "2023-12-20T17:23:55Z",
       "side": 0,
       "message": "ditto",
+      "revId": "c0cf423b6b3833850564c8681c6e1d7cf2d1b66d",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a9718e71_28a4b851",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 2
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 682
+      },
+      "writtenOn": "2023-12-20T17:43:18Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "514479bb_50572f6a",
       "revId": "c0cf423b6b3833850564c8681c6e1d7cf2d1b66d",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
     }
