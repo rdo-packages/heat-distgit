@@ -16,6 +16,24 @@
       "message": "I had already proposed the same here https://review.rdoproject.org/r/c/openstack/heat-distgit/+/51137. But I think it\u0027s better to merge  https://review.rdoproject.org/r/c/openstack/heat-distgit/+/51138",
       "revId": "87dab93210f8903bd23d799997f846e17f592c58",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5d7f0f39_04bfba8f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 415
+      },
+      "writtenOn": "2023-12-21T08:18:43Z",
+      "side": 1,
+      "message": "Here is the relevant upstream thread if you want more clarification. https://lists.openstack.org/pipermail/openstack-discuss/2020-April/014227.html",
+      "parentUuid": "5747df80_aa64a870",
+      "revId": "87dab93210f8903bd23d799997f846e17f592c58",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
     }
   ]
 }
