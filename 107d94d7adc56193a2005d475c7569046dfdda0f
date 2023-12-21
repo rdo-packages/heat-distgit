@@ -33,6 +33,24 @@
       "message": "This is not needed after https://review.rdoproject.org/r/c/openstack/heat-distgit/+/51137 , right?",
       "revId": "107d94d7adc56193a2005d475c7569046dfdda0f",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2db13957_c3006460",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 415
+      },
+      "writtenOn": "2023-12-21T09:06:53Z",
+      "side": 1,
+      "message": "We should still merge this after being rebased and drop usage of catalog which is not required. I had commented about it in the other review.",
+      "parentUuid": "b6753b3b_0819d7f5",
+      "revId": "107d94d7adc56193a2005d475c7569046dfdda0f",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
     }
   ]
 }
