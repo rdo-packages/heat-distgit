@@ -150,7 +150,7 @@ done
 PYTHONPATH="%{buildroot}/%{python3_sitelib}" oslo-config-generator --config-file=config-generator.conf
 
 # Generate i18n files
-%{__python3} setup.py compile_catalog -d %{buildroot}%{python3_sitelib}/%{service}/locale
+%{__python3} setup.py compile_catalog -d %{buildroot}%{python3_sitelib}/%{service}/locale -D heat
 
 mkdir -p %{buildroot}/%{_localstatedir}/log/%{service}/
 mkdir -p %{buildroot}/%{_localstatedir}/run/%{service}/
