@@ -74,23 +74,10 @@ Requires:       %{name}-common = %{epoch}:%{version}-%{release}
 
 Requires: python3-oslotest
 Requires: python3-testresources
-Requires: python3-oslotest
-Requires: python3-oslo-log >= 4.3.0
-Requires: python3-oslo-utils >= 4.5.0
-Requires: python3-heatclient
-Requires: python3-cinderclient
-Requires: python3-zaqarclient
-Requires: python3-keystoneclient
-Requires: python3-swiftclient
 Requires: python3-paramiko
 Requires: python3-kombu
-Requires: python3-oslo-config >= 6.8.0
-Requires: python3-oslo-concurrency
-Requires: python3-requests >= 2.23.0
-Requires: python3-eventlet >= 0.18.2
 Requires: python3-gabbi
 Requires: python3-ddt >= 1.4.1
-Requires: python3-yaml >= 5.1
 
 %description -n python3-%{service}-tests
 %{common_desc}
