@@ -51,6 +51,24 @@
       "parentUuid": "b6753b3b_0819d7f5",
       "revId": "107d94d7adc56193a2005d475c7569046dfdda0f",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "be08daed_a6ac4ae7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 128
+      },
+      "writtenOn": "2024-01-04T09:56:52Z",
+      "side": 1,
+      "message": "I see there are some translation files upstream https://github.com/openstack/heat/tree/master/heat/locale we don\u0027t want to ship them? or we don\u0027t need to compile the files?",
+      "parentUuid": "2db13957_c3006460",
+      "revId": "107d94d7adc56193a2005d475c7569046dfdda0f",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
     }
   ]
 }
