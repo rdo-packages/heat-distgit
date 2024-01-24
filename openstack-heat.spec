@@ -72,7 +72,6 @@ Requires: %{name}-api-cfn = %{epoch}:%{version}-%{release}
 Summary:        Heat tests
 Requires:       %{name}-common = %{epoch}:%{version}-%{release}
 
-Requires: python3-oslotest
 Requires: python3-testresources
 Requires: python3-oslotest
 Requires: python3-oslo-log >= 4.3.0
