@@ -74,9 +74,7 @@ Requires:       %{name}-common = %{epoch}:%{version}-%{release}
 
 Requires: python3-oslotest
 Requires: python3-testresources
-Requires: python3-paramiko
 Requires: python3-kombu
-Requires: python3-gabbi
 Requires: python3-ddt >= 1.4.1
 
 %description -n python3-%{service}-tests
