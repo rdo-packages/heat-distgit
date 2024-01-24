@@ -72,11 +72,6 @@ Requires: %{name}-api-cfn = %{epoch}:%{version}-%{release}
 Summary:        Heat tests
 Requires:       %{name}-common = %{epoch}:%{version}-%{release}
 
-Requires: python3-oslotest
-Requires: python3-testresources
-Requires: python3-kombu
-Requires: python3-ddt >= 1.4.1
-
 %description -n python3-%{service}-tests
 %{common_desc}
 This package contains the Heat test files.
