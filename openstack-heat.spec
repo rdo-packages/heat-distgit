@@ -4,10 +4,10 @@
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 
 # we are excluding some runtime reqs from automatic generator
-%global excluded_reqs packaging tzdata python-blazarclient python-zunclient python-vitrageclient
+%global excluded_reqs packaging tzdata python-blazarclient python-zunclient python-vitrageclient python-saharaclient
 
 %if 0%{?rhosp}
-%global excluded_reqs %{excluded_reqs} python-magnumclient python-mistralclient python-monascaclient python-saharaclient python-troveclient
+%global excluded_reqs %{excluded_reqs} python-magnumclient python-mistralclient python-monascaclient python-troveclient
 %endif
 
 # we are excluding some BRs from automatic generator
