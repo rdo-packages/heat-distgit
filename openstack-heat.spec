@@ -6,17 +6,20 @@
 # we are excluding some runtime reqs from automatic generator
 %global excluded_reqs packaging tzdata python-blazarclient python-zunclient python-vitrageclient
 
+%global excluded_projects_in_test blazar zun vitrage senlin
+
 %if 0%{?rhosp}
 %global excluded_reqs %{excluded_reqs} python-magnumclient python-mistralclient python-monascaclient python-saharaclient python-troveclient
 %endif
 
 # we are excluding some BRs from automatic generator
-%global excluded_brs doc8 bandit pre-commit hacking flake8-import-order os-api-ref
+%global excluded_brs doc8 bandit pre-commit flake8-import-order os-api-ref
 # Exclude sphinx from BRs if docs are disabled
 %if ! 0%{?with_doc}
 %global excluded_brs %{excluded_brs} sphinx openstackdocstheme
 %endif
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
+%global with_test 1
 %global rhosp 0
 %global service heat
 
@@ -68,11 +71,13 @@ Requires: %{name}-engine = %{epoch}:%{version}-%{release}
 Requires: %{name}-api = %{epoch}:%{version}-%{release}
 Requires: %{name}-api-cfn = %{epoch}:%{version}-%{release}
 
+%if 0%{?with_test}
 %package -n python3-%{service}-tests
 Summary:        Heat tests
 Requires:       %{name}-common = %{epoch}:%{version}-%{release}
 
 Requires: python3-oslotest
+Requires: python3-hacking
 Requires: python3-testresources
 Requires: python3-kombu
 Requires: python3-ddt >= 1.4.1
@@ -80,6 +85,7 @@ Requires: python3-ddt >= 1.4.1
 %description -n python3-%{service}-tests
 %{common_desc}
 This package contains the Heat test files.
+%endif
 
 %prep
 # Required for tarball sources verification
@@ -88,9 +94,16 @@ This package contains the Heat test files.
 %endif
 %autosetup -n openstack-%{service}-%{upstream_version} -S git
 
+%if 0%{?with_test}
+sed -i 's/^hacking.*/hacking/' test-requirements.txt
+for project in %{excluded_projects_in_test}; do
+  rm -rf heat/tests/openstack/${project}/
+  find heat/tests -name *${project}* -type f | xargs rm -f
+done
 
 # Remove tests in contrib
 find contrib -name tests -type d | xargs rm -r
+%endif
 
 sed -i /^[[:space:]]*-c{env:.*_CONSTRAINTS_FILE.*/d tox.ini
 sed -i "s/^deps = -c{env:.*_CONSTRAINTS_FILE.*/deps =/" tox.ini
@@ -197,6 +210,12 @@ Requires(pre): shadow-utils
 %description common
 Components common to all OpenStack Heat services
 
+
+%if 0%{?with_test}
+%check
+%tox -e %{default_toxenv}
+%endif
+
 %files common -f %{service}.lang
 %doc LICENSE
 %{_bindir}/%{service}-manage
@@ -223,10 +242,12 @@ Components common to all OpenStack Heat services
 %{_mandir}/man1/%{service}-status.1.gz
 %endif
 
+%if 0%{?with_test}
 %files -n python3-%{service}-tests
 %license LICENSE
 %{python3_sitelib}/%{service}/tests
 %{python3_sitelib}/%{service}_integrationtests
+%endif
 
 %pre common
 # 187:187 for heat - rhbz#845078
