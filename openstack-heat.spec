@@ -176,8 +176,10 @@ install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
 
 rm -f %{buildroot}/%{_bindir}/%{service}-db-setup
 rm -f %{buildroot}/%{_mandir}/man1/%{service}-db-setup.*
+rm -f %{buildroot}/%{_bindir}/%{service}-keystone-setup
+rm -f %{buildroot}/%{_bindir}/%{service}-keystone-setup-domain
+rm -f %{buildroot}/%{_mandir}/man1/%{service}-keystone-setup.*
 rm -rf %{buildroot}/var/lib/%{service}/.dummy
-rm -f %{buildroot}/usr/bin/cinder-keystone-setup
 
 install -p -D -m 640 etc/%{service}/%{service}.conf.sample %{buildroot}/%{_sysconfdir}/%{service}/%{service}.conf
 install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf
@@ -220,8 +222,6 @@ Components common to all OpenStack Heat services
 %doc LICENSE
 %{_bindir}/%{service}-manage
 %{_bindir}/%{service}-status
-%{_bindir}/%{service}-keystone-setup
-%{_bindir}/%{service}-keystone-setup-domain
 %{python3_sitelib}/%{service}
 %{python3_sitelib}/openstack_%{service}*.dist-info
 %exclude %{python3_sitelib}/%{service}/tests
@@ -236,8 +236,6 @@ Components common to all OpenStack Heat services
 %config(noreplace) %attr(-,root,%{service}) %{_sysconfdir}/%{service}/environment.d/*
 %config(noreplace) %attr(-,root,%{service}) %{_sysconfdir}/%{service}/templates/*
 %if 0%{?with_doc}
-%{_mandir}/man1/%{service}-keystone-setup.1.gz
-%{_mandir}/man1/%{service}-keystone-setup-domain.1.gz
 %{_mandir}/man1/%{service}-manage.1.gz
 %{_mandir}/man1/%{service}-status.1.gz
 %endif
