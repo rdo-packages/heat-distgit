@@ -9,7 +9,7 @@
 %global excluded_projects_in_test blazar zun vitrage senlin
 
 %if 0%{?rhosp}
-%global excluded_reqs %{excluded_reqs} python-magnumclient python-mistralclient python-monascaclient python-saharaclient python-troveclient
+%global excluded_reqs %{excluded_reqs} python-magnumclient python-mistralclient python-monascaclient python-troveclient
 %endif
 
 # we are excluding some BRs from automatic generator
