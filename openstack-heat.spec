@@ -38,8 +38,6 @@ Release:        XXX
 License:        Apache-2.0
 URL:            http://www.openstack.org
 Source0:        https://tarballs.openstack.org/%{service}/%{name}-%{upstream_version}.tar.gz
-Obsoletes:      %{service} < 7-9
-Provides:       %{service}
 
 Source1:        %{service}.logrotate
 Source2:        openstack-%{service}-api.service
