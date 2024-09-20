@@ -70,6 +70,24 @@
       "parentUuid": "08913965_2f1b2e9e",
       "revId": "88ec2e52fc8a334001a5bb25e33671cc4f151882",
       "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "51303517_8c52bef3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 128
+      },
+      "writtenOn": "2024-09-20T11:13:13Z",
+      "side": 1,
+      "message": "IMO, removing dist files could be done at this point but with proper time for tools to adjust to it and for all the projects, as it has been a \"RDO standard way of doing things\" for some time. I wouldn\u0027t remove dist files at this time, right before a release. It may be put as a goal for next release.\n\nI\u0027m in favor of merging this now but I will wait for Rabi feedback.",
+      "parentUuid": "9a079698_6d216995",
+      "revId": "88ec2e52fc8a334001a5bb25e33671cc4f151882",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
     }
   ]
 }
