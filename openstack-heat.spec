@@ -143,7 +143,7 @@ done
 
 # Generate sample config and add the current directory to PYTHONPATH so
 # oslo-config-generator doesn't skip heat's entry points.
-PYTHONPATH="%{buildroot}/%{python3_sitelib}" oslo-config-generator --config-file=config-generator.conf
+PYTHONPATH="%{buildroot}/%{python3_sitelib}" oslo-config-generator --config-file=etc/heat-config-generator.conf
 
 # Generate i18n files
 %{__python3} setup.py compile_catalog -d %{buildroot}%{python3_sitelib}/%{service}/locale -D heat
