@@ -1,0 +1,9 @@
+Code-Review+1: Rabi Mishra <ramishra@redhat.com>
+Workflow+1: Joel Capitao <jcapitao@redhat.com>
+Verified+2: Zuul CI <zuul@review.rdoproject.org>
+Code-Review+2: Joel Capitao <jcapitao@redhat.com>
+Submitted-by: Zuul CI <zuul@review.rdoproject.org>
+Submitted-at: Wed, 02 Oct 2024 07:24:25 +0000
+Reviewed-on: https://review.rdoproject.org/r/c/openstack/heat-distgit/+/54840
+Project: openstack/heat-distgit
+Branch: refs/heads/rpm-master
