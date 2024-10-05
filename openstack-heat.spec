@@ -173,9 +173,7 @@ install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
 %endif
 
 rm -f %{buildroot}/%{_bindir}/%{service}-db-setup
-rm -f %{buildroot}/%{_bindir}/%{service}-keystone-setup
 rm -f %{buildroot}/%{_mandir}/man1/%{service}-db-setup.*
-rm -f %{buildroot}/%{_mandir}/man1/%{service}-keystone-setup.*
 rm -rf %{buildroot}/var/lib/%{service}/.dummy
 
 install -p -D -m 640 etc/%{service}/%{service}.conf.sample %{buildroot}/%{_sysconfdir}/%{service}/%{service}.conf
