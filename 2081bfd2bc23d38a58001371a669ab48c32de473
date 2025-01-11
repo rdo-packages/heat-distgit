@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f6ec29b_901cc00d",
+        "filename": "openstack-heat.spec",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 682
+      },
+      "writtenOn": "2025-01-11T17:15:28Z",
+      "side": 1,
+      "message": "it\u0027s already added here :-(",
+      "range": {
+        "startLine": 7,
+        "startChar": 32,
+        "endLine": 7,
+        "endChar": 38
+      },
+      "revId": "2081bfd2bc23d38a58001371a669ab48c32de473",
+      "serverId": "270e2033-b340-4cff-9539-693957ebf0e7"
+    }
+  ]
+}
