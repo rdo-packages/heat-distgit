@@ -1,0 +1,8 @@
+Workflow+1: Joel Capitao <jcapitao@redhat.com>
+Code-Review+2: Joel Capitao <jcapitao@redhat.com>
+Verified+2: Joel Capitao <jcapitao@redhat.com>
+Submitted-by: Joel Capitao <jcapitao@redhat.com>
+Submitted-at: Tue, 18 Mar 2025 13:51:43 +0000
+Reviewed-on: https://review.rdoproject.org/r/c/openstack/heat-distgit/+/57045
+Project: openstack/heat-distgit
+Branch: refs/heads/rpm-master
