@@ -2,6 +2,8 @@
 %global sources_gpg_sign 0x2426b928085a020d8a90d0d879ab7008d0896c8a
 
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
+%{?dlrn: %global tarsources openstack-heat}
+%{!?dlrn: %global tarsources openstack_heat}
 
 # we are excluding some runtime reqs from automatic generator
 %global excluded_reqs packaging tzdata python-blazarclient python-zunclient python-vitrageclient
@@ -37,7 +39,7 @@ Version:        XXX
 Release:        XXX
 License:        Apache-2.0
 URL:            http://www.openstack.org
-Source0:        https://tarballs.openstack.org/%{service}/%{name}-%{upstream_version}.tar.gz
+Source0:        https://tarballs.openstack.org/%{service}/%{tarsources}-%{upstream_version}.tar.gz
 
 Source1:        %{service}.logrotate
 Source2:        openstack-%{service}-api.service
@@ -48,7 +50,7 @@ Source6:        openstack-%{service}-all.service
 Source20:       %{service}-dist.conf
 # Required for tarball sources verification
 %if 0%{?sources_gpg} == 1
-Source101:        https://tarballs.openstack.org/%{service}/%{name}-%{upstream_version}.tar.gz.asc
+Source101:        https://tarballs.openstack.org/%{service}/%{tarsources}-%{upstream_version}.tar.gz.asc
 Source102:        https://releases.openstack.org/_static/%{sources_gpg_sign}.txt
 %endif
 
@@ -90,7 +92,7 @@ This package contains the Heat test files.
 %if 0%{?sources_gpg} == 1
 %{gpgverify}  --keyring=%{SOURCE102} --signature=%{SOURCE101} --data=%{SOURCE0}
 %endif
-%autosetup -n openstack-%{service}-%{upstream_version} -S git
+%autosetup -n openstack-%{tarsources}-%{upstream_version} -S git
 
 %if 0%{?with_test}
 sed -i 's/^hacking.*/hacking/' test-requirements.txt
