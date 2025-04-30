@@ -1,5 +1,5 @@
 %{!?sources_gpg: %{!?dlrn:%global sources_gpg 1} }
-%global sources_gpg_sign 0x815AFEC729392386480E076DCC0DFE2D21C023C9
+%global sources_gpg_sign 0x22284f69d9eccdf3df7819791c711af193ff8e54
 
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 
@@ -30,7 +30,7 @@ Summary:        OpenStack Orchestration (%{service})
 # Liberty semver reset
 # https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
 Epoch:          1
-Version:        21.0.0
+Version:        21.0.1
 Release:        1%{?dist}
 License:        Apache-2.0
 URL:            http://www.openstack.org
@@ -389,6 +389,9 @@ running the Heat service in general.
 
 
 %changelog
+* Wed Apr 30 2025 RDO <dev@lists.rdoproject.org> 1:21.0.1-1
+- Update to 21.0.1
+
 * Wed Oct 04 2023 RDO <dev@lists.rdoproject.org> 1:21.0.0-1
 - Update to 21.0.0
 
