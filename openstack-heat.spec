@@ -45,7 +45,6 @@ Source1:        %{service}.logrotate
 Source2:        openstack-%{service}-api.service
 Source3:        openstack-%{service}-api-cfn.service
 Source4:        openstack-%{service}-engine.service
-Source6:        openstack-%{service}-all.service
 
 Source20:       %{service}-dist.conf
 # Required for tarball sources verification
@@ -158,7 +157,6 @@ install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-%{service}-api.service
 install -p -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/openstack-%{service}-api-cfn.service
 install -p -D -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/openstack-%{service}-engine.service
-install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-%{service}-all.service
 
 mkdir -p %{buildroot}/%{_sharedstatedir}/%{service}/
 mkdir -p %{buildroot}/%{_sysconfdir}/%{service}/
@@ -205,6 +203,7 @@ Summary: Heat common
 Group: System Environment/Base
 
 Requires(pre): shadow-utils
+Obsoletes: openstack-heat-monolith
 
 %description common
 Components common to all OpenStack Heat services
@@ -357,36 +356,5 @@ AWS CloudFormation and processes API requests by sending them to the
 
 %postun api-cfn
 %systemd_postun_with_restart openstack-%{service}-api-cfn.service
-
-
-%package monolith
-Summary: The combined Heat engine/API
-
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-
-%{?systemd_ordering}
-
-%description monolith
-%{common_desc}
-
-The %{service}-all process bundles together any (or all) of %{service}-engine,
-%{service}-api, and %{service}-cfn-api into a single process. This can be used
-to bootstrap a minimal TripleO deployment, but is not the recommended way of
-running the Heat service in general.
-
-%files monolith
-%doc README.rst LICENSE
-%{_bindir}/%{service}-all
-%{_unitdir}/openstack-%{service}-all.service
-
-%post monolith
-%systemd_post openstack-%{service}-all.service
-
-%preun monolith
-%systemd_preun openstack-%{service}-all.service
-
-%postun monolith
-%systemd_postun_with_restart openstack-%{service}-all.service
-
 
 %changelog
