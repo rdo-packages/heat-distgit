@@ -42,10 +42,7 @@ URL:            http://www.openstack.org
 Source0:        https://tarballs.openstack.org/%{service}/%{tarsources}-%{upstream_version}.tar.gz
 
 Source1:        %{service}.logrotate
-Source2:        openstack-%{service}-api.service
-Source3:        openstack-%{service}-api-cfn.service
 Source4:        openstack-%{service}-engine.service
-Source6:        openstack-%{service}-all.service
 
 Source20:       %{service}-dist.conf
 # Required for tarball sources verification
@@ -155,10 +152,7 @@ mkdir -p %{buildroot}/%{_localstatedir}/run/%{service}/
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-%{service}
 
 # install systemd unit files
-install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-%{service}-api.service
-install -p -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/openstack-%{service}-api-cfn.service
 install -p -D -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/openstack-%{service}-engine.service
-install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-%{service}-all.service
 
 mkdir -p %{buildroot}/%{_sharedstatedir}/%{service}/
 mkdir -p %{buildroot}/%{_sysconfdir}/%{service}/
@@ -176,6 +170,8 @@ install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
 
 rm -f %{buildroot}/%{_bindir}/%{service}-db-setup
 rm -f %{buildroot}/%{_mandir}/man1/%{service}-db-setup.*
+rm -f %{buildroot}/%{_mandir}/man1/%{service}-api.*
+rm -f %{buildroot}/%{_mandir}/man1/%{service}-api-cfn.*
 rm -rf %{buildroot}/var/lib/%{service}/.dummy
 
 install -p -D -m 640 etc/%{service}/%{service}.conf.sample %{buildroot}/%{_sysconfdir}/%{service}/%{service}.conf
@@ -205,6 +201,7 @@ Summary: Heat common
 Group: System Environment/Base
 
 Requires(pre): shadow-utils
+Obsoletes: openstack-heat-monolith < %{epoch}:25.0.0
 
 %description common
 Components common to all OpenStack Heat services
@@ -303,24 +300,7 @@ requests by sending them to the %{service}-engine over RPC.
 
 %files api
 %doc README.rst LICENSE
-%if 0%{?with_doc}
-%doc doc/build/html/man/%{service}-api.html
-%endif
-%{_bindir}/%{service}-api
 %{_bindir}/%{service}-wsgi-api
-%{_unitdir}/openstack-%{service}-api.service
-%if 0%{?with_doc}
-%{_mandir}/man1/%{service}-api.1.gz
-%endif
-
-%post api
-%systemd_post openstack-%{service}-api.service
-
-%preun api
-%systemd_preun openstack-%{service}-api.service
-
-%postun api
-%systemd_postun_with_restart openstack-%{service}-api.service
 
 
 %package api-cfn
@@ -339,54 +319,7 @@ AWS CloudFormation and processes API requests by sending them to the
 
 %files api-cfn
 %doc README.rst LICENSE
-%if 0%{?with_doc}
-%doc doc/build/html/man/%{service}-api-cfn.html
-%endif
-%{_bindir}/%{service}-api-cfn
 %{_bindir}/%{service}-wsgi-api-cfn
-%{_unitdir}/openstack-%{service}-api-cfn.service
-%if 0%{?with_doc}
-%{_mandir}/man1/%{service}-api-cfn.1.gz
-%endif
-
-%post api-cfn
-%systemd_post openstack-%{service}-api-cfn.service
-
-%preun api-cfn
-%systemd_preun openstack-%{service}-api-cfn.service
-
-%postun api-cfn
-%systemd_postun_with_restart openstack-%{service}-api-cfn.service
-
-
-%package monolith
-Summary: The combined Heat engine/API
-
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-
-%{?systemd_ordering}
-
-%description monolith
-%{common_desc}
-
-The %{service}-all process bundles together any (or all) of %{service}-engine,
-%{service}-api, and %{service}-cfn-api into a single process. This can be used
-to bootstrap a minimal TripleO deployment, but is not the recommended way of
-running the Heat service in general.
-
-%files monolith
-%doc README.rst LICENSE
-%{_bindir}/%{service}-all
-%{_unitdir}/openstack-%{service}-all.service
-
-%post monolith
-%systemd_post openstack-%{service}-all.service
-
-%preun monolith
-%systemd_preun openstack-%{service}-all.service
-
-%postun monolith
-%systemd_postun_with_restart openstack-%{service}-all.service
 
 
 %changelog
