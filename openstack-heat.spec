@@ -323,3 +323,4 @@ AWS CloudFormation and processes API requests by sending them to the
 
 
 %changelog
+# REMOVEME: error caused by commit https://opendev.org/openstack/heat/commit/a855296b889a1edb78c8c95ae37bee18655dd470
